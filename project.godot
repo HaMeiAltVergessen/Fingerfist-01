@@ -1,0 +1,67 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Fingerfist 01 Punch to Playton"
+run/main_scene="uid://q6qlqtcsygqy"
+config/features=PackedStringArray("4.4", "GL Compatibility")
+config/icon="res://icon.svg"
+
+[autoload]
+
+Game="*res://scripts/GameManager.gd"
+DataStore="*res://scripts/DataStore.gd"
+Audio="*res://scripts/AudioManager.gd"
+
+[display]
+
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="viewport"
+
+[file_customization]
+
+folder_colors={
+"res://Scenes/": "orange",
+"res://assets/": "red",
+"res://autoload/": "gray",
+"res://data/": "blue",
+"res://scripts/": "purple"
+}
+
+[input]
+
+UI_Accept={
+"deadzone": 0.2,
+"events": []
+}
+Attack={
+"deadzone": 0.2,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":1,"position":Vector2(259, 22),"global_position":Vector2(268, 70),"factor":1.0,"button_index":1,"canceled":false,"pressed":true,"double_click":false,"script":null)
+]
+}
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
+[layer_names]
+
+2d_render/layer_1="Player"
+2d_render/layer_2="Enemy"
+2d_render/layer_3="Projectile"
+2d_render/layer_4="Coin"
+2d_render/layer_5="Wall"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

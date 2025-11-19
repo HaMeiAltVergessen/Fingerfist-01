@@ -1,0 +1,58 @@
+[gd_scene load_steps=4 format=3 uid="uid://q6qlqtcsygqy"]
+
+[ext_resource type="PackedScene" uid="uid://ck0hp12ep61o7" path="res://Scenes/EnemySpawner.tscn" id="1_qxrlw"]
+[ext_resource type="PackedScene" uid="uid://dafnnjlk7nlh5" path="res://Scenes/Coin.tscn" id="1_wrm1d"]
+[ext_resource type="PackedScene" uid="uid://ccn5mavmp861o" path="res://Scenes/CoinSpawner.tscn" id="2_wrm1d"]
+
+[node name="Game" type="Node2D"]
+
+[node name="GameCamera" type="Camera2D" parent="."]
+position = Vector2(634, 349)
+
+[node name="HUDLayer" type="CanvasLayer" parent="."]
+
+[node name="TimerLabel" type="Label" parent="HUDLayer"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ScoreLabe" type="Label" parent="HUDLayer"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="ComboCounter" type="Label" parent="HUDLayer"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="CoinLayer" type="CanvasLayer" parent="."]
+
+[node name="Coin" parent="CoinLayer" instance=ExtResource("1_wrm1d")]
+
+[node name="GameTimer" type="Timer" parent="."]
+
+[node name="Spawners" type="Node2D" parent="."]
+
+[node name="EnemySpawner" parent="Spawners" instance=ExtResource("1_qxrlw")]
+
+[node name="CoinSpawner" parent="Spawners" instance=ExtResource("2_wrm1d")]
+
+[node name="Wall" type="Sprite2D" parent="."]
+
+[node name="EndScreen" type="CanvasLayer" parent="."]
+
+[node name="Shop" type="Button" parent="EndScreen"]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="Retry" type="Button" parent="EndScreen"]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="MainMenu" type="Button" parent="EndScreen"]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="HighscoreLabel" type="Label" parent="EndScreen"]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="PauseScreen" type="CanvasLayer" parent="."]

@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://b13fiv2j853o8"]
+
+[node name="MainMenu" type="Node2D"]
+
+[node name="Start" type="Button" parent="."]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="Options" type="Button" parent="."]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="Highscores" type="Button" parent="."]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="Quit" type="Button" parent="."]
+offset_right = 8.0
+offset_bottom = 8.0
+
+[node name="Credits" type="Button" parent="."]
+offset_right = 8.0
+offset_bottom = 8.0
