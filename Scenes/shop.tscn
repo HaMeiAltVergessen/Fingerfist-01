@@ -1,8 +1,11 @@
-[gd_scene format=3 uid="uid://dq52xtlvp5ina"]
+[gd_scene load_steps=2 format=3 uid="uid://dq52xtlvp5ina"]
+
+[ext_resource type="Script" uid="uid://bqksvglkxefry" path="res://scripts/shop.gd" id="1_a0mxf"]
 
 [node name="Shop" type="Control"]
 layout_mode = 3
 anchors_preset = 0
+script = ExtResource("1_a0mxf")
 
 [node name="SkinList" type="ItemList" parent="."]
 layout_mode = 0

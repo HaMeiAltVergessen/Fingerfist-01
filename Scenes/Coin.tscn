@@ -1,8 +1,11 @@
-[gd_scene load_steps=2 format=3 uid="uid://dafnnjlk7nlh5"]
+[gd_scene load_steps=3 format=3 uid="uid://dafnnjlk7nlh5"]
+
+[ext_resource type="Script" uid="uid://c4h3fssragc6s" path="res://scripts/coin.gd" id="1_qrc3l"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_8a2u1"]
 
 [node name="Coin" type="Area2D"]
+script = ExtResource("1_qrc3l")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_8a2u1")

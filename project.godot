@@ -17,9 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Game="*res://scripts/GameManager.gd"
-DataStore="*res://scripts/DataStore.gd"
-Audio="*res://scripts/AudioManager.gd"
+Game="*res://autoload/GameManager.gd"
+DataStore="*res://autoload/DataStore.gd"
+Audio="*res://autoload/AudioManager.gd"
 
 [display]
 
@@ -32,7 +32,7 @@ window/stretch/mode="viewport"
 folder_colors={
 "res://Scenes/": "orange",
 "res://assets/": "red",
-"res://autoload/": "gray",
+"res://autoload/": "blue",
 "res://data/": "blue",
 "res://scripts/": "purple"
 }

@@ -1,10 +1,26 @@
-[gd_scene load_steps=4 format=3 uid="uid://q6qlqtcsygqy"]
+[gd_scene load_steps=6 format=3 uid="uid://q6qlqtcsygqy"]
 
 [ext_resource type="PackedScene" uid="uid://ck0hp12ep61o7" path="res://Scenes/EnemySpawner.tscn" id="1_qxrlw"]
+[ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="1_wowpa"]
 [ext_resource type="PackedScene" uid="uid://dafnnjlk7nlh5" path="res://Scenes/Coin.tscn" id="1_wrm1d"]
+[ext_resource type="PackedScene" uid="uid://cis4te6nth5k" path="res://Scenes/Enemy.tscn" id="2_i6g32"]
 [ext_resource type="PackedScene" uid="uid://ccn5mavmp861o" path="res://Scenes/CoinSpawner.tscn" id="2_wrm1d"]
 
 [node name="Game" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource("1_wowpa")]
+
+[node name="Enemy" parent="." instance=ExtResource("2_i6g32")]
+
+[node name="Spawners" type="Node2D" parent="."]
+
+[node name="EnemySpawner" parent="Spawners" instance=ExtResource("1_qxrlw")]
+
+[node name="CoinSpawner" parent="Spawners" instance=ExtResource("2_wrm1d")]
+
+[node name="CoinLayer" type="CanvasLayer" parent="."]
+
+[node name="Coin" parent="CoinLayer" instance=ExtResource("1_wrm1d")]
 
 [node name="GameCamera" type="Camera2D" parent="."]
 position = Vector2(634, 349)
@@ -23,17 +39,7 @@ offset_bottom = 23.0
 offset_right = 40.0
 offset_bottom = 23.0
 
-[node name="CoinLayer" type="CanvasLayer" parent="."]
-
-[node name="Coin" parent="CoinLayer" instance=ExtResource("1_wrm1d")]
-
 [node name="GameTimer" type="Timer" parent="."]
-
-[node name="Spawners" type="Node2D" parent="."]
-
-[node name="EnemySpawner" parent="Spawners" instance=ExtResource("1_qxrlw")]
-
-[node name="CoinSpawner" parent="Spawners" instance=ExtResource("2_wrm1d")]
 
 [node name="Wall" type="Sprite2D" parent="."]
 
