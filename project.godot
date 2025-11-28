@@ -21,6 +21,10 @@ Global="*res://autoload/Global.gd"
 Audio="*res://autoload/AudioManager.gd"
 SceneLoader="*res://autoload/SceneLoader.gd"
 
+[audio]
+
+buses/default_bus_layout="res://default_bus_layout.tres"
+
 [display]
 
 window/size/viewport_width=1280
