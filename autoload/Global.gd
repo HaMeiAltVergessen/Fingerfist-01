@@ -168,3 +168,13 @@ func end_round():
 func _process(delta: float):
 	if not get_tree().paused:
 		total_playtime += delta
+
+# ============================================================================
+# SAVE INTEGRATION
+# ============================================================================
+
+func save_game():
+	SaveSystem.save_game()
+
+func load_game():
+	SaveSystem.load_game()
