@@ -172,6 +172,9 @@ func end_round():
 	enemy_spawner.stop_spawning()
 	coin_spawner.stop_spawning()
 
+	# Clear Enemies
+	enemy_spawner.clear_all_enemies()
+
 	# Update Global Stats
 	Global.end_round()
 
