@@ -65,6 +65,31 @@ var current_level: int = 1
 var spawned_enemies: Array[Enemy] = []
 
 # ============================================================================
+# SPAWN PATTERNS
+# ============================================================================
+
+enum SpawnPattern {
+	SINGLE,     # 1 Enemy
+	WAVE_2,     # 2 Enemies vertikal
+	WAVE_3,     # 3 Enemies vertikal
+	CLUSTER,    # 2-3 Enemies eng zusammen
+	SPREAD,     # 2-3 Enemies weit auseinander
+}
+
+# Pattern-Wahrscheinlichkeiten pro Level
+const PATTERN_WEIGHTS = {
+	1: { SpawnPattern.SINGLE: 100 },  # Nur Singles
+	2: { SpawnPattern.SINGLE: 80, SpawnPattern.WAVE_2: 20 },
+	3: { SpawnPattern.SINGLE: 60, SpawnPattern.WAVE_2: 30, SpawnPattern.CLUSTER: 10 },
+	4: { SpawnPattern.SINGLE: 40, SpawnPattern.WAVE_2: 30, SpawnPattern.WAVE_3: 15, SpawnPattern.CLUSTER: 15 },
+	5: { SpawnPattern.SINGLE: 30, SpawnPattern.WAVE_2: 25, SpawnPattern.WAVE_3: 20, SpawnPattern.CLUSTER: 15, SpawnPattern.SPREAD: 10 },
+	6: { SpawnPattern.SINGLE: 20, SpawnPattern.WAVE_2: 20, SpawnPattern.WAVE_3: 25, SpawnPattern.CLUSTER: 20, SpawnPattern.SPREAD: 15 },
+	7: { SpawnPattern.SINGLE: 10, SpawnPattern.WAVE_2: 20, SpawnPattern.WAVE_3: 30, SpawnPattern.CLUSTER: 20, SpawnPattern.SPREAD: 20 },
+}
+
+var current_pattern: SpawnPattern = SpawnPattern.SINGLE
+
+# ============================================================================
 # INITIALIZATION
 # ============================================================================
 
@@ -87,13 +112,32 @@ func _process(delta: float):
 	spawn_timer -= delta
 
 	if spawn_timer <= 0:
-		# Spawn Enemy (wenn unter Max-Limit)
-		if get_active_enemy_count() < MAX_ENEMIES.get(current_level, 10):
+		# Prüfe Pattern-spezifische Max-Limits
+		var pattern = select_weighted_pattern()
+		var enemies_to_spawn = get_pattern_enemy_count(pattern)
+
+		# Spawn wenn genug Slots frei
+		if get_active_enemy_count() + enemies_to_spawn <= MAX_ENEMIES.get(current_level, 10):
 			spawn_enemy()
 			spawn_timer = current_interval
 		else:
-			# Warte bis Slot frei wird
-			spawn_timer = 0.2  # Check alle 200ms
+			# Warte bis genug Slots frei
+			spawn_timer = 0.2
+
+func get_pattern_enemy_count(pattern: SpawnPattern) -> int:
+	"""Gibt Anzahl Enemies zurück die ein Pattern spawnt"""
+	match pattern:
+		SpawnPattern.SINGLE:
+			return 1
+		SpawnPattern.WAVE_2:
+			return 2
+		SpawnPattern.WAVE_3:
+			return 3
+		SpawnPattern.CLUSTER:
+			return randi_range(2, 3)
+		SpawnPattern.SPREAD:
+			return randi_range(2, 3)
+	return 1
 
 # ============================================================================
 # SPAWNING API
@@ -123,29 +167,120 @@ func clear_all_enemies():
 # ============================================================================
 
 func spawn_enemy():
-	"""Spawnt einen Enemy basierend auf Level-Gewichten"""
-	# Wähle Type basierend auf Gewichten
-	var enemy_type = select_weighted_type()
+	"""Spawnt Enemy(s) basierend auf Pattern"""
+	# Wähle Pattern basierend auf Level
+	current_pattern = select_weighted_pattern()
 
-	# Wähle zufällige Y-Position
+	match current_pattern:
+		SpawnPattern.SINGLE:
+			spawn_single()
+		SpawnPattern.WAVE_2:
+			spawn_wave(2)
+		SpawnPattern.WAVE_3:
+			spawn_wave(3)
+		SpawnPattern.CLUSTER:
+			spawn_cluster()
+		SpawnPattern.SPREAD:
+			spawn_spread()
+
+func spawn_single():
+	"""Spawnt einzelnen Enemy"""
+	var enemy_type = select_weighted_type()
 	var spawn_y = randf_range(spawn_y_min, spawn_y_max)
 	var spawn_pos = Vector2(spawn_x, spawn_y)
 
-	# Instanziiere Enemy
+	_instantiate_enemy(enemy_type, spawn_pos)
+
+func spawn_wave(count: int):
+	"""Spawnt vertikale Welle von Enemies
+
+	2er-Wave: 2 Enemies mit 120px Abstand
+	3er-Wave: 3 Enemies mit 100px Abstand
+	"""
+	var enemy_type = select_weighted_type()
+
+	# Berechne Start-Position (zentriert)
+	var spacing = 120.0 if count == 2 else 100.0
+	var total_height = (count - 1) * spacing
+	var center_y = (spawn_y_min + spawn_y_max) / 2.0
+	var start_y = center_y - (total_height / 2.0)
+
+	# Spawne Enemies
+	for i in range(count):
+		var spawn_y = start_y + (i * spacing)
+		spawn_y = clamp(spawn_y, spawn_y_min, spawn_y_max)
+		var spawn_pos = Vector2(spawn_x, spawn_y)
+
+		_instantiate_enemy(enemy_type, spawn_pos)
+
+func spawn_cluster():
+	"""Spawnt 2-3 Enemies eng zusammen (50px Radius)"""
+	var enemy_type = select_weighted_type()
+	var count = randi_range(2, 3)
+
+	# Zentrale Position
+	var center_y = randf_range(spawn_y_min + 100, spawn_y_max - 100)
+
+	for i in range(count):
+		# Zufälliger Offset im 50px Radius
+		var offset_y = randf_range(-50, 50)
+		var spawn_y = clamp(center_y + offset_y, spawn_y_min, spawn_y_max)
+		var spawn_pos = Vector2(spawn_x, spawn_y)
+
+		_instantiate_enemy(enemy_type, spawn_pos)
+
+		# Kleines Delay zwischen Cluster-Spawns (visuell)
+		await get_tree().create_timer(0.05).timeout
+
+func spawn_spread():
+	"""Spawnt 2-3 Enemies weit auseinander (>200px)"""
+	var enemy_type = select_weighted_type()
+	var count = randi_range(2, 3)
+
+	# Gleichmäßige Verteilung über Screen-Höhe
+	var sections = spawn_y_max - spawn_y_min
+	var section_size = sections / count
+
+	for i in range(count):
+		var section_center = spawn_y_min + (i * section_size) + (section_size / 2.0)
+		var spawn_y = randf_range(section_center - 30, section_center + 30)
+		spawn_y = clamp(spawn_y, spawn_y_min, spawn_y_max)
+		var spawn_pos = Vector2(spawn_x, spawn_y)
+
+		_instantiate_enemy(enemy_type, spawn_pos)
+
+func _instantiate_enemy(enemy_type: Enemy.Type, spawn_pos: Vector2):
+	"""Hilfsfunktion: Erstellt Enemy an Position"""
 	var enemy = EnemyScene.instantiate() as Enemy
 	enemy.enemy_type = enemy_type
 	enemy.position = spawn_pos
 
-	# Füge zum Parent hinzu (GameScene)
-	get_parent().get_parent().add_child(enemy)  # Spawners -> Game -> add
+	# Füge zum Parent hinzu
+	get_parent().get_parent().add_child(enemy)
 
 	# Tracke Enemy
 	spawned_enemies.append(enemy)
-
-	# Connect Death-Signal für Cleanup
 	enemy.tree_exited.connect(_on_enemy_removed.bind(enemy))
 
 	print("[EnemySpawner] Spawned: ", Enemy.Type.keys()[enemy_type], " at ", spawn_pos)
+
+func select_weighted_pattern() -> SpawnPattern:
+	"""Wählt Spawn-Pattern basierend auf Level-Gewichten"""
+	var weights = PATTERN_WEIGHTS.get(current_level, { SpawnPattern.SINGLE: 100 })
+
+	var total_weight = 0
+	for weight in weights.values():
+		total_weight += weight
+
+	var rand_value = randf() * total_weight
+	var cumulative_weight = 0
+
+	for pattern in weights:
+		cumulative_weight += weights[pattern]
+		if rand_value < cumulative_weight:
+			return pattern
+
+	return SpawnPattern.SINGLE
 
 func select_weighted_type() -> Enemy.Type:
 	"""Wählt Enemy-Type basierend auf Level-Gewichten
@@ -204,3 +339,16 @@ func _on_enemy_removed(enemy: Enemy):
 	"""Enemy wurde aus Tree entfernt (Tod oder Despawn)"""
 	if spawned_enemies.has(enemy):
 		spawned_enemies.erase(enemy)
+
+# ============================================================================
+# DEBUG
+# ============================================================================
+
+func get_pattern_stats() -> Dictionary:
+	"""Gibt Pattern-Statistiken zurück (für Testing)"""
+	return {
+		"current_pattern": SpawnPattern.keys()[current_pattern],
+		"active_enemies": get_active_enemy_count(),
+		"max_enemies": MAX_ENEMIES.get(current_level, 10),
+		"spawn_interval": current_interval,
+	}
