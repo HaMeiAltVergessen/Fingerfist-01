@@ -355,6 +355,12 @@ func trigger_slow_motion():
 func trigger_chain_lightning():
 	"""Spawnt Chain Lightning Effekt"""
 	Audio.play_sfx("thunder_chain.ogg")
+
+	# Screenshake
+	var camera = get_tree().get_first_node_in_group("camera")
+	if camera and camera.has_method("shake_explosion"):
+		camera.shake_explosion()
+
 	# TODO: Implement Lightning Visual (Commit 60)
 
 	# Schade allen Enemies in Range
@@ -367,6 +373,12 @@ func trigger_meteor_rain():
 	"""Spawnt Meteoriten-Regen"""
 	Global.score_multiplier = 2.0
 	Audio.play_sfx("meteor_rain.ogg")
+
+	# Screenshake
+	var camera = get_tree().get_first_node_in_group("camera")
+	if camera and camera.has_method("shake_explosion"):
+		camera.shake_explosion()
+
 	# TODO: Implement Meteor Visual (Commit 60)
 
 func _attract_nearby_coins():
