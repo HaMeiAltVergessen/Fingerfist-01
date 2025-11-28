@@ -66,6 +66,7 @@ var call_of_wrath_active: bool = false
 @onready var hurtbox: Area2D = $Hurtbox
 @onready var hurtbox_shape: CollisionShape2D = $Hurtbox/HurtboxShape
 @onready var invulnerability_timer: Timer = $InvulnerabilityTimer
+@onready var animation_player: AnimationPlayer = $AnimationPlayer
 
 # ============================================================================
 # SIGNALS
@@ -145,15 +146,11 @@ func attack(target_pos: Vector2):
 	var punch_num = randi() % 10 + 1
 	Audio.play_sfx("punch_%02d.ogg" % punch_num, 0.1)
 
-	# Hitbox aktivieren nach 52.5ms (Frame 3)
-	var activate_delay = (HITBOX_ACTIVATE_FRAME / 8.0) * ATTACK_ANIMATION_DURATION
-	await get_tree().create_timer(activate_delay).timeout
-	activate_hitbox()
+	# Animation abspielen
+	animation_player.play("attack")
 
-	# Hitbox deaktivieren nach 87.5ms (Frame 5)
-	var deactivate_delay = ((HITBOX_DEACTIVATE_FRAME - HITBOX_ACTIVATE_FRAME) / 8.0) * ATTACK_ANIMATION_DURATION
-	await get_tree().create_timer(deactivate_delay).timeout
-	deactivate_hitbox()
+	# WICHTIG: Hitbox wird jetzt via Animation-Tracks aktiviert/deaktiviert
+	# (activate_hitbox bei Frame 3, deactivate_hitbox bei Frame 5)
 
 func activate_hitbox():
 	"""Aktiviert die Hitbox (Gegner können getroffen werden)"""
