@@ -4,3 +4,6 @@
 
 [node name="EnemySpawner" type="Node2D"]
 script = ExtResource("1_4b1db")
+spawn_x = -50.0
+spawn_y_min = 100.0
+spawn_y_max = 620.0
