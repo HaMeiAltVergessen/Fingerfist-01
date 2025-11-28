@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3 uid="uid://test_combat_01"]
+
+[ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="1_player"]
+[ext_resource type="Script" path="res://scripts/DebugSpawner.gd" id="2_spawner"]
+[ext_resource type="Script" path="res://scripts/GameCamera.gd" id="3_camera"]
+
+[node name="TestCombat" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+
+[node name="Camera2D" type="Camera2D" parent="." groups=["camera"]]
+position = Vector2(640, 360)
+script = ExtResource("3_camera")
+
+[node name="DebugSpawner" type="Node2D" parent="."]
+script = ExtResource("2_spawner")
+spawn_position = Vector2(200, 360)
+auto_spawn = false
+
+[node name="DebugInfo" type="CanvasLayer" parent="."]
+
+[node name="InfoLabel" type="Label" parent="DebugInfo"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 400.0
+offset_bottom = 200.0
+text = "=== COMBAT TEST ===
+SPACE - Spawn Random
+1 - Insect
+2 - Vase Monster
+3 - Fire Devil
+
+Click to Attack"
