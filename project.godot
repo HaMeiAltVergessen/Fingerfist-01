@@ -17,9 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-Game="*res://autoload/GameManager.gd"
-DataStore="*res://autoload/DataStore.gd"
+Global="*res://autoload/Global.gd"
 Audio="*res://autoload/AudioManager.gd"
+SceneLoader="*res://autoload/SceneLoader.gd"
 
 [display]
 
