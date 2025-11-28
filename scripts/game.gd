@@ -8,7 +8,7 @@ extends Node2D
 @onready var player: Player = $Player
 @onready var enemy_spawner: Node2D = $Spawners/EnemySpawner
 @onready var coin_spawner: Node2D = $Spawners/CoinSpawner
-@onready var camera: Camera2D = $GameCamera
+@onready var camera: GameCamera = $GameCamera
 @onready var hud: CanvasLayer = $HUDLayer
 @onready var wall: Sprite2D = $Wall
 @onready var end_screen: CanvasLayer = $EndScreen
@@ -113,9 +113,9 @@ func destroy_wall():
 
 	wall.visible = false
 
-	# TODO: SFX + Particles (Commit später)
-	# Audio.play_sfx("wall_break.ogg")
-	# Screenshake
+	# SFX + Screenshake
+	# TODO: Audio.play_sfx("wall_break.ogg")  # Commit später
+	camera.shake_wall_destroyed()
 
 	# Level Complete
 	end_round()
@@ -228,8 +228,14 @@ func _on_player_died():
 
 func _on_player_hit_enemy(enemy: Enemy):
 	"""Player hat Enemy getroffen"""
-	# Hier können später Partikel/SFX getriggert werden
-	pass
+	# Screenshake basierend auf Enemy-Typ
+	match enemy.enemy_type:
+		Enemy.Type.INSECT:
+			camera.shake_light_hit()
+		Enemy.Type.VASE_MONSTER:
+			camera.shake_normal_hit()
+		Enemy.Type.FIRE_DEVIL:
+			camera.shake_heavy_hit()
 
 func _on_combo_increased(combo: int):
 	"""Combo erhöht"""
@@ -241,9 +247,7 @@ func _on_player_took_damage(hp: int):
 	# HUD wird via Signal updated
 
 	# Screenshake
-	if Global.screenshake_enabled:
-		# TODO: Implement in Commit 12
-		pass
+	camera.shake_player_hurt()
 
 # ============================================================================
 # GLOBAL SIGNAL HANDLERS
