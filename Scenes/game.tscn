@@ -1,64 +1,146 @@
-[gd_scene load_steps=6 format=3 uid="uid://q6qlqtcsygqy"]
+[gd_scene load_steps=4 format=3 uid="uid://q6qlqtcsygqy"]
 
-[ext_resource type="PackedScene" uid="uid://ck0hp12ep61o7" path="res://Scenes/EnemySpawner.tscn" id="1_qxrlw"]
-[ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="1_wowpa"]
-[ext_resource type="PackedScene" uid="uid://dafnnjlk7nlh5" path="res://Scenes/Coin.tscn" id="1_wrm1d"]
-[ext_resource type="PackedScene" uid="uid://cis4te6nth5k" path="res://Scenes/Enemy.tscn" id="2_i6g32"]
-[ext_resource type="PackedScene" uid="uid://ccn5mavmp861o" path="res://Scenes/CoinSpawner.tscn" id="2_wrm1d"]
+[ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
+[ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://ck0hp12ep61o7" path="res://Scenes/EnemySpawner.tscn" id="3_spawner"]
 
 [node name="Game" type="Node2D"]
+script = ExtResource("1_game")
 
-[node name="Player" parent="." instance=ExtResource("1_wowpa")]
-
-[node name="Enemy" parent="." instance=ExtResource("2_i6g32")]
+[node name="Player" parent="." instance=ExtResource("2_player")]
 
 [node name="Spawners" type="Node2D" parent="."]
 
-[node name="EnemySpawner" parent="Spawners" instance=ExtResource("1_qxrlw")]
+[node name="EnemySpawner" parent="Spawners" instance=ExtResource("3_spawner")]
 
-[node name="CoinSpawner" parent="Spawners" instance=ExtResource("2_wrm1d")]
-
-[node name="CoinLayer" type="CanvasLayer" parent="."]
-
-[node name="Coin" parent="CoinLayer" instance=ExtResource("1_wrm1d")]
+[node name="CoinSpawner" type="Node2D" parent="Spawners"]
 
 [node name="GameCamera" type="Camera2D" parent="."]
-position = Vector2(634, 349)
+position = Vector2(640, 360)
+enabled = true
 
 [node name="HUDLayer" type="CanvasLayer" parent="."]
 
-[node name="TimerLabel" type="Label" parent="HUDLayer"]
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="ScoreLabe" type="Label" parent="HUDLayer"]
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="ComboCounter" type="Label" parent="HUDLayer"]
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="GameTimer" type="Timer" parent="."]
-
 [node name="Wall" type="Sprite2D" parent="."]
+position = Vector2(48, 360)
+visible = false
 
 [node name="EndScreen" type="CanvasLayer" parent="."]
+visible = false
 
-[node name="Shop" type="Button" parent="EndScreen"]
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="EndScreenPanel" type="Panel" parent="EndScreen"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 400.0
+offset_top = 200.0
+offset_right = -400.0
+offset_bottom = -200.0
 
-[node name="Retry" type="Button" parent="EndScreen"]
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="RoundScoreLabel" type="Label" parent="EndScreen/EndScreenPanel"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 200.0
+offset_bottom = 50.0
+text = "Round Score: 0"
 
-[node name="MainMenu" type="Button" parent="EndScreen"]
-offset_right = 8.0
-offset_bottom = 8.0
+[node name="ShopButton" type="Button" parent="EndScreen/EndScreenPanel"]
+offset_left = 20.0
+offset_top = 280.0
+offset_right = 120.0
+offset_bottom = 310.0
+text = "Shop"
 
-[node name="HighscoreLabel" type="Label" parent="EndScreen"]
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="RetryButton" type="Button" parent="EndScreen/EndScreenPanel"]
+offset_left = 140.0
+offset_top = 280.0
+offset_right = 240.0
+offset_bottom = 310.0
+text = "Retry"
+
+[node name="MenuButton" type="Button" parent="EndScreen/EndScreenPanel"]
+offset_left = 260.0
+offset_top = 280.0
+offset_right = 360.0
+offset_bottom = 310.0
+text = "Main Menu"
 
 [node name="PauseScreen" type="CanvasLayer" parent="."]
+visible = false
+
+[node name="PausePanel" type="Panel" parent="PauseScreen"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PauseLabel" type="Label" parent="PauseScreen/PausePanel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -60.0
+offset_right = 50.0
+offset_bottom = -30.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "PAUSED"
+horizontal_alignment = 1
+
+[node name="ContinueButton" type="Button" parent="PauseScreen/PausePanel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = -10.0
+offset_right = 60.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Continue"
+
+[node name="RestartButton" type="Button" parent="PauseScreen/PausePanel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = 30.0
+offset_right = 60.0
+offset_bottom = 60.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Restart"
+
+[node name="MenuButton2" type="Button" parent="PauseScreen/PausePanel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = 70.0
+offset_right = 60.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Main Menu"
+
+[connection signal="pressed" from="EndScreen/EndScreenPanel/ShopButton" to="." method="_on_shop_button_pressed"]
+[connection signal="pressed" from="EndScreen/EndScreenPanel/RetryButton" to="." method="_on_retry_button_pressed"]
+[connection signal="pressed" from="EndScreen/EndScreenPanel/MenuButton" to="." method="_on_menu_button_pressed"]
+[connection signal="pressed" from="PauseScreen/PausePanel/ContinueButton" to="." method="_on_continue_button_pressed"]
+[connection signal="pressed" from="PauseScreen/PausePanel/RestartButton" to="." method="_on_restart_button_pressed"]
+[connection signal="pressed" from="PauseScreen/PausePanel/MenuButton2" to="." method="_on_pause_menu_button_pressed"]
