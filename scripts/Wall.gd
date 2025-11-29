@@ -34,6 +34,13 @@ var flash_particles: CPUParticles2D
 var impact_particles: CPUParticles2D
 var destruction_particles: CPUParticles2D
 
+# Crack Overlays
+var crack_sprites: Array[Sprite2D] = []
+var damage_zones: Array[Dictionary] = []
+
+# Crack Display
+const MAX_CRACKS: int = 5
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -41,6 +48,12 @@ var destruction_particles: CPUParticles2D
 func _ready():
 	# Create Particle Systems
 	create_particle_systems()
+
+	# Create Crack Sprites
+	create_crack_sprites()
+
+	# Initialize Damage Zones
+	initialize_damage_zones()
 
 	print("[Wall] Ready - HP: %d/%d" % [current_hp, max_hp])
 
@@ -106,6 +119,75 @@ func create_particle_systems():
 	print("[Wall] Particle systems created")
 
 # ============================================================================
+# CRACK TEXTURES
+# ============================================================================
+
+func create_crack_sprites():
+	"""Erstellt Crack-Sprite-Overlays"""
+	for i in range(MAX_CRACKS):
+		var crack = Sprite2D.new()
+		crack.name = "Crack%d" % i
+		crack.visible = false
+		crack.modulate = Color(0.3, 0.2, 0.2, 0.8)  # Dark cracks
+
+		# Position cracks randomly on wall
+		crack.position = Vector2(
+			randf_range(-20, 20),
+			randf_range(-40, 40)
+		)
+
+		# Random rotation
+		crack.rotation = randf_range(0, TAU)
+
+		# Random scale
+		crack.scale = Vector2.ONE * randf_range(0.5, 1.5)
+
+		add_child(crack)
+		crack_sprites.append(crack)
+
+	print("[Wall] Created %d crack sprites" % MAX_CRACKS)
+
+func initialize_damage_zones():
+	"""Initialisiert Schaden-Zonen auf der Wall"""
+	# 3 Damage Zones: Top, Middle, Bottom
+	damage_zones = [
+		{
+			"name": "Top",
+			"area": Rect2(Vector2(-30, -50), Vector2(60, 30)),
+			"damage_taken": 0.0,
+		},
+		{
+			"name": "Middle",
+			"area": Rect2(Vector2(-30, -20), Vector2(60, 40)),
+			"damage_taken": 0.0,
+		},
+		{
+			"name": "Bottom",
+			"area": Rect2(Vector2(-30, 20), Vector2(60, 30)),
+			"damage_taken": 0.0,
+		},
+	]
+
+	print("[Wall] Initialized %d damage zones" % damage_zones.size())
+
+func update_crack_display():
+	"""Updated Crack-Display basierend auf HP"""
+	var hp_percent = get_hp_percent()
+
+	# Show cracks based on damage
+	var cracks_to_show = 0
+	if hp_percent < 67:
+		cracks_to_show = 2  # Damaged state
+	if hp_percent < 50:
+		cracks_to_show = 3
+	if hp_percent < 34:
+		cracks_to_show = 5  # Critical state
+
+	# Update visibility
+	for i in range(MAX_CRACKS):
+		crack_sprites[i].visible = (i < cracks_to_show)
+
+# ============================================================================
 # HP MANAGEMENT
 # ============================================================================
 
@@ -162,6 +244,9 @@ func update_visual_state():
 	else:
 		current_state = WallState.CRITICAL
 		modulate = Color(0.8, 0.6, 0.5)  # Reddish
+
+	# Update Crack Display
+	update_crack_display()
 
 	# Emit Signal if state changed
 	if old_state != current_state:
