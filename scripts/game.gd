@@ -10,7 +10,7 @@ extends Node2D
 @onready var coin_spawner: Node2D = $Spawners/CoinSpawner
 @onready var camera: GameCamera = $GameCamera
 @onready var hud: CanvasLayer = $HUDLayer
-@onready var wall: Sprite2D = $Wall
+@onready var wall: Wall = $Wall
 @onready var end_screen: CanvasLayer = $EndScreen
 @onready var pause_screen: CanvasLayer = $PauseScreen
 
@@ -84,60 +84,27 @@ func setup_player():
 
 func setup_wall(level: int):
 	"""Setzt Wand-HP basierend auf Level und Total Highscore"""
-	if not Global.WALL_HP_PER_LEVEL.has(level):
-		push_error("Invalid level: " + str(level))
-		return
-
-	var max_hp = Global.WALL_HP_PER_LEVEL[level]
-	var current_hp = Global.get_wall_remaining_hp(level)
-
 	# Wand-Sprite anzeigen
 	wall.visible = true
 	wall.position = Vector2(48, 360)  # Links im Screen
 
-	# TODO: Wand-Sprite laden basierend auf Level (Commit später)
-	# wall.texture = load("res://assets/sprites/walls/level_%d/wall_intact.png" % level)
+	# Setup Wall (new Wall class handles HP)
+	wall.setup(level)
 
-	# Wand-Zustand setzen
-	update_wall_visual(current_hp, max_hp)
+	# Connect Wall Signals
+	wall.wall_destroyed.connect(_on_wall_destroyed)
+	wall.hp_changed.connect(_on_wall_hp_changed)
 
-	print("[GameScene] Wall HP: ", current_hp, "/", max_hp)
+	print("[GameScene] Wall setup for Level %d" % level)
 
 func setup_endless_mode():
 	"""Endless Mode (Level 7) - keine Wand"""
 	wall.visible = false
 	print("[GameScene] Endless Mode - No Wall")
 
-func update_wall_visual(current_hp: float, max_hp: float):
-	"""Updated Wand-Sprite basierend auf HP-Prozent"""
-	if not wall.visible:
-		return
-
-	var hp_percent = (current_hp / max_hp) * 100.0
-
-	# Sprite-Zustand (3 States)
-	if hp_percent > 67:
-		# Intact
-		wall.modulate = Color(1.0, 1.0, 1.0)  # Normal
-	elif hp_percent > 34:
-		# Damaged
-		wall.modulate = Color(0.9, 0.8, 0.7)  # Leicht gelblich
-		# TODO: SFX wall_crack_01.ogg (Commit später)
-	else:
-		# Critical
-		wall.modulate = Color(0.8, 0.6, 0.5)  # Rötlich
-		# TODO: SFX wall_crack_02.ogg (Commit später)
-
-	# Prüfe Zerstörung
-	if current_hp <= 0:
-		destroy_wall()
-
-func destroy_wall():
-	"""Wand wird zerstört - Level Complete"""
-	if not wall.visible:
-		return
-
-	wall.visible = false
+func _on_wall_destroyed():
+	"""Wall wurde zerstört - Victory!"""
+	print("[GameScene] Wall Destroyed! Victory!")
 
 	# SFX + Screenshake
 	# TODO: Audio.play_sfx("wall_break.ogg")  # Commit später
@@ -159,7 +126,10 @@ func destroy_wall():
 	# End Round
 	end_round()
 
-	print("[GameScene] Wall Destroyed! Victory!")
+func _on_wall_hp_changed(current_hp: float, max_hp: float):
+	"""Wall HP hat sich geändert"""
+	# HUD wird automatisch via Signal updated
+	pass
 
 # ============================================================================
 # ROUND MANAGEMENT
@@ -309,16 +279,23 @@ func _on_player_took_damage(hp: int):
 # ============================================================================
 
 func _on_score_changed(new_score: int):
-	"""Score hat sich geändert - Update Wand"""
+	"""Score hat sich geändert - Damage Wall"""
 	if Global.selected_level == 7:
 		return  # Endless Mode, keine Wand
 
+	# Score damages wall (every point of score = 1 damage)
+	# Wall tracks its own HP, we just tell it to take damage
+	# Note: This is called on score increase, so we damage by the increment
+	# But since score increases are small (usually 1-10), we just sync HP with score
 	var level = Global.selected_level
 	var max_hp = Global.WALL_HP_PER_LEVEL.get(level, 0)
-	var score_delta = Global.total_highscore - total_highscore_before_round
-	var current_hp = max_hp - (Global.total_highscore - score_delta)
+	var target_hp = max_hp - Global.current_round_score
 
-	update_wall_visual(current_hp, max_hp)
+	# Damage wall to match target HP
+	var current_wall_hp = wall.current_hp
+	if target_hp < current_wall_hp:
+		var damage = current_wall_hp - target_hp
+		wall.take_damage(damage)
 
 # ============================================================================
 # CLEANUP
