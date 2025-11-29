@@ -8,11 +8,11 @@
 
 ## 📊 Overall Progress
 
-**Commits:** 15 / 70 (21%) ✅
-**Milestones:** 1 / 5 (20%) ✅
+**Commits:** 25 / 70 (36%) ✅
+**Milestones:** 2 / 5 (40%) ✅
 
 ```
-Progress: ████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 21%
+Progress: ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░ 36%
 ```
 
 ---
@@ -24,10 +24,10 @@ Progress: ████████░░░░░░░░░░░░░░░�
 **Status:** 15/15 Commits ✅ (100%)
 **Date:** 2025-11-28
 
-### 🚧 M2 - Core Loop (Commits 16-35) - IN PROGRESS
-**Goal:** Wand, Coins, Spawner
-**Status:** 0/20 Commits (0%)
-**ETA:** +2 weeks
+### ✅ M2 - Core Loop (Commits 16-25) - COMPLETE
+**Goal:** Wand, Coins, Spawner, Progression
+**Status:** 10/10 Commits ✅ (100%)
+**Date:** 2025-11-29
 
 ### 📋 M3 - Progression (Commits 36-50) - PLANNED
 **Goal:** Levels, Save/Load, Shop
@@ -69,20 +69,21 @@ Progress: ████████░░░░░░░░░░░░░░░�
 - [x] Death System
 - [x] Coin Dropping
 
-**Game Loop:** 60% 🚧
+**Game Loop:** 100% ✅
 - [x] GameScene
 - [x] Camera + Screenshake
 - [x] HUD (Score, HP, Combo)
-- [ ] Enemy Spawner
-- [ ] Coin Spawner
-- [ ] Wall System
-- [ ] EndScreen (partial)
+- [x] Enemy Spawner
+- [x] Coin Spawner
+- [x] Wall System
+- [x] EndScreen (complete)
 
-**Progression:** 0% 📋
-- [ ] Level System
-- [ ] Save/Load Integration
-- [ ] Shop
-- [ ] Highscores
+**Progression:** 60% 🚧
+- [x] Level Unlock System
+- [x] Highscore Tracking
+- [x] Save/Load Integration
+- [ ] Level Select UI (C31)
+- [ ] Shop System
 
 **Polish:** 0% 📋
 - [ ] Item Effects (visuals)
@@ -95,34 +96,34 @@ Progress: ████████░░░░░░░░░░░░░░░�
 
 ## 🔢 Statistics
 
-**Files Created:** 25+
-- Scripts: 15
-- Scenes: 10
-- Docs: 2
+**Files Created:** 35+
+- Scripts: 22
+- Scenes: 13
+- Docs: 3
 
-**Lines of Code:** ~2,500
-**Test Coverage:** 9 automated tests
+**Lines of Code:** ~4,500
+**Commits:** 25 (C1-C25 complete)
 
 ---
 
 ## ⏱️ Time Tracking
 
 **Estimated Total:** 3-4 months (Solo Fulltime)
-**Elapsed:** ~2 weeks (15 commits)
-**Remaining:** ~10-14 weeks (55 commits)
+**Elapsed:** ~3 weeks (25 commits)
+**Remaining:** ~9-13 weeks (45 commits)
 
 ---
 
-## 🎯 Next 5 Commits Preview
+## 🎯 Next Commits Preview
 
-**Commit 16:** EnemySpawner with level curves
-**Commit 17:** Spawn timer and intervals
-**Commit 18:** Weighted type selection
-**Commit 19:** All 3 enemy behaviors
-**Commit 20:** Fire Devil projectiles
+**Commit 31:** Level Select Screen with unlock status
+**Commit 32:** Shop UI with item categories
+**Commit 33:** Item purchase and activation
+**Commit 34:** Settings menu
+**Commit 35:** M3 Testing & Documentation
 
-**Focus:** Complete Enemy Spawning System
+**Focus:** Complete UI & Shop System
 
 ---
 
-Last Updated: 2025-11-28
+Last Updated: 2025-11-29

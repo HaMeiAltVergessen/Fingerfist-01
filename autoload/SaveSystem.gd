@@ -25,11 +25,19 @@ func save_game() -> bool:
 
 	# ========== GAME SECTION ==========
 	config.set_value("game", "total_highscore", Global.total_highscore)
-	config.set_value("game", "unlocked_levels", Global.unlocked_levels)
-	config.set_value("game", "highscores", Global.highscores)
-	config.set_value("game", "highest_combos", Global.highest_combos)
 	config.set_value("game", "total_rounds_played", Global.total_rounds_played)
 	config.set_value("game", "total_playtime", Global.total_playtime)
+
+	# ========== PROGRESSION SECTION ==========
+	config.set_value("progression", "unlocked_levels", Global.unlocked_levels)
+	config.set_value("progression", "selected_level", Global.selected_level)
+	config.set_value("progression", "level_highscores", Global.level_highscores)
+	config.set_value("progression", "level_highest_combos", Global.level_highest_combos)
+	config.set_value("progression", "wall_hp", Global.wall_hp)
+
+	# Legacy arrays (deprecated but keep for compatibility)
+	config.set_value("game", "highscores", Global.highscores)
+	config.set_value("game", "highest_combos", Global.highest_combos)
 
 	# ========== ECONOMY SECTION ==========
 	config.set_value("economy", "coins", Global.coins)
@@ -74,11 +82,19 @@ func load_game() -> bool:
 
 	# ========== GAME SECTION ==========
 	Global.total_highscore = config.get_value("game", "total_highscore", 0)
-	Global.unlocked_levels = config.get_value("game", "unlocked_levels", 1)
-	Global.highscores = config.get_value("game", "highscores", [])
-	Global.highest_combos = config.get_value("game", "highest_combos", [])
 	Global.total_rounds_played = config.get_value("game", "total_rounds_played", 0)
 	Global.total_playtime = config.get_value("game", "total_playtime", 0.0)
+
+	# ========== PROGRESSION SECTION ==========
+	Global.unlocked_levels = config.get_value("progression", "unlocked_levels", [1])
+	Global.selected_level = config.get_value("progression", "selected_level", 1)
+	Global.level_highscores = config.get_value("progression", "level_highscores", [0,0,0,0,0,0,0,0])
+	Global.level_highest_combos = config.get_value("progression", "level_highest_combos", [0,0,0,0,0,0,0,0])
+	Global.wall_hp = config.get_value("progression", "wall_hp", {1:1000,2:3500,3:8000,4:15000,5:25000,6:40000})
+
+	# Legacy arrays (deprecated)
+	Global.highscores = config.get_value("game", "highscores", [])
+	Global.highest_combos = config.get_value("game", "highest_combos", [])
 
 	# ========== ECONOMY SECTION ==========
 	Global.coins = config.get_value("economy", "coins", 0)
@@ -168,6 +184,13 @@ func _initialize_default_items():
 			"owned": false,
 			"active": false,
 			"description": "Meteoriten + x2 Score bei 30+ Combo"
+		},
+		"golem_blessing": {
+			"name": "Golem's Blessing",
+			"cost": 700,
+			"owned": false,
+			"active": false,
+			"description": "Wall regeneriert 1 HP/s (max 10% Total HP)"
 		}
 	}
 
