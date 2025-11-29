@@ -1,0 +1,68 @@
+PALETTES USED
+
+The majority of palettes used in my work are taken from Lospec.
+
+Where possible, I've provided the names of the palettes used for each image below.
+
+Where palettes have had additional colors added, these are indicated in brackets.
+
+
+
+ITEMS
+Items_CoffeeTools.png - SteamLords
+Items_EspressoMachine.png - 2bitSunrise
+Items_Toaster.png - Pineapple32
+
+
+MECHS
+Mechs_1000Follows.png - EN4
+Mechs_Mech0.png - 2bitSunrise
+Mechs_Mech1.png - EN4
+Mechs_Mech2.png - Dustbyte
+
+
+MISC
+Misc_CatDrinking - Apollo
+Misc_DinosaurMeetsBird.png - SteamLords
+Misc_Dodgems.png - Lospec500
+Misc_FlappyFriend - Kalimba26
+Misc_NoDinosaursBeyondThisPoint.png - 2bitSunrise
+Misc_SpaceshipFlight - Vinik24 (heavily modified and extended)
+
+
+MOCKUPS
+Mockups_DiveBar.png - LospecGB
+Mockups_DizzyHorn.png - NESWikipedia
+Mockups_GamedevTheGame.png - 1BitMonitorGlow (+#3c91e6)
+Mockups_HospitalScene.png - LospecGB
+Mockups_IsometricEspresso.png - NintendoGameboyBGB
+Mockups_Ritual.png - LospecGB
+Mockups_Trombone.png - NESWikipedia
+
+
+PORTRAITS
+Portraits_Gorp.png - Vinik24
+Portraits_HalloweenCouple.png - Pineapple32
+Portraits_ScaryFace.png - LospecGB
+Portraits_Snacks.png - Vinik24
+
+
+SPRITES
+Sprites_2BitNPCs.png - LospecGB
+Sprites_AndNowWeBurgle.png - LospecGB
+Sprites_AxolotlMage.png - Vinik24
+Sprites_Devil.png - Pineapple32
+Sprites_EldritchHorror - Pineapple32
+Sprites_Forg.png - Vinik24
+Sprites_Gobbos.png - Vinik24
+Sprites_HalloweenCoupleSprites.png - Pineapple32
+Sprites_MechAnnoyed - TYArcanixium13
+Sprites_MechAttack - TYArcanixium13
+Sprites_MechIdle - TYArcanixium13
+Sprites_SWM_Galoober - Kalimba26
+Sprites_SWM_Goober - Kalimba26
+Sprites_SWM_Shoober - Kalimba26
+
+
+TILES
+Tiles_SWM_RoomTiles - Kalimba26
