@@ -10,7 +10,7 @@ extends Node2D
 @onready var coin_spawner: Node2D = $Spawners/CoinSpawner
 @onready var camera: GameCamera = $GameCamera
 @onready var hud: CanvasLayer = $HUDLayer
-@onready var wall: Sprite2D = $Wall
+@onready var wall: Wall = $Wall
 @onready var end_screen: CanvasLayer = $EndScreen
 @onready var pause_screen: CanvasLayer = $PauseScreen
 
@@ -21,6 +21,12 @@ extends Node2D
 var is_round_active: bool = false
 var is_paused: bool = false
 var total_highscore_before_round: int = 0
+
+# Round Stats Tracking
+var coins_at_round_start: int = 0
+var round_start_time: float = 0.0
+var enemies_killed_this_round: int = 0
+var is_new_highscore: bool = false
 
 # ============================================================================
 # INITIALIZATION
@@ -78,73 +84,56 @@ func setup_player():
 
 func setup_wall(level: int):
 	"""Setzt Wand-HP basierend auf Level und Total Highscore"""
-	if not Global.WALL_HP_PER_LEVEL.has(level):
-		push_error("Invalid level: " + str(level))
-		return
-
-	var max_hp = Global.WALL_HP_PER_LEVEL[level]
-	var current_hp = Global.get_wall_remaining_hp(level)
-
 	# Wand-Sprite anzeigen
 	wall.visible = true
 	wall.position = Vector2(48, 360)  # Links im Screen
 
-	# TODO: Wand-Sprite laden basierend auf Level (Commit später)
-	# wall.texture = load("res://assets/sprites/walls/level_%d/wall_intact.png" % level)
+	# Setup Wall (new Wall class handles HP)
+	wall.setup(level)
 
-	# Wand-Zustand setzen
-	update_wall_visual(current_hp, max_hp)
+	# Connect Wall Signals
+	wall.wall_destroyed.connect(_on_wall_destroyed)
+	wall.hp_changed.connect(_on_wall_hp_changed)
 
-	print("[GameScene] Wall HP: ", current_hp, "/", max_hp)
+	# Check Golem's Blessing Item
+	if Global.is_item_active("golem_blessing"):
+		wall.enable_regeneration()
+
+	print("[GameScene] Wall setup for Level %d" % level)
 
 func setup_endless_mode():
 	"""Endless Mode (Level 7) - keine Wand"""
 	wall.visible = false
 	print("[GameScene] Endless Mode - No Wall")
 
-func update_wall_visual(current_hp: float, max_hp: float):
-	"""Updated Wand-Sprite basierend auf HP-Prozent"""
-	if not wall.visible:
-		return
-
-	var hp_percent = (current_hp / max_hp) * 100.0
-
-	# Sprite-Zustand (3 States)
-	if hp_percent > 67:
-		# Intact
-		wall.modulate = Color(1.0, 1.0, 1.0)  # Normal
-	elif hp_percent > 34:
-		# Damaged
-		wall.modulate = Color(0.9, 0.8, 0.7)  # Leicht gelblich
-		# TODO: SFX wall_crack_01.ogg (Commit später)
-	else:
-		# Critical
-		wall.modulate = Color(0.8, 0.6, 0.5)  # Rötlich
-		# TODO: SFX wall_crack_02.ogg (Commit später)
-
-	# Prüfe Zerstörung
-	if current_hp <= 0:
-		destroy_wall()
-
-func destroy_wall():
-	"""Wand wird zerstört - Level Complete"""
-	if not wall.visible:
-		return
-
-	wall.visible = false
+func _on_wall_destroyed():
+	"""Wall wurde zerstört - Victory!"""
+	print("[GameScene] Wall Destroyed! Victory!")
 
 	# SFX + Screenshake
 	# TODO: Audio.play_sfx("wall_break.ogg")  # Commit später
 	camera.shake_wall_destroyed()
 
-	# Level Complete
-	end_round()
+	# Victory! Update progression
+	var level = Global.selected_level
+
+	# Update Highscore (returns true if new)
+	is_new_highscore = Global.update_highscore(level, Global.current_round_score)
+
+	# Update Highest Combo (from static player)
+	Global.update_highest_combo(level, player.highest_combo)
 
 	# Unlock next level
-	if Global.selected_level < 7:
-		Global.unlock_next_level(Global.selected_level)
+	if level < 7:
+		Global.unlock_next_level(level)
 
-	print("[GameScene] Wall Destroyed!")
+	# End Round
+	end_round()
+
+func _on_wall_hp_changed(current_hp: float, max_hp: float):
+	"""Wall HP hat sich geändert"""
+	# HUD wird automatisch via Signal updated
+	pass
 
 # ============================================================================
 # ROUND MANAGEMENT
@@ -162,6 +151,11 @@ func start_round():
 
 	# Speichere Total Highscore vor Runde (für Wand-Schaden)
 	total_highscore_before_round = Global.total_highscore
+
+	# Reset Round Stats
+	coins_at_round_start = Global.coins
+	round_start_time = Time.get_ticks_msec() / 1000.0
+	enemies_killed_this_round = 0
 
 	# Start Spawners
 	enemy_spawner.start_spawning()
@@ -185,12 +179,17 @@ func end_round():
 
 	is_round_active = false
 
+	# Save Wall HP (persistent across rounds)
+	if wall.visible and Global.selected_level != 7:
+		Global.update_wall_hp(Global.selected_level, wall.current_hp)
+
 	# Stop Spawners
 	enemy_spawner.stop_spawning()
 	coin_spawner.stop_spawning()
 
-	# Clear Enemies
+	# Clear Enemies + Coins
 	enemy_spawner.clear_all_enemies()
+	coin_spawner.clear_all_coins()
 
 	# Update Global Stats
 	Global.end_round()
@@ -208,13 +207,24 @@ func end_round():
 
 func show_end_screen():
 	"""Zeigt End Screen mit Stats"""
-	end_screen.visible = true
-	get_tree().paused = true
+	# Calculate Stats
+	var round_time = (Time.get_ticks_msec() / 1000.0) - round_start_time
+	var coins_earned = Global.coins - coins_at_round_start
+	var victory = (wall and not wall.visible)
 
-	# TODO: Update End Screen Labels (Commit später)
-	# var round_score = Global.current_round_score
-	# var total_score = Global.total_highscore
-	# var coins_earned = ...
+	var stats = {
+		"round_score": Global.current_round_score,
+		"total_score": Global.total_highscore,
+		"coins_earned": coins_earned,
+		"highest_combo": player.highest_combo,
+		"enemies_killed": enemies_killed_this_round,
+		"time_played": round_time,
+		"victory": victory,
+		"new_highscore": is_new_highscore,
+	}
+
+	# Show EndScreen with stats
+	end_screen.show_stats(stats)
 
 # ============================================================================
 # PAUSE SYSTEM
@@ -247,7 +257,10 @@ func _on_player_died():
 	end_round()
 
 func _on_player_hit_enemy(enemy: Enemy):
-	"""Player hat Enemy getroffen"""
+	"""Player hat Enemy getroffen (One-Hit-KO)"""
+	# Track Kill
+	enemies_killed_this_round += 1
+
 	# Screenshake basierend auf Enemy-Typ
 	match enemy.enemy_type:
 		Enemy.Type.INSECT:
@@ -274,16 +287,23 @@ func _on_player_took_damage(hp: int):
 # ============================================================================
 
 func _on_score_changed(new_score: int):
-	"""Score hat sich geändert - Update Wand"""
+	"""Score hat sich geändert - Damage Wall"""
 	if Global.selected_level == 7:
 		return  # Endless Mode, keine Wand
 
+	# Score damages wall (every point of score = 1 damage)
+	# Wall tracks its own HP, we just tell it to take damage
+	# Note: This is called on score increase, so we damage by the increment
+	# But since score increases are small (usually 1-10), we just sync HP with score
 	var level = Global.selected_level
 	var max_hp = Global.WALL_HP_PER_LEVEL.get(level, 0)
-	var score_delta = Global.total_highscore - total_highscore_before_round
-	var current_hp = max_hp - (Global.total_highscore - score_delta)
+	var target_hp = max_hp - Global.current_round_score
 
-	update_wall_visual(current_hp, max_hp)
+	# Damage wall to match target HP
+	var current_wall_hp = wall.current_hp
+	if target_hp < current_wall_hp:
+		var damage = current_wall_hp - target_hp
+		wall.take_damage(damage)
 
 # ============================================================================
 # CLEANUP

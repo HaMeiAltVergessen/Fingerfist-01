@@ -70,6 +70,9 @@ signal combo_reset
 func _ready():
 	add_to_group("player")
 
+	# STATIC POSITION - NO MOVEMENT!
+	position = Vector2(100, 360)  # Fixed position on left side of screen
+
 	# Hitbox initial deaktiviert
 	punch_hitbox.monitoring = false
 	punch_hitbox.monitorable = false
@@ -86,7 +89,7 @@ func _ready():
 	# Apply Items
 	apply_item_effects()
 
-	print("[Player] Ready - HP: %d, No Movement (Static)" % hp)
+	print("[Player] Static position: %s - HP: %d, NO MOVEMENT" % [position, hp])
 
 # ============================================================================
 # INPUT - NUR PUNCH
@@ -188,21 +191,24 @@ func _on_hitbox_area_entered(area: Area2D):
 # ============================================================================
 
 func check_combo_rewards():
-	"""Prüft Combo-Thresholds"""
+	"""Prüft Combo-Thresholds für Coin Rain"""
 	# Big Rain (30+)
 	if combo_counter >= COMBO_BIG_RAIN and last_rain_combo < COMBO_BIG_RAIN:
 		trigger_coin_rain(20)
 		last_rain_combo = COMBO_BIG_RAIN
+		print("[Player] BIG COMBO RAIN! (30+)")
 
 	# Medium Rain (20+)
 	elif combo_counter >= COMBO_MEDIUM_RAIN and last_rain_combo < COMBO_MEDIUM_RAIN:
 		trigger_coin_rain(10)
 		last_rain_combo = COMBO_MEDIUM_RAIN
+		print("[Player] Medium Combo Rain (20+)")
 
 	# Small Rain (10+)
 	elif combo_counter >= COMBO_SMALL_RAIN and last_rain_combo < COMBO_SMALL_RAIN:
 		trigger_coin_rain(5)
 		last_rain_combo = COMBO_SMALL_RAIN
+		print("[Player] Small Combo Rain (10+)")
 
 func trigger_coin_rain(count: int):
 	"""Triggert Coin-Rain via CoinSpawner"""

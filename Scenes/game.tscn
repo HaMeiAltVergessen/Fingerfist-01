@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://q6qlqtcsygqy"]
+[gd_scene load_steps=7 format=3 uid="uid://q6qlqtcsygqy"]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://ck0hp12ep61o7" path="res://Scenes/EnemySpawner.tscn" id="3_spawner"]
+[ext_resource type="PackedScene" uid="uid://coin_spawner_01" path="res://Scenes/CoinSpawner.tscn" id="4_coin_spawner"]
 [ext_resource type="Script" path="res://scripts/GameCamera.gd" id="4_camera"]
 [ext_resource type="PackedScene" uid="uid://hud_scene_01" path="res://Scenes/HUD.tscn" id="5_hud"]
 
@@ -15,7 +16,7 @@ script = ExtResource("1_game")
 
 [node name="EnemySpawner" parent="Spawners" instance=ExtResource("3_spawner")]
 
-[node name="CoinSpawner" type="Node2D" parent="Spawners"]
+[node name="CoinSpawner" parent="Spawners" instance=ExtResource("4_coin_spawner")]
 
 [node name="GameCamera" type="Camera2D" parent="." groups=["camera"]]
 position = Vector2(640, 360)

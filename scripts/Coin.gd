@@ -73,6 +73,9 @@ var coin_value: int = 1
 # ============================================================================
 
 func _ready():
+	# Add to group
+	add_to_group("coins")
+
 	# Setup basierend auf Type
 	var config = COIN_CONFIG[coin_type]
 	coin_value = config.value
@@ -168,6 +171,10 @@ func check_magnet_pull():
 	if distance < magnet_radius:
 		is_magnetized = true
 		print("[Coin] Magnetized!")
+
+func set_magnetized(enabled: bool, player_pos: Vector2 = Vector2.ZERO):
+	"""Setzt Magnetized-Status (für externe Magnet-Trigger)"""
+	is_magnetized = enabled
 
 func move_to_player(delta: float):
 	"""Bewegt Coin zu Player (Magnet)"""
