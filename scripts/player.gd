@@ -70,6 +70,9 @@ signal combo_reset
 func _ready():
 	add_to_group("player")
 
+	# STATIC POSITION - NO MOVEMENT!
+	position = Vector2(100, 360)  # Fixed position on left side of screen
+
 	# Hitbox initial deaktiviert
 	punch_hitbox.monitoring = false
 	punch_hitbox.monitorable = false
@@ -86,7 +89,7 @@ func _ready():
 	# Apply Items
 	apply_item_effects()
 
-	print("[Player] Ready - HP: %d, No Movement (Static)" % hp)
+	print("[Player] Static position: %s - HP: %d, NO MOVEMENT" % [position, hp])
 
 # ============================================================================
 # INPUT - NUR PUNCH
