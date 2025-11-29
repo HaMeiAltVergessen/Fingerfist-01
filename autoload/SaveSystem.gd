@@ -33,6 +33,7 @@ func save_game() -> bool:
 	config.set_value("progression", "selected_level", Global.selected_level)
 	config.set_value("progression", "level_highscores", Global.level_highscores)
 	config.set_value("progression", "level_highest_combos", Global.level_highest_combos)
+	config.set_value("progression", "wall_hp", Global.wall_hp)
 
 	# Legacy arrays (deprecated but keep for compatibility)
 	config.set_value("game", "highscores", Global.highscores)
@@ -89,6 +90,7 @@ func load_game() -> bool:
 	Global.selected_level = config.get_value("progression", "selected_level", 1)
 	Global.level_highscores = config.get_value("progression", "level_highscores", [0,0,0,0,0,0,0,0])
 	Global.level_highest_combos = config.get_value("progression", "level_highest_combos", [0,0,0,0,0,0,0,0])
+	Global.wall_hp = config.get_value("progression", "wall_hp", {1:1000,2:3500,3:8000,4:15000,5:25000,6:40000})
 
 	# Legacy arrays (deprecated)
 	Global.highscores = config.get_value("game", "highscores", [])

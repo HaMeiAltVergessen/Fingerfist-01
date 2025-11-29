@@ -36,6 +36,19 @@ const WALL_HP_PER_LEVEL = {
 	# Level 7 = Endless Mode (keine Wand)
 }
 
+# Persistent Wall HP per Level (tracks remaining HP across sessions)
+var wall_hp: Dictionary = {
+	1: 1000,
+	2: 3500,
+	3: 8000,
+	4: 15000,
+	5: 25000,
+	6: 40000,
+}
+
+# Difficulty Multipliers
+var wall_damage_multiplier: float = 1.0
+
 # ============================================================================
 # ITEMS
 # ============================================================================
@@ -137,15 +150,37 @@ func is_item_active(item_id: String) -> bool:
 # ============================================================================
 
 func get_wall_remaining_hp(level_id: int) -> float:
+	"""Gibt verbleibende Wall-HP für Level zurück (persistent)"""
 	if level_id == 7:
 		return 0.0  # Endless Mode
 
-	if not WALL_HP_PER_LEVEL.has(level_id):
-		return 0.0
+	if not wall_hp.has(level_id):
+		return WALL_HP_PER_LEVEL.get(level_id, 0.0)
 
-	var max_hp = WALL_HP_PER_LEVEL[level_id]
-	var remaining = max_hp - total_highscore
-	return max(0.0, remaining)
+	return wall_hp.get(level_id, 0.0)
+
+func update_wall_hp(level_id: int, current_hp: float):
+	"""Updated persistente Wall-HP für Level"""
+	if level_id == 7:
+		return  # Endless Mode hat keine Wall
+
+	wall_hp[level_id] = max(0.0, current_hp)
+	save_game()
+
+func reset_wall_hp(level_id: int):
+	"""Setzt Wall-HP für Level zurück (auf Max)"""
+	if level_id == 7:
+		return
+
+	if WALL_HP_PER_LEVEL.has(level_id):
+		wall_hp[level_id] = WALL_HP_PER_LEVEL[level_id]
+		save_game()
+
+func reset_all_wall_hp():
+	"""Setzt alle Wall-HP zurück"""
+	for level in WALL_HP_PER_LEVEL:
+		wall_hp[level] = WALL_HP_PER_LEVEL[level]
+	save_game()
 
 # ============================================================================
 # LEVEL UNLOCK SYSTEM

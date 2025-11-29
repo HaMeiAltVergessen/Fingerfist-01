@@ -179,6 +179,10 @@ func end_round():
 
 	is_round_active = false
 
+	# Save Wall HP (persistent across rounds)
+	if wall.visible and Global.selected_level != 7:
+		Global.update_wall_hp(Global.selected_level, wall.current_hp)
+
 	# Stop Spawners
 	enemy_spawner.stop_spawning()
 	coin_spawner.stop_spawning()
