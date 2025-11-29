@@ -182,6 +182,13 @@ func _initialize_default_items():
 			"owned": false,
 			"active": false,
 			"description": "Meteoriten + x2 Score bei 30+ Combo"
+		},
+		"golem_blessing": {
+			"name": "Golem's Blessing",
+			"cost": 700,
+			"owned": false,
+			"active": false,
+			"description": "Wall regeneriert 1 HP/s (max 10% Total HP)"
 		}
 	}
 

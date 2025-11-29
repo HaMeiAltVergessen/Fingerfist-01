@@ -41,6 +41,11 @@ var damage_zones: Array[Dictionary] = []
 # Crack Display
 const MAX_CRACKS: int = 5
 
+# HP Regeneration (Golem's Blessing)
+var regeneration_enabled: bool = false
+var regeneration_rate: float = 1.0  # HP per second
+var max_regeneration_percent: float = 0.1  # Max 10% of total HP can regenerate
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -56,6 +61,11 @@ func _ready():
 	initialize_damage_zones()
 
 	print("[Wall] Ready - HP: %d/%d" % [current_hp, max_hp])
+
+func _process(delta: float):
+	"""Process HP Regeneration"""
+	if regeneration_enabled:
+		regenerate_hp(delta)
 
 # ============================================================================
 # PARTICLE SYSTEMS
@@ -299,3 +309,40 @@ func get_hp_percent() -> float:
 func is_destroyed() -> bool:
 	"""Prüft ob Wand zerstört ist"""
 	return current_hp <= 0
+
+# ============================================================================
+# HP REGENERATION
+# ============================================================================
+
+func regenerate_hp(delta: float):
+	"""Regeneriert HP basierend auf Golem's Blessing"""
+	if current_hp >= max_hp:
+		return  # Already at max HP
+
+	# Calculate max HP we can regenerate to (10% of total)
+	var max_regen_hp = max_hp * max_regeneration_percent
+
+	# Don't regenerate if we're above the threshold
+	if current_hp >= (max_hp - max_regen_hp):
+		return
+
+	# Regenerate
+	var regen_amount = regeneration_rate * delta
+	current_hp += regen_amount
+	current_hp = min(current_hp, max_hp)
+
+	# Emit Signal
+	hp_changed.emit(current_hp, max_hp)
+
+	# Update Visual State (reduces cracks as HP increases)
+	update_visual_state()
+
+func enable_regeneration():
+	"""Aktiviert HP-Regeneration (Golem's Blessing)"""
+	regeneration_enabled = true
+	print("[Wall] HP Regeneration ENABLED (1 HP/s, max 10%%)")
+
+func disable_regeneration():
+	"""Deaktiviert HP-Regeneration"""
+	regeneration_enabled = false
+	print("[Wall] HP Regeneration DISABLED")

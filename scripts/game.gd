@@ -95,6 +95,10 @@ func setup_wall(level: int):
 	wall.wall_destroyed.connect(_on_wall_destroyed)
 	wall.hp_changed.connect(_on_wall_hp_changed)
 
+	# Check Golem's Blessing Item
+	if Global.is_item_active("golem_blessing"):
+		wall.enable_regeneration()
+
 	print("[GameScene] Wall setup for Level %d" % level)
 
 func setup_endless_mode():
