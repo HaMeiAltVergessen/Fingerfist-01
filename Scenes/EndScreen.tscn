@@ -1,0 +1,105 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/EndScreen.gd" id="1"]
+
+[node name="EndScreen" type="CanvasLayer"]
+script = ExtResource("1")
+
+[node name="EndScreenPanel" type="Panel" parent="."]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -250.0
+offset_right = 300.0
+offset_bottom = 250.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleLabel" type="Label" parent="EndScreenPanel"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 20.0
+offset_bottom = 60.0
+theme_override_font_sizes/font_size = 32
+text = "LEVEL COMPLETE!"
+horizontal_alignment = 1
+
+[node name="StatsContainer" type="VBoxContainer" parent="EndScreenPanel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -80.0
+offset_right = 200.0
+offset_bottom = 80.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="RoundScoreLabel" type="Label" parent="EndScreenPanel/StatsContainer"]
+layout_mode = 2
+text = "Round Score: 0"
+horizontal_alignment = 1
+
+[node name="TotalScoreLabel" type="Label" parent="EndScreenPanel/StatsContainer"]
+layout_mode = 2
+text = "Total Score: 0"
+horizontal_alignment = 1
+
+[node name="CoinsEarnedLabel" type="Label" parent="EndScreenPanel/StatsContainer"]
+layout_mode = 2
+text = "Coins Earned: 0"
+horizontal_alignment = 1
+
+[node name="HighestComboLabel" type="Label" parent="EndScreenPanel/StatsContainer"]
+layout_mode = 2
+text = "Highest Combo: x0"
+horizontal_alignment = 1
+
+[node name="EnemiesKilledLabel" type="Label" parent="EndScreenPanel/StatsContainer"]
+layout_mode = 2
+text = "Enemies Killed: 0"
+horizontal_alignment = 1
+
+[node name="TimePlayedLabel" type="Label" parent="EndScreenPanel/StatsContainer"]
+layout_mode = 2
+text = "Time: 00:00"
+horizontal_alignment = 1
+
+[node name="ButtonsContainer" type="HBoxContainer" parent="EndScreenPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -180.0
+offset_top = -60.0
+offset_right = 180.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="ShopButton" type="Button" parent="EndScreenPanel/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Shop"
+
+[node name="RetryButton" type="Button" parent="EndScreenPanel/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Retry"
+
+[node name="MenuButton" type="Button" parent="EndScreenPanel/ButtonsContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Menu"
