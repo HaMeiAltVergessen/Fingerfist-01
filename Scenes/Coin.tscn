@@ -1,13 +1,35 @@
-[gd_scene load_steps=3 format=3 uid="uid://dafnnjlk7nlh5"]
+[gd_scene load_steps=4 format=3 uid="uid://dafnnjlk7nlh5"]
 
-[ext_resource type="Script" uid="uid://c4h3fssragc6s" path="res://scripts/coin.gd" id="1_qrc3l"]
+[ext_resource type="Script" path="res://scripts/Coin.gd" id="1_coin"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_8a2u1"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_coin"]
+radius = 12.0
 
-[node name="Coin" type="Area2D"]
-script = ExtResource("1_qrc3l")
+[sub_resource type="CircleShape2D" id="CircleShape2D_magnet"]
+radius = 200.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_8a2u1")
+[node name="Coin" type="Area2D" groups=["coins"]]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_coin")
 
 [node name="CoinSprite" type="Sprite2D" parent="."]
+modulate = Color(0.8, 0.5, 0.2, 1)
+scale = Vector2(12, 12)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_coin")
+debug_color = Color(1, 0.843137, 0, 0.419608)
+
+[node name="LifetimeTimer" type="Timer" parent="."]
+wait_time = 10.0
+one_shot = true
+
+[node name="MagnetArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 1
+monitoring = false
+monitorable = false
+
+[node name="MagnetShape" type="CollisionShape2D" parent="MagnetArea"]
+shape = SubResource("CircleShape2D_magnet")

@@ -324,19 +324,28 @@ func apply_knockback(direction: Vector2, force: float):
 # ============================================================================
 
 func spawn_coin():
-	"""Spawnt Coin an Enemy-Position"""
+	"""Spawnt Coin mit Wahrscheinlichkeit"""
 	if not CoinScene:
 		return
 
-	var coin = CoinScene.instantiate()
-	coin.global_position = global_position
-	coin.global_position.y -= 20  # Leicht über Enemy
+	# Spawne Coin
+	var coin = CoinScene.instantiate() as Coin
 
-	# Random horizontale Velocity
-	coin.velocity.x = randf_range(-100, 100)
-	coin.velocity.y = randf_range(-200, -100)
+	# Zufälliger Coin-Type
+	coin.coin_type = Coin.get_random_coin_type()
 
+	# Position (Enemy-Position)
+	coin.position = global_position
+
+	# Initiale Velocity (nach oben und leicht zur Mitte)
+	var upward_force = randf_range(200, 350)
+	var horizontal_force = randf_range(-50, 50)
+	coin.velocity = Vector2(horizontal_force, -upward_force)
+
+	# Füge zur Scene hinzu
 	get_parent().add_child(coin)
+
+	print("[Enemy] Coin dropped: ", Coin.CoinType.keys()[coin.coin_type])
 
 # ============================================================================
 # DESPAWN (OFF-SCREEN)
