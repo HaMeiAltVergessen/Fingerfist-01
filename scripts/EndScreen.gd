@@ -58,8 +58,13 @@ func show_stats(stats: Dictionary):
 
 	# Title (Victory vs Defeat)
 	if stats.get("victory", false):
-		title_label.text = "🎉 LEVEL COMPLETE! 🎉"
-		title_label.modulate = Color(0.3, 1.0, 0.3)
+		# Check if new highscore
+		if stats.get("new_highscore", false):
+			title_label.text = "🏆 NEW HIGHSCORE! 🏆"
+			title_label.modulate = Color(1.0, 0.84, 0.0)  # Gold
+		else:
+			title_label.text = "🎉 LEVEL COMPLETE! 🎉"
+			title_label.modulate = Color(0.3, 1.0, 0.3)
 	else:
 		title_label.text = "💀 GAME OVER 💀"
 		title_label.modulate = Color(1.0, 0.3, 0.3)

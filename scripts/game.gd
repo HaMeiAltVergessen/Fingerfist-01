@@ -26,6 +26,7 @@ var total_highscore_before_round: int = 0
 var coins_at_round_start: int = 0
 var round_start_time: float = 0.0
 var enemies_killed_this_round: int = 0
+var is_new_highscore: bool = false
 
 # ============================================================================
 # INITIALIZATION
@@ -142,14 +143,23 @@ func destroy_wall():
 	# TODO: Audio.play_sfx("wall_break.ogg")  # Commit später
 	camera.shake_wall_destroyed()
 
-	# Level Complete
-	end_round()
+	# Victory! Update progression
+	var level = Global.selected_level
+
+	# Update Highscore (returns true if new)
+	is_new_highscore = Global.update_highscore(level, Global.current_round_score)
+
+	# Update Highest Combo (from static player)
+	Global.update_highest_combo(level, player.highest_combo)
 
 	# Unlock next level
-	if Global.selected_level < 7:
-		Global.unlock_next_level(Global.selected_level)
+	if level < 7:
+		Global.unlock_next_level(level)
 
-	print("[GameScene] Wall Destroyed!")
+	# End Round
+	end_round()
+
+	print("[GameScene] Wall Destroyed! Victory!")
 
 # ============================================================================
 # ROUND MANAGEMENT
@@ -232,6 +242,7 @@ func show_end_screen():
 		"enemies_killed": enemies_killed_this_round,
 		"time_played": round_time,
 		"victory": victory,
+		"new_highscore": is_new_highscore,
 	}
 
 	# Show EndScreen with stats
