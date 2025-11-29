@@ -16,42 +16,50 @@ const ITEMS = {
 	"greed_magnet": {
 		"name": "Greed Magnet",
 		"cost": 300,
-		"description": "Zieht Coins an (200px Radius)"
+		"description": "Zieht Coins an (200px Radius)",
+		"category": "Economy"
 	},
 	"iron_knuckles": {
 		"name": "Iron Knuckles",
 		"cost": 400,
-		"description": "Knockback-Effekt auf Gegner"
+		"description": "Knockback-Effekt auf Gegner",
+		"category": "Combat"
 	},
 	"shockwave_fist": {
 		"name": "Shockwave Fist",
 		"cost": 500,
-		"description": "Verdoppelt Attack-Radius"
+		"description": "Verdoppelt Attack-Radius",
+		"category": "Combat"
 	},
 	"time_crystal": {
 		"name": "Time Crystal",
 		"cost": 600,
-		"description": "Slow-Motion bei 10er Combo"
+		"description": "Slow-Motion bei 10er Combo",
+		"category": "Utility"
 	},
 	"golem_blessing": {
 		"name": "Golem's Blessing",
 		"cost": 700,
-		"description": "Wall regeneriert 1 HP/s (max 10% Total HP)"
+		"description": "Wall regeneriert 1 HP/s (max 10% Total HP)",
+		"category": "Defense"
 	},
 	"fire_shield": {
 		"name": "Fire Shield",
 		"cost": 800,
-		"description": "Negiert 1 Projektil pro Runde"
+		"description": "Negiert 1 Projektil pro Runde",
+		"category": "Defense"
 	},
 	"golem_skin": {
 		"name": "Golem Skin",
 		"cost": 1000,
-		"description": "+3 Extra Leben (HP 5→8)"
+		"description": "+3 Extra Leben (HP 5→8)",
+		"category": "Defense"
 	},
 	"call_of_wrath": {
 		"name": "Call of Wrath",
 		"cost": 1200,
-		"description": "Meteoriten + x2 Score bei 30+ Combo"
+		"description": "Meteoriten + x2 Score bei 30+ Combo",
+		"category": "Ultimate"
 	}
 }
 

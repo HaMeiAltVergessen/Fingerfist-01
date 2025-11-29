@@ -26,6 +26,10 @@ var confirm_message: Label
 var confirm_yes_button: Button
 var confirm_no_button: Button
 
+# Filter Buttons (created dynamically)
+var filter_container: HBoxContainer
+var filter_buttons: Dictionary = {}
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -33,6 +37,7 @@ var confirm_no_button: Button
 var item_buttons: Array[Button] = []
 var selected_item_id: String = ""
 var pending_purchase_item_id: String = ""
+var active_filter: String = "All"  # Current category filter
 
 # ============================================================================
 # INITIALIZATION
@@ -46,6 +51,9 @@ func _ready():
 
 	# Connect Back Button
 	back_button.pressed.connect(_on_back_button_pressed)
+
+	# Create Category Filters
+	create_category_filters()
 
 	# Create Item Buttons
 	create_item_buttons()
@@ -62,11 +70,56 @@ func _ready():
 	print("[Shop] Ready")
 
 # ============================================================================
+# CATEGORY FILTERS
+# ============================================================================
+
+func create_category_filters():
+	"""Erstellt Category-Filter-Buttons"""
+	filter_container = HBoxContainer.new()
+	filter_container.name = "FilterContainer"
+	filter_container.position = Vector2(100, 150)
+	add_child(filter_container)
+
+	# Categories: All, Combat, Defense, Economy, Utility, Ultimate
+	var categories = ["All", "Combat", "Defense", "Economy", "Utility", "Ultimate"]
+
+	for category in categories:
+		var button = Button.new()
+		button.text = category
+		button.custom_minimum_size = Vector2(100, 40)
+		button.name = "%sFilterButton" % category
+		button.pressed.connect(_on_filter_button_pressed.bind(category))
+		filter_container.add_child(button)
+		filter_buttons[category] = button
+
+	# Set initial filter (All)
+	update_filter_buttons()
+
+	print("[Shop] Category filters created")
+
+func _on_filter_button_pressed(category: String):
+	"""Filter Button geklickt"""
+	active_filter = category
+	update_filter_buttons()
+	create_item_buttons()  # Rebuild item grid
+
+func update_filter_buttons():
+	"""Updated Filter-Button-Zustände"""
+	for category in filter_buttons:
+		var button = filter_buttons[category]
+		if category == active_filter:
+			button.modulate = Color(0.5, 1.0, 0.5)  # Green (active)
+			button.disabled = true
+		else:
+			button.modulate = Color.WHITE
+			button.disabled = false
+
+# ============================================================================
 # ITEM GRID
 # ============================================================================
 
 func create_item_buttons():
-	"""Erstellt Item-Buttons im Grid (4 per row)"""
+	"""Erstellt Item-Buttons im Grid (4 per row) - filtered by category"""
 	# Clear existing buttons
 	for child in item_grid.get_children():
 		child.queue_free()
@@ -76,14 +129,20 @@ func create_item_buttons():
 	# Get all items from SaveSystem
 	var items = SaveSystem.ITEMS
 
-	# Create button for each item
+	# Create button for each item (filtered)
 	for item_id in items.keys():
 		var item_data = items[item_id]
+
+		# Check if item matches active filter
+		if active_filter != "All":
+			if item_data.category != active_filter:
+				continue  # Skip this item
+
 		var button = create_item_button(item_id, item_data)
 		item_grid.add_child(button)
 		item_buttons.append(button)
 
-	print("[Shop] Created %d item buttons" % item_buttons.size())
+	print("[Shop] Created %d item buttons (filter: %s)" % [item_buttons.size(), active_filter])
 
 func create_item_button(item_id: String, item_data: Dictionary) -> Button:
 	"""Erstellt einzelnen Item-Button"""
