@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://dafnnjlk7nlh5"]
+[gd_scene load_steps=5 format=3 uid="uid://dafnnjlk7nlh5"]
 
 [ext_resource type="Script" path="res://scripts/Coin.gd" id="1_coin"]
+[ext_resource type="Texture2D" uid="uid://coin_bronze" path="res://assets/sprites/coins/bronze/coin_frame_00.png" id="2_coin_tex"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_coin"]
 radius = 12.0
@@ -14,8 +15,8 @@ collision_mask = 1
 script = ExtResource("1_coin")
 
 [node name="CoinSprite" type="Sprite2D" parent="."]
-modulate = Color(0.8, 0.5, 0.2, 1)
-scale = Vector2(12, 12)
+texture = ExtResource("2_coin_tex")
+scale = Vector2(1, 1)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_coin")
