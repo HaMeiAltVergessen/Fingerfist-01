@@ -123,7 +123,7 @@ func _on_play_button_pressed():
 func _on_shop_button_pressed():
 	"""Shop Button → Shop"""
 	print("[MainMenu] Shop pressed")
-	SceneLoader.load_scene("res://Scenes/Shop.tscn")
+	SceneLoader.load_scene("res://Scenes/shop.tscn")
 
 func _on_settings_button_pressed():
 	"""Settings Button → Settings"""
