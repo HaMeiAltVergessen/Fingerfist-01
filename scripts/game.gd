@@ -22,6 +22,12 @@ var is_round_active: bool = false
 var is_paused: bool = false
 var total_highscore_before_round: int = 0
 
+# Round Stats Tracking
+var coins_at_round_start: int = 0
+var round_start_time: float = 0.0
+var enemies_killed_this_round: int = 0
+var is_new_highscore: bool = false
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -137,14 +143,23 @@ func destroy_wall():
 	# TODO: Audio.play_sfx("wall_break.ogg")  # Commit später
 	camera.shake_wall_destroyed()
 
-	# Level Complete
-	end_round()
+	# Victory! Update progression
+	var level = Global.selected_level
+
+	# Update Highscore (returns true if new)
+	is_new_highscore = Global.update_highscore(level, Global.current_round_score)
+
+	# Update Highest Combo (from static player)
+	Global.update_highest_combo(level, player.highest_combo)
 
 	# Unlock next level
-	if Global.selected_level < 7:
-		Global.unlock_next_level(Global.selected_level)
+	if level < 7:
+		Global.unlock_next_level(level)
 
-	print("[GameScene] Wall Destroyed!")
+	# End Round
+	end_round()
+
+	print("[GameScene] Wall Destroyed! Victory!")
 
 # ============================================================================
 # ROUND MANAGEMENT
@@ -162,6 +177,11 @@ func start_round():
 
 	# Speichere Total Highscore vor Runde (für Wand-Schaden)
 	total_highscore_before_round = Global.total_highscore
+
+	# Reset Round Stats
+	coins_at_round_start = Global.coins
+	round_start_time = Time.get_ticks_msec() / 1000.0
+	enemies_killed_this_round = 0
 
 	# Start Spawners
 	enemy_spawner.start_spawning()
@@ -209,13 +229,24 @@ func end_round():
 
 func show_end_screen():
 	"""Zeigt End Screen mit Stats"""
-	end_screen.visible = true
-	get_tree().paused = true
+	# Calculate Stats
+	var round_time = (Time.get_ticks_msec() / 1000.0) - round_start_time
+	var coins_earned = Global.coins - coins_at_round_start
+	var victory = (wall and not wall.visible)
 
-	# TODO: Update End Screen Labels (Commit später)
-	# var round_score = Global.current_round_score
-	# var total_score = Global.total_highscore
-	# var coins_earned = ...
+	var stats = {
+		"round_score": Global.current_round_score,
+		"total_score": Global.total_highscore,
+		"coins_earned": coins_earned,
+		"highest_combo": player.highest_combo,
+		"enemies_killed": enemies_killed_this_round,
+		"time_played": round_time,
+		"victory": victory,
+		"new_highscore": is_new_highscore,
+	}
+
+	# Show EndScreen with stats
+	end_screen.show_stats(stats)
 
 # ============================================================================
 # PAUSE SYSTEM
@@ -248,7 +279,10 @@ func _on_player_died():
 	end_round()
 
 func _on_player_hit_enemy(enemy: Enemy):
-	"""Player hat Enemy getroffen"""
+	"""Player hat Enemy getroffen (One-Hit-KO)"""
+	# Track Kill
+	enemies_killed_this_round += 1
+
 	# Screenshake basierend auf Enemy-Typ
 	match enemy.enemy_type:
 		Enemy.Type.INSECT:
