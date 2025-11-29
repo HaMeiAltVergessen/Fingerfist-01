@@ -382,6 +382,23 @@ func _attract_nearby_coins():
 		if distance < coin_magnet_radius:
 			coin_node.set_magnetized(true, global_position)
 
+func get_nearby_coins() -> Array[Coin]:
+	"""Gibt alle Coins in Magnet-Radius zurück"""
+	if coin_magnet_radius <= 0:
+		return []
+
+	var coins: Array[Coin] = []
+	var all_coins = get_tree().get_nodes_in_group("coins")
+
+	for coin_node in all_coins:
+		var coin = coin_node as Coin
+		if coin and not coin.is_collected:
+			var distance = global_position.distance_to(coin.global_position)
+			if distance < coin_magnet_radius:
+				coins.append(coin)
+
+	return coins
+
 func _check_item_triggers():
 	"""Prüft ob Item-Trigger aktiviert werden sollen"""
 	# Time Crystal: Slow Motion bei 10er Combo
