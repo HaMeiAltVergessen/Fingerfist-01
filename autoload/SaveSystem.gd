@@ -9,6 +9,61 @@ const SAVE_PATH = "user://fingerfist_save.cfg"
 const BACKUP_PATH = "user://fingerfist_save_backup.cfg"
 
 # ============================================================================
+# ITEM DEFINITIONS
+# ============================================================================
+
+const ITEMS = {
+	"greed_magnet": {
+		"name": "Greed Magnet",
+		"cost": 300,
+		"description": "Zieht Coins an (200px Radius)",
+		"category": "Economy"
+	},
+	"iron_knuckles": {
+		"name": "Iron Knuckles",
+		"cost": 400,
+		"description": "Knockback-Effekt auf Gegner",
+		"category": "Combat"
+	},
+	"shockwave_fist": {
+		"name": "Shockwave Fist",
+		"cost": 500,
+		"description": "Verdoppelt Attack-Radius",
+		"category": "Combat"
+	},
+	"time_crystal": {
+		"name": "Time Crystal",
+		"cost": 600,
+		"description": "Slow-Motion bei 10er Combo",
+		"category": "Utility"
+	},
+	"golem_blessing": {
+		"name": "Golem's Blessing",
+		"cost": 700,
+		"description": "Wall regeneriert 1 HP/s (max 10% Total HP)",
+		"category": "Defense"
+	},
+	"fire_shield": {
+		"name": "Fire Shield",
+		"cost": 800,
+		"description": "Negiert 1 Projektil pro Runde",
+		"category": "Defense"
+	},
+	"golem_skin": {
+		"name": "Golem Skin",
+		"cost": 1000,
+		"description": "+3 Extra Leben (HP 5→8)",
+		"category": "Defense"
+	},
+	"call_of_wrath": {
+		"name": "Call of Wrath",
+		"cost": 1200,
+		"description": "Meteoriten + x2 Score bei 30+ Combo",
+		"category": "Ultimate"
+	}
+}
+
+# ============================================================================
 # INITIALIZATION
 # ============================================================================
 
@@ -126,83 +181,24 @@ func load_game() -> bool:
 
 func _initialize_default_items():
 	"""Initialisiert alle Items mit Default-Werten (falls noch nicht vorhanden)"""
-
-	# Item-Definitionen (aus items.json - später aus Datei laden)
-	var default_items = {
-		"shockwave_fist": {
-			"name": "Shockwave Fist",
-			"cost": 500,
-			"owned": false,
-			"active": false,
-			"description": "Verdoppelt Attack-Radius"
-		},
-		"iron_knuckles": {
-			"name": "Iron Knuckles",
-			"cost": 400,
-			"owned": false,
-			"active": false,
-			"description": "Knockback-Effekt auf Gegner"
-		},
-		"time_crystal": {
-			"name": "Time Crystal",
-			"cost": 600,
-			"owned": false,
-			"active": false,
-			"description": "Slow-Motion bei 10er Combo"
-		},
-		"fire_shield": {
-			"name": "Fire Shield",
-			"cost": 800,
-			"owned": false,
-			"active": false,
-			"description": "Negiert 1 Projektil pro Runde"
-		},
-		"greed_magnet": {
-			"name": "Greed Magnet",
-			"cost": 300,
-			"owned": false,
-			"active": false,
-			"description": "Zieht Coins an (200px Radius)"
-		},
-		"thunder_charge": {
-			"name": "Thunder Charge",
-			"cost": 900,
-			"owned": false,
-			"active": false,
-			"description": "Kettenblitz bei 20er Combo"
-		},
-		"golem_skin": {
-			"name": "Golem Skin",
-			"cost": 1000,
-			"owned": false,
-			"active": false,
-			"description": "+3 Extra Leben (HP 5→8)"
-		},
-		"call_of_wrath": {
-			"name": "Call of Wrath",
-			"cost": 1200,
-			"owned": false,
-			"active": false,
-			"description": "Meteoriten + x2 Score bei 30+ Combo"
-		},
-		"golem_blessing": {
-			"name": "Golem's Blessing",
-			"cost": 700,
-			"owned": false,
-			"active": false,
-			"description": "Wall regeneriert 1 HP/s (max 10% Total HP)"
-		}
-	}
-
 	# Merge mit existierenden Items (behalte owned/active Status)
-	for item_id in default_items:
+	for item_id in ITEMS:
+		var item_data = ITEMS[item_id]
+
 		if not Global.items.has(item_id):
-			Global.items[item_id] = default_items[item_id]
+			# Neues Item - initialisiere mit owned=false, active=false
+			Global.items[item_id] = {
+				"name": item_data.name,
+				"cost": item_data.cost,
+				"description": item_data.description,
+				"owned": false,
+				"active": false
+			}
 		else:
-			# Update nur description/name/cost (nicht owned/active)
-			Global.items[item_id].name = default_items[item_id].name
-			Global.items[item_id].cost = default_items[item_id].cost
-			Global.items[item_id].description = default_items[item_id].description
+			# Existierendes Item - Update nur description/name/cost (nicht owned/active)
+			Global.items[item_id].name = item_data.name
+			Global.items[item_id].cost = item_data.cost
+			Global.items[item_id].description = item_data.description
 
 # ============================================================================
 # UTILITY FUNCTIONS

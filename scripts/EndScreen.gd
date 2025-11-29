@@ -100,7 +100,7 @@ func show_stats(stats: Dictionary):
 func _on_shop_pressed():
 	"""Load Shop Scene"""
 	get_tree().paused = false
-	SceneLoader.load_scene("res://Scenes/Shop.tscn")
+	SceneLoader.load_scene("res://Scenes/shop.tscn")
 
 func _on_retry_pressed():
 	"""Retry Current Level"""

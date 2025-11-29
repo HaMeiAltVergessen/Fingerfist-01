@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://q6qlqtcsygqy"]
+[gd_scene load_steps=10 format=3 uid="uid://q6qlqtcsygqy"]
 
 [ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="2_player"]
@@ -6,9 +6,17 @@
 [ext_resource type="PackedScene" uid="uid://coin_spawner_01" path="res://Scenes/CoinSpawner.tscn" id="4_coin_spawner"]
 [ext_resource type="Script" path="res://scripts/GameCamera.gd" id="4_camera"]
 [ext_resource type="PackedScene" uid="uid://hud_scene_01" path="res://Scenes/HUD.tscn" id="5_hud"]
+[ext_resource type="Texture2D" uid="uid://bg_level1" path="res://assets/sprites/backgrounds/level_1_bg.png" id="6_bg"]
+[ext_resource type="Script" path="res://scripts/Wall.gd" id="7_wall_script"]
+[ext_resource type="Texture2D" uid="uid://wall_level1" path="res://assets/sprites/walls/level_1/wall_intact.png" id="8_wall_tex"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_game")
+
+[node name="Background" type="Sprite2D" parent="."]
+position = Vector2(640, 360)
+texture = ExtResource("6_bg")
+z_index = -10
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 
@@ -27,7 +35,8 @@ script = ExtResource("4_camera")
 
 [node name="Wall" type="Sprite2D" parent="."]
 position = Vector2(48, 360)
-visible = false
+texture = ExtResource("8_wall_tex")
+script = ExtResource("7_wall_script")
 
 [node name="EndScreen" type="CanvasLayer" parent="."]
 visible = false
