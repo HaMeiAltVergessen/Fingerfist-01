@@ -31,6 +31,9 @@ func _ready():
 	end_screen.visible = false
 	pause_screen.visible = false
 
+	# Setup Player (STATIC position)
+	setup_player()
+
 	# Setup based on selected level
 	var level = Global.selected_level
 	if level == 7:
@@ -51,6 +54,23 @@ func _ready():
 	start_round()
 
 	print("[GameScene] Ready - Level: ", level)
+
+# ============================================================================
+# PLAYER SETUP
+# ============================================================================
+
+func setup_player():
+	"""Setup Player (statisch!)"""
+	if not player:
+		return
+
+	# FESTE Position (links im Screen)
+	player.position = Vector2(100, 360)
+
+	# Apply Items (falls gekauft)
+	player.apply_item_effects()
+
+	print("[GameScene] Player setup - Position: ", player.position)
 
 # ============================================================================
 # WALL SETUP
@@ -142,9 +162,6 @@ func start_round():
 
 	# Speichere Total Highscore vor Runde (für Wand-Schaden)
 	total_highscore_before_round = Global.total_highscore
-
-	# Aktiviere Items (falls gekauft)
-	player.apply_item_effects()
 
 	# Start Spawners
 	enemy_spawner.start_spawning()
