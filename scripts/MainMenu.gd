@@ -17,6 +17,9 @@ var total_score_label: Label
 var coins_label: Label
 var levels_unlocked_label: Label
 
+# Continue Button (created dynamically)
+var continue_button: Button
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -27,6 +30,9 @@ func _ready():
 
 	# Create Stats Display
 	create_stats_display()
+
+	# Create Continue Button (if save exists)
+	create_continue_button()
 
 	# Update Stats
 	update_stats_display()
@@ -40,6 +46,8 @@ func _ready():
 		settings_button.pressed.connect(_on_settings_button_pressed)
 	if quit_button:
 		quit_button.pressed.connect(_on_quit_button_pressed)
+	if continue_button:
+		continue_button.pressed.connect(_on_continue_button_pressed)
 
 	# Connect Global Signals
 	Global.coins_changed.connect(_on_stats_changed)
@@ -95,6 +103,24 @@ func create_stats_display():
 
 	print("[MainMenu] Stats display created")
 
+func create_continue_button():
+	"""Erstellt Continue Button (nur wenn irgendein Save existiert)"""
+	# Only show if any save file exists
+	if not SaveSystem.any_save_exists():
+		print("[MainMenu] No save files - Continue button hidden")
+		return
+
+	# Create Continue Button
+	continue_button = Button.new()
+	continue_button.name = "ContinueButton"
+	continue_button.text = "📂 Continue"
+	continue_button.position = Vector2(440, 160)
+	continue_button.custom_minimum_size = Vector2(200, 50)
+	continue_button.add_theme_font_size_override("font_size", 20)
+	add_child(continue_button)
+
+	print("[MainMenu] Continue button created")
+
 func update_stats_display():
 	"""Updated Stats-Anzeige"""
 	# Total Score
@@ -114,6 +140,11 @@ func _on_stats_changed(_value):
 # ============================================================================
 # BUTTON HANDLERS
 # ============================================================================
+
+func _on_continue_button_pressed():
+	"""Continue Button → Save Slot Select"""
+	print("[MainMenu] Continue pressed - Going to slot select")
+	SceneLoader.load_scene("res://Scenes/SaveSlotSelect.tscn")
 
 func _on_play_button_pressed():
 	"""Play Button → Level Select"""

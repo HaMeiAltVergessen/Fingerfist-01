@@ -355,6 +355,11 @@ func _on_continue_button_pressed():
 	"""Continue Button im PauseScreen"""
 	toggle_pause()
 
+func _on_save_button_pressed():
+	"""Save Button im PauseScreen - Manual Save"""
+	SaveSystem.save_game(false)  # Manual save
+	print("[GameScene] Manual save triggered from pause menu")
+
 func _on_restart_button_pressed():
 	"""Restart Button im PauseScreen"""
 	get_tree().paused = false
