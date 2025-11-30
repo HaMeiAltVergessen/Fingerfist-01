@@ -30,6 +30,24 @@ var confirm_no_button: Button
 var filter_container: HBoxContainer
 var filter_buttons: Dictionary = {}
 
+# Preview Panel (C46 - Item Preview)
+var preview_panel: Panel
+var preview_player: ColorRect  # Visual representation of player
+var preview_hitbox: ColorRect  # Visual representation of punch radius
+var preview_before_label: Label
+var preview_after_label: Label
+
+# Tooltip (C47 - Hover Tooltips)
+var tooltip: Panel
+var tooltip_title: Label
+var tooltip_desc: Label
+var tooltip_cost: Label
+
+# Search and Sort (C49)
+var search_field: LineEdit
+var sort_cost_button: Button
+var sort_name_button: Button
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -38,6 +56,8 @@ var item_buttons: Array[Button] = []
 var selected_item_id: String = ""
 var pending_purchase_item_id: String = ""
 var active_filter: String = "All"  # Current category filter
+var search_query: String = ""  # C49
+var current_sort: String = "cost_asc"  # C49: cost_asc, cost_desc, name_asc, name_desc
 
 # ============================================================================
 # INITIALIZATION
@@ -52,6 +72,9 @@ func _ready():
 	# Connect Back Button
 	back_button.pressed.connect(_on_back_button_pressed)
 
+	# Create Search and Sort UI (C49)
+	create_search_and_sort()
+
 	# Create Category Filters
 	create_category_filters()
 
@@ -64,10 +87,78 @@ func _ready():
 	# Create Confirmation Dialog
 	create_confirmation_dialog()
 
+	# Create Preview Panel (C46)
+	create_preview_panel()
+
+	# Create Tooltip (C47)
+	create_tooltip()
+
 	# Connect Global Signals
 	Global.coins_changed.connect(_on_coins_changed)
 
 	print("[Shop] Ready")
+
+# ============================================================================
+# SEARCH AND SORT (C49)
+# ============================================================================
+
+func create_search_and_sort():
+	"""Erstellt Search Field und Sort Buttons"""
+	# Search Field
+	search_field = LineEdit.new()
+	search_field.name = "SearchField"
+	search_field.placeholder_text = "Search items..."
+	search_field.position = Vector2(100, 100)
+	search_field.custom_minimum_size = Vector2(400, 40)
+	search_field.text_changed.connect(_on_search_changed)
+	add_child(search_field)
+
+	# Sort Cost Button
+	sort_cost_button = Button.new()
+	sort_cost_button.name = "SortCostButton"
+	sort_cost_button.text = "Sort: Cost ▼"
+	sort_cost_button.position = Vector2(520, 100)
+	sort_cost_button.custom_minimum_size = Vector2(140, 40)
+	sort_cost_button.pressed.connect(_on_sort_cost)
+	add_child(sort_cost_button)
+
+	# Sort Name Button
+	sort_name_button = Button.new()
+	sort_name_button.name = "SortNameButton"
+	sort_name_button.text = "Sort: Name"
+	sort_name_button.position = Vector2(680, 100)
+	sort_name_button.custom_minimum_size = Vector2(140, 40)
+	sort_name_button.pressed.connect(_on_sort_name)
+	add_child(sort_name_button)
+
+	print("[Shop] Search and Sort UI created")
+
+func _on_search_changed(text: String):
+	"""Search text changed - filter items"""
+	search_query = text.to_lower()
+	create_item_buttons()  # Rebuild list
+
+func _on_sort_cost():
+	"""Toggle cost sorting"""
+	if current_sort == "cost_asc":
+		current_sort = "cost_desc"
+		sort_cost_button.text = "Sort: Cost ▲"
+	else:
+		current_sort = "cost_asc"
+		sort_cost_button.text = "Sort: Cost ▼"
+
+	create_item_buttons()  # Rebuild list
+
+func _on_sort_name():
+	"""Toggle name sorting"""
+	if current_sort == "name_asc":
+		current_sort = "name_desc"
+		sort_name_button.text = "Sort: Name ▲"
+	else:
+		current_sort = "name_asc"
+		sort_name_button.text = "Sort: Name ▼"
+
+	create_item_buttons()  # Rebuild list
 
 # ============================================================================
 # CATEGORY FILTERS
@@ -119,7 +210,7 @@ func update_filter_buttons():
 # ============================================================================
 
 func create_item_buttons():
-	"""Erstellt Item-Buttons im Grid (4 per row) - filtered by category"""
+	"""Erstellt Item-Buttons im Grid (4 per row) - filtered & sorted"""
 	# Clear existing buttons
 	for child in item_grid.get_children():
 		child.queue_free()
@@ -129,20 +220,51 @@ func create_item_buttons():
 	# Get all items from SaveSystem
 	var items = SaveSystem.ITEMS
 
-	# Create button for each item (filtered)
+	# Build filtered list
+	var items_list: Array = []
 	for item_id in items.keys():
 		var item_data = items[item_id]
 
-		# Check if item matches active filter
+		# Category Filter
 		if active_filter != "All":
 			if item_data.category != active_filter:
-				continue  # Skip this item
+				continue  # Skip
 
-		var button = create_item_button(item_id, item_data)
+		# Search Filter (C49)
+		if search_query != "":
+			var name_match = item_data.name.to_lower().contains(search_query)
+			var desc_match = item_data.description.to_lower().contains(search_query)
+			if not (name_match or desc_match):
+				continue  # Skip
+
+		items_list.append({"id": item_id, "data": item_data})
+
+	# Sort list (C49)
+	items_list = _sort_items(items_list)
+
+	# Create buttons
+	for entry in items_list:
+		var button = create_item_button(entry.id, entry.data)
 		item_grid.add_child(button)
 		item_buttons.append(button)
 
-	print("[Shop] Created %d item buttons (filter: %s)" % [item_buttons.size(), active_filter])
+	print("[Shop] Created %d item buttons (filter: %s, sort: %s)" % [
+		item_buttons.size(), active_filter, current_sort
+	])
+
+func _sort_items(items: Array) -> Array:
+	"""Sort items based on current_sort setting"""
+	match current_sort:
+		"cost_asc":
+			items.sort_custom(func(a, b): return a.data.cost < b.data.cost)
+		"cost_desc":
+			items.sort_custom(func(a, b): return a.data.cost > b.data.cost)
+		"name_asc":
+			items.sort_custom(func(a, b): return a.data.name < b.data.name)
+		"name_desc":
+			items.sort_custom(func(a, b): return a.data.name > b.data.name)
+
+	return items
 
 func create_item_button(item_id: String, item_data: Dictionary) -> Button:
 	"""Erstellt einzelnen Item-Button"""
@@ -170,8 +292,10 @@ func create_item_button(item_id: String, item_data: Dictionary) -> Button:
 
 	button.text = button_text
 
-	# Connect Signal
+	# Connect Signals
 	button.pressed.connect(_on_item_button_pressed.bind(item_id))
+	button.mouse_entered.connect(_on_item_hover.bind(item_id))  # C47
+	button.mouse_exited.connect(_on_item_hover_end)  # C47
 
 	return button
 
@@ -321,11 +445,15 @@ func show_item_details(item_id: String):
 	# Show Panel
 	details_panel.visible = true
 
+	# Show Preview (C46)
+	show_item_preview(item_id)
+
 	print("[Shop] Showing details for: %s" % item_id)
 
 func hide_item_details():
 	"""Versteckt Item-Details-Panel"""
 	details_panel.visible = false
+	preview_panel.visible = false
 	selected_item_id = ""
 
 # ============================================================================
@@ -381,6 +509,245 @@ func create_confirmation_dialog():
 
 	print("[Shop] Confirmation Dialog created")
 
+# ============================================================================
+# PREVIEW PANEL (C46)
+# ============================================================================
+
+func create_preview_panel():
+	"""Erstellt Item-Preview-Panel mit Stat-Vergleich"""
+	# Main Panel
+	preview_panel = Panel.new()
+	preview_panel.name = "PreviewPanel"
+	preview_panel.visible = false
+	preview_panel.custom_minimum_size = Vector2(360, 400)
+	preview_panel.position = Vector2(820, 220)
+	add_child(preview_panel)
+
+	# Title
+	var title = Label.new()
+	title.text = "ITEM PREVIEW"
+	title.position = Vector2(100, 10)
+	title.add_theme_font_size_override("font_size", 20)
+	preview_panel.add_child(title)
+
+	# Player Visual (static position)
+	preview_player = ColorRect.new()
+	preview_player.name = "PreviewPlayer"
+	preview_player.color = Color(0.3, 0.8, 1.0)  # Blue for player
+	preview_player.custom_minimum_size = Vector2(20, 40)
+	preview_player.position = Vector2(170, 130)
+	preview_panel.add_child(preview_player)
+
+	# Punch Hitbox Visual
+	preview_hitbox = ColorRect.new()
+	preview_hitbox.name = "PreviewHitbox"
+	preview_hitbox.color = Color(0.3, 1.0, 0.3, 0.3)  # Semi-transparent green
+	preview_hitbox.custom_minimum_size = Vector2(64, 64)  # Default 32px radius = 64px diameter
+	preview_hitbox.position = Vector2(180 - 32, 150 - 32)  # Centered on player
+	preview_panel.add_child(preview_hitbox)
+
+	# Before Stats Label
+	preview_before_label = Label.new()
+	preview_before_label.name = "BeforeLabel"
+	preview_before_label.position = Vector2(20, 220)
+	preview_before_label.custom_minimum_size = Vector2(150, 150)
+	preview_before_label.add_theme_font_size_override("font_size", 14)
+	preview_before_label.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0))
+	preview_panel.add_child(preview_before_label)
+
+	# After Stats Label
+	preview_after_label = Label.new()
+	preview_after_label.name = "AfterLabel"
+	preview_after_label.position = Vector2(190, 220)
+	preview_after_label.custom_minimum_size = Vector2(150, 150)
+	preview_after_label.add_theme_font_size_override("font_size", 14)
+	preview_after_label.add_theme_color_override("font_color", Color(0.3, 1.0, 0.3))  # Green for after
+	preview_panel.add_child(preview_after_label)
+
+	print("[Shop] Preview Panel created")
+
+func show_item_preview(item_id: String):
+	"""Zeigt Item-Preview mit Before/After Stats"""
+	# Only show preview for items with visual effects
+	if not _has_visual_preview(item_id):
+		preview_panel.visible = false
+		return
+
+	# Calculate stats
+	var before_stats = _calculate_current_stats()
+	var after_stats = _calculate_stats_with_item(item_id)
+
+	# Update visual preview
+	_update_preview_visuals(after_stats)
+
+	# Update stat labels
+	preview_before_label.text = _format_stats_text("CURRENT", before_stats)
+	preview_after_label.text = _format_stats_text("WITH ITEM", after_stats)
+
+	# Show panel
+	preview_panel.visible = true
+
+	print("[Shop] Showing preview for: %s" % item_id)
+
+func _has_visual_preview(item_id: String) -> bool:
+	"""Check if item has a visual preview"""
+	return item_id in ["shockwave_fist", "iron_knuckles", "fire_shield", "greed_magnet"]
+
+func _calculate_current_stats() -> Dictionary:
+	"""Calculate current player stats based on owned items"""
+	var radius = 32.0
+	var knockback = false
+	var shield = 0
+	var magnet = 0.0
+
+	# Check all owned items
+	for item_id in Global.items:
+		var item = Global.items[item_id]
+		if not item.owned:
+			continue
+
+		match item_id:
+			"shockwave_fist":
+				radius = 32.0 * 2.0  # Doubles radius
+			"iron_knuckles":
+				knockback = true
+			"fire_shield":
+				shield = 1  # 1 projectile negation per round
+			"greed_magnet":
+				magnet = 200.0
+
+	return {
+		"punch_radius": radius,
+		"has_knockback": knockback,
+		"shield_charges": shield,
+		"magnet_radius": magnet,
+	}
+
+func _calculate_stats_with_item(item_id: String) -> Dictionary:
+	"""Calculate stats if item was owned"""
+	var stats = _calculate_current_stats()
+
+	match item_id:
+		"shockwave_fist":
+			stats.punch_radius = 32.0 * 2.0  # Doubles from 32 to 64
+		"iron_knuckles":
+			stats.has_knockback = true
+		"fire_shield":
+			stats.shield_charges = 1
+		"greed_magnet":
+			stats.magnet_radius = 200.0
+
+	return stats
+
+func _update_preview_visuals(stats: Dictionary):
+	"""Update preview visual elements"""
+	# Update hitbox size based on punch radius
+	var radius = stats.punch_radius
+	var diameter = radius * 2
+
+	preview_hitbox.custom_minimum_size = Vector2(diameter, diameter)
+	preview_hitbox.position = Vector2(180 - radius, 150 - radius)
+
+	# Change color if knockback
+	if stats.has_knockback:
+		preview_hitbox.color = Color(1.0, 0.5, 0.3, 0.3)  # Orange for knockback
+	else:
+		preview_hitbox.color = Color(0.3, 1.0, 0.3, 0.3)  # Green default
+
+func _format_stats_text(title: String, stats: Dictionary) -> String:
+	"""Format stats into readable text"""
+	var text = "%s:\n\n" % title
+	text += "Punch Radius:\n%.0fpx\n\n" % stats.punch_radius
+
+	if stats.has_knockback:
+		text += "Knockback: ✓\n"
+	else:
+		text += "Knockback: ✗\n"
+
+	if stats.shield_charges > 0:
+		text += "Shield: %d\n" % stats.shield_charges
+	else:
+		text += "Shield: ✗\n"
+
+	if stats.magnet_radius > 0:
+		text += "Magnet: %.0fpx" % stats.magnet_radius
+	else:
+		text += "Magnet: ✗"
+
+	return text
+
+# ============================================================================
+# TOOLTIP (C47)
+# ============================================================================
+
+func create_tooltip():
+	"""Erstellt Hover-Tooltip für Items"""
+	# Main Panel
+	tooltip = Panel.new()
+	tooltip.name = "Tooltip"
+	tooltip.visible = false
+	tooltip.custom_minimum_size = Vector2(250, 140)
+	tooltip.z_index = 100  # Always on top
+	add_child(tooltip)
+
+	# Title
+	tooltip_title = Label.new()
+	tooltip_title.name = "TooltipTitle"
+	tooltip_title.position = Vector2(10, 10)
+	tooltip_title.add_theme_font_size_override("font_size", 18)
+	tooltip_title.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))  # Gold
+	tooltip.add_child(tooltip_title)
+
+	# Description
+	tooltip_desc = Label.new()
+	tooltip_desc.name = "TooltipDesc"
+	tooltip_desc.position = Vector2(10, 40)
+	tooltip_desc.custom_minimum_size = Vector2(230, 60)
+	tooltip_desc.add_theme_font_size_override("font_size", 12)
+	tooltip_desc.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	tooltip.add_child(tooltip_desc)
+
+	# Cost
+	tooltip_cost = Label.new()
+	tooltip_cost.name = "TooltipCost"
+	tooltip_cost.position = Vector2(10, 110)
+	tooltip_cost.add_theme_font_size_override("font_size", 14)
+	tooltip.add_child(tooltip_cost)
+
+	print("[Shop] Tooltip created")
+
+func _on_item_hover(item_id: String):
+	"""Item Button hover - zeige Tooltip"""
+	var item_data = SaveSystem.ITEMS.get(item_id)
+	if not item_data:
+		return
+
+	tooltip_title.text = item_data.name
+	tooltip_desc.text = item_data.description
+
+	var is_owned = Global.is_item_owned(item_id)
+
+	if is_owned:
+		tooltip_cost.text = "✅ OWNED"
+		tooltip_cost.modulate = Color(0.5, 1.0, 0.5)
+	else:
+		tooltip_cost.text = "💰 %d coins" % item_data.cost
+		var can_afford = Global.coins >= item_data.cost
+		tooltip_cost.modulate = Color(0.3, 1.0, 0.3) if can_afford else Color(1.0, 0.3, 0.3)
+
+	# Position tooltip at mouse cursor
+	tooltip.position = get_viewport().get_mouse_position() + Vector2(10, 10)
+	tooltip.visible = true
+
+func _on_item_hover_end():
+	"""Item hover ended - hide tooltip"""
+	tooltip.visible = false
+
+func _process(delta: float):
+	"""Update tooltip position to follow mouse"""
+	if tooltip.visible:
+		tooltip.position = get_viewport().get_mouse_position() + Vector2(10, 10)
+
 func show_purchase_confirmation(item_id: String):
 	"""Zeigt Purchase-Confirmation-Dialog"""
 	var item_data = SaveSystem.ITEMS.get(item_id)
@@ -390,11 +757,16 @@ func show_purchase_confirmation(item_id: String):
 	pending_purchase_item_id = item_id
 
 	# Update Message
-	confirm_message.text = "Purchase '%s' for %d coins?\n\nYou currently have %d coins." % [
+	confirm_message.text = "Purchase '%s' for %d coins?\n\nYou will have %d coins remaining." % [
 		item_data.name,
 		item_data.cost,
-		Global.coins
+		Global.coins - item_data.cost
 	]
+
+	# Dim background (C48)
+	details_panel.modulate.a = 0.5
+	item_grid.modulate.a = 0.5
+	filter_container.modulate.a = 0.5
 
 	# Show Dialog
 	confirm_dialog.visible = true
@@ -405,6 +777,11 @@ func hide_purchase_confirmation():
 	"""Versteckt Purchase-Confirmation-Dialog"""
 	confirm_dialog.visible = false
 	pending_purchase_item_id = ""
+
+	# Restore background (C48)
+	details_panel.modulate.a = 1.0
+	item_grid.modulate.a = 1.0
+	filter_container.modulate.a = 1.0
 
 # ============================================================================
 # COINS DISPLAY
@@ -491,8 +868,8 @@ func purchase_item(item_id: String, item_data: Dictionary):
 	# Add to Owned Items
 	Global.purchase_item(item_id)
 
-	# Save
-	SaveSystem.save_game()
+	# Auto-Save after purchase (C48)
+	Global.trigger_auto_save()
 
 	# Update Buttons
 	update_item_buttons()
