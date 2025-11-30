@@ -127,6 +127,9 @@ func _on_wall_destroyed():
 	if level < 7:
 		Global.unlock_next_level(level)
 
+	# Auto-Save bei Victory
+	Global.trigger_auto_save()
+
 	# End Round
 	end_round()
 
@@ -197,8 +200,8 @@ func end_round():
 	# Deactivate Items
 	Global.deactivate_all_items()
 
-	# Save Game
-	SaveSystem.save_game()
+	# Auto-Save bei Round-Ende
+	Global.trigger_auto_save()
 
 	# Show End Screen
 	show_end_screen()
@@ -260,6 +263,10 @@ func _on_player_hit_enemy(enemy: Enemy):
 	"""Player hat Enemy getroffen (One-Hit-KO)"""
 	# Track Kill
 	enemies_killed_this_round += 1
+
+	# Auto-Save alle 10 Kills
+	if enemies_killed_this_round % 10 == 0:
+		Global.trigger_auto_save()
 
 	# Screenshake basierend auf Enemy-Typ
 	match enemy.enemy_type:

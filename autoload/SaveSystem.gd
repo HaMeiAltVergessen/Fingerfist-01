@@ -7,6 +7,15 @@ extends Node
 
 const SAVE_PATH = "user://fingerfist_save.cfg"
 const BACKUP_PATH = "user://fingerfist_save_backup.cfg"
+const AUTO_SAVE_DELAY = 2.0  # Seconds between auto-saves
+
+# ============================================================================
+# AUTO-SAVE STATE
+# ============================================================================
+
+var save_timer: Timer
+var pending_save: bool = false
+var is_saving: bool = false
 
 # ============================================================================
 # ITEM DEFINITIONS
@@ -68,14 +77,68 @@ const ITEMS = {
 # ============================================================================
 
 func _ready():
+	# Auto-Save Timer
+	save_timer = Timer.new()
+	save_timer.wait_time = AUTO_SAVE_DELAY
+	save_timer.one_shot = true
+	save_timer.timeout.connect(_perform_auto_save)
+	add_child(save_timer)
+
 	# Lade gespeicherte Daten beim Start
 	load_game()
+
+	print("[SaveSystem] Ready with Auto-Save")
+
+# ============================================================================
+# AUTO-SAVE
+# ============================================================================
+
+func request_auto_save():
+	"""Fordert Auto-Save an (debounced)
+
+	Verhindert zu häufiges Speichern durch Timer.
+	Sammelt mehrere Save-Requests in einem Save.
+	"""
+	if is_saving:
+		pending_save = true
+		return
+
+	# Restart Timer (debounce)
+	save_timer.start()
+	pending_save = true
+
+func _perform_auto_save():
+	"""Führt tatsächlichen Auto-Save aus"""
+	if not pending_save:
+		return
+
+	pending_save = false
+	save_game(true)  # Auto-Save flag
+
+# ============================================================================
+# SIGNALS
+# ============================================================================
+
+signal saved(is_auto: bool)
+signal loaded
 
 # ============================================================================
 # SAVE GAME
 # ============================================================================
 
-func save_game() -> bool:
+func save_game(is_auto: bool = false) -> bool:
+	"""Speichert kompletten Spielstand
+
+	Args:
+		is_auto: True wenn Auto-Save, False wenn manuell
+	"""
+	if is_saving:
+		print("[SaveSystem] Save already in progress")
+		return false
+
+	is_saving = true
+	var start_time = Time.get_ticks_msec()
+
 	var config = ConfigFile.new()
 
 	# ========== GAME SECTION ==========
@@ -106,6 +169,11 @@ func save_game() -> bool:
 	config.set_value("settings", "screenshake_enabled", Global.screenshake_enabled)
 	config.set_value("settings", "pixel_perfect", Global.pixel_perfect)
 
+	# ========== METADATA SECTION ==========
+	config.set_value("meta", "save_version", "1.0")
+	config.set_value("meta", "save_time", Time.get_datetime_string_from_system())
+	config.set_value("meta", "is_auto_save", is_auto)
+
 	# ========== BACKUP ==========
 	# Erstelle Backup bevor wir überschreiben
 	if FileAccess.file_exists(SAVE_PATH):
@@ -115,11 +183,19 @@ func save_game() -> bool:
 
 	# ========== SAVE TO DISK ==========
 	var error = config.save(SAVE_PATH)
+
+	var duration = Time.get_ticks_msec() - start_time
+	is_saving = false
+
 	if error != OK:
 		push_error("Failed to save game: " + str(error))
 		return false
 
-	print("[SaveSystem] Game saved successfully")
+	var save_type = "Auto-Save" if is_auto else "Manual Save"
+	print("[SaveSystem] %s complete (%d ms)" % [save_type, duration])
+
+	# Emit Signal für UI-Feedback
+	saved.emit(is_auto)
 	return true
 
 # ============================================================================
@@ -173,6 +249,9 @@ func load_game() -> bool:
 	Global.pixel_perfect = config.get_value("settings", "pixel_perfect", false)
 
 	print("[SaveSystem] Game loaded successfully")
+
+	# Emit loaded signal
+	loaded.emit()
 	return true
 
 # ============================================================================
