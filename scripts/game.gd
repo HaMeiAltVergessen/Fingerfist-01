@@ -14,6 +14,9 @@ extends Node2D
 @onready var end_screen: CanvasLayer = $EndScreen
 @onready var pause_screen: CanvasLayer = $PauseScreen
 
+# Dynamic UI
+var save_indicator: CanvasLayer
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -33,6 +36,12 @@ var is_new_highscore: bool = false
 # ============================================================================
 
 func _ready():
+	# Create Save Indicator
+	var indicator_script = preload("res://scripts/SaveIndicator.gd")
+	save_indicator = CanvasLayer.new()
+	save_indicator.set_script(indicator_script)
+	add_child(save_indicator)
+
 	# Hide Screens initially
 	end_screen.visible = false
 	pause_screen.visible = false
