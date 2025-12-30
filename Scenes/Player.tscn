@@ -1,14 +1,14 @@
 [gd_scene load_steps=13 format=3 uid="uid://4rxoeb3wyu0h"]
 
 [ext_resource type="Script" path="res://scripts/player.gd" id="1_player"]
-[ext_resource type="Texture2D" uid="uid://placeholder" path="res://assets/sprites/player/default/fist_frame_00.png" id="2_frame00"]
-[ext_resource type="Texture2D" uid="uid://placeholder" path="res://assets/sprites/player/default/fist_frame_01.png" id="3_frame01"]
-[ext_resource type="Texture2D" uid="uid://placeholder" path="res://assets/sprites/player/default/fist_frame_02.png" id="4_frame02"]
-[ext_resource type="Texture2D" uid="uid://placeholder" path="res://assets/sprites/player/default/fist_frame_03.png" id="5_frame03"]
-[ext_resource type="Texture2D" uid="uid://placeholder" path="res://assets/sprites/player/default/fist_frame_04.png" id="6_frame04"]
-[ext_resource type="Texture2D" uid="uid://placeholder" path="res://assets/sprites/player/default/fist_frame_05.png" id="7_frame05"]
-[ext_resource type="Texture2D" uid="uid://placeholder" path="res://assets/sprites/player/default/fist_frame_06.png" id="8_frame06"]
-[ext_resource type="Texture2D" uid="uid://placeholder" path="res://assets/sprites/player/default/fist_frame_07.png" id="9_frame07"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/default/fist_frame_00.png" id="2_frame00"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/default/fist_frame_01.png" id="3_frame01"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/default/fist_frame_02.png" id="4_frame02"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/default/fist_frame_03.png" id="5_frame03"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/default/fist_frame_04.png" id="6_frame04"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/default/fist_frame_05.png" id="7_frame05"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/default/fist_frame_06.png" id="8_frame06"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player/default/fist_frame_07.png" id="9_frame07"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_hitbox"]
 radius = 32.0
