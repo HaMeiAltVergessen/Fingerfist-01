@@ -116,12 +116,26 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -60.0
-offset_top = -10.0
+offset_top = -30.0
 offset_right = 60.0
-offset_bottom = 20.0
+offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Continue"
+
+[node name="SaveButton" type="Button" parent="PauseScreen/PausePanel"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -60.0
+offset_top = 10.0
+offset_right = 60.0
+offset_bottom = 40.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "💾 Save"
 
 [node name="RestartButton" type="Button" parent="PauseScreen/PausePanel"]
 anchors_preset = 8
@@ -130,9 +144,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -60.0
-offset_top = 30.0
+offset_top = 50.0
 offset_right = 60.0
-offset_bottom = 60.0
+offset_bottom = 80.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Restart"
@@ -144,9 +158,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -60.0
-offset_top = 70.0
+offset_top = 90.0
 offset_right = 60.0
-offset_bottom = 100.0
+offset_bottom = 120.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Main Menu"
@@ -155,5 +169,6 @@ text = "Main Menu"
 [connection signal="pressed" from="EndScreen/EndScreenPanel/RetryButton" to="." method="_on_retry_button_pressed"]
 [connection signal="pressed" from="EndScreen/EndScreenPanel/MenuButton" to="." method="_on_menu_button_pressed"]
 [connection signal="pressed" from="PauseScreen/PausePanel/ContinueButton" to="." method="_on_continue_button_pressed"]
+[connection signal="pressed" from="PauseScreen/PausePanel/SaveButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="PauseScreen/PausePanel/RestartButton" to="." method="_on_restart_button_pressed"]
 [connection signal="pressed" from="PauseScreen/PausePanel/MenuButton2" to="." method="_on_pause_menu_button_pressed"]

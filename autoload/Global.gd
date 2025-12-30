@@ -301,3 +301,7 @@ func save_game():
 
 func load_game():
 	SaveSystem.load_game()
+
+func trigger_auto_save():
+	"""Triggert Auto-Save (debounced)"""
+	SaveSystem.request_auto_save()

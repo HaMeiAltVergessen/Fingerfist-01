@@ -14,6 +14,9 @@ extends Node2D
 @onready var end_screen: CanvasLayer = $EndScreen
 @onready var pause_screen: CanvasLayer = $PauseScreen
 
+# Dynamic UI
+var save_indicator: CanvasLayer
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -33,6 +36,12 @@ var is_new_highscore: bool = false
 # ============================================================================
 
 func _ready():
+	# Create Save Indicator
+	var indicator_script = preload("res://scripts/SaveIndicator.gd")
+	save_indicator = CanvasLayer.new()
+	save_indicator.set_script(indicator_script)
+	add_child(save_indicator)
+
 	# Hide Screens initially
 	end_screen.visible = false
 	pause_screen.visible = false
@@ -127,6 +136,9 @@ func _on_wall_destroyed():
 	if level < 7:
 		Global.unlock_next_level(level)
 
+	# Auto-Save bei Victory
+	Global.trigger_auto_save()
+
 	# End Round
 	end_round()
 
@@ -197,8 +209,8 @@ func end_round():
 	# Deactivate Items
 	Global.deactivate_all_items()
 
-	# Save Game
-	SaveSystem.save_game()
+	# Auto-Save bei Round-Ende
+	Global.trigger_auto_save()
 
 	# Show End Screen
 	show_end_screen()
@@ -260,6 +272,10 @@ func _on_player_hit_enemy(enemy: Enemy):
 	"""Player hat Enemy getroffen (One-Hit-KO)"""
 	# Track Kill
 	enemies_killed_this_round += 1
+
+	# Auto-Save alle 10 Kills
+	if enemies_killed_this_round % 10 == 0:
+		Global.trigger_auto_save()
 
 	# Screenshake basierend auf Enemy-Typ
 	match enemy.enemy_type:
@@ -338,6 +354,11 @@ func _on_menu_button_pressed():
 func _on_continue_button_pressed():
 	"""Continue Button im PauseScreen"""
 	toggle_pause()
+
+func _on_save_button_pressed():
+	"""Save Button im PauseScreen - Manual Save"""
+	SaveSystem.save_game(false)  # Manual save
+	print("[GameScene] Manual save triggered from pause menu")
 
 func _on_restart_button_pressed():
 	"""Restart Button im PauseScreen"""
