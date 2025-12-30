@@ -204,9 +204,9 @@ func test_slot_info():
 
 func run_all_tests():
 	"""Run all tests sequentially"""
-	print("\n" + "="*60)
+	print("\n" + "============================================================")
 	print("RUNNING ALL SAVE SYSTEM TESTS")
-	print("="*60)
+	print("============================================================")
 
 	await test_auto_save_triggers()
 	test_slot_switching()
@@ -214,6 +214,6 @@ func run_all_tests():
 	test_backup_restore()
 	test_slot_info()
 
-	print("\n" + "="*60)
+	print("\n" + "============================================================")
 	print("ALL TESTS COMPLETE")
-	print("="*60)
+	print("============================================================")

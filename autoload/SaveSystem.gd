@@ -320,7 +320,7 @@ func restore_backup() -> bool:
 func _reset_global_to_defaults():
 	"""Setzt alle Global-Variablen auf Default zurück"""
 	Global.total_highscore = 0
-	Global.unlocked_levels = 1
+	Global.unlocked_levels = [1]
 	Global.current_round_score = 0
 	Global.coins = 0
 	Global.highscores = []
