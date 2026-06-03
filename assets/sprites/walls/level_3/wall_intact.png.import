@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dh2q2xc0dk3mn"
-valid=false
+path="res://.godot/imported/wall_intact.png-5065b6913683fa87bff67e4300946298.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/walls/level_3/wall_intact.png"
+dest_files=["res://.godot/imported/wall_intact.png-5065b6913683fa87bff67e4300946298.ctex"]
 
 [params]
 

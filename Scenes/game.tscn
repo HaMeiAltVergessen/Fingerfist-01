@@ -1,22 +1,22 @@
 [gd_scene load_steps=10 format=3 uid="uid://q6qlqtcsygqy"]
 
-[ext_resource type="Script" path="res://scripts/game.gd" id="1_game"]
-[ext_resource type="PackedScene"  path="res://Scenes/Player.tscn" id="2_player"]
-[ext_resource type="PackedScene"  path="res://Scenes/EnemySpawner.tscn" id="3_spawner"]
-[ext_resource type="PackedScene"  path="res://Scenes/CoinSpawner.tscn" id="4_coin_spawner"]
-[ext_resource type="Script" path="res://scripts/GameCamera.gd" id="4_camera"]
-[ext_resource type="PackedScene"  path="res://Scenes/HUD.tscn" id="5_hud"]
-[ext_resource type="Texture2D"  path="res://assets/sprites/backgrounds/level_1_bg.png" id="6_bg"]
-[ext_resource type="Script" path="res://scripts/Wall.gd" id="7_wall_script"]
-[ext_resource type="Texture2D"  path="res://assets/sprites/walls/level_1/wall_intact.png" id="8_wall_tex"]
+[ext_resource type="Script" uid="uid://dg2yenqilvjgt" path="res://scripts/game.gd" id="1_game"]
+[ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://ck0hp12ep61o7" path="res://Scenes/EnemySpawner.tscn" id="3_spawner"]
+[ext_resource type="Script" uid="uid://bpj2p6hd82ytd" path="res://scripts/GameCamera.gd" id="4_camera"]
+[ext_resource type="PackedScene" path="res://Scenes/CoinSpawner.tscn" id="4_coin_spawner"]
+[ext_resource type="PackedScene" path="res://Scenes/HUD.tscn" id="5_hud"]
+[ext_resource type="Texture2D" uid="uid://bdoyjdxtrkqdr" path="res://assets/sprites/backgrounds/level_1_bg.png" id="6_bg"]
+[ext_resource type="Script" uid="uid://hu2gxwadic7y" path="res://scripts/Wall.gd" id="7_wall_script"]
+[ext_resource type="Texture2D" uid="uid://cqfou658lw7vs" path="res://assets/sprites/walls/level_1/wall_intact.png" id="8_wall_tex"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_game")
 
 [node name="Background" type="Sprite2D" parent="."]
+z_index = -10
 position = Vector2(640, 360)
 texture = ExtResource("6_bg")
-z_index = -10
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
 
@@ -28,7 +28,6 @@ z_index = -10
 
 [node name="GameCamera" type="Camera2D" parent="." groups=["camera"]]
 position = Vector2(640, 360)
-enabled = true
 script = ExtResource("4_camera")
 
 [node name="HUDLayer" parent="." instance=ExtResource("5_hud")]
@@ -51,6 +50,7 @@ offset_right = -400.0
 offset_bottom = -200.0
 
 [node name="RoundScoreLabel" type="Label" parent="EndScreen/EndScreenPanel"]
+layout_mode = 0
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 200.0
@@ -58,6 +58,7 @@ offset_bottom = 50.0
 text = "Round Score: 0"
 
 [node name="ShopButton" type="Button" parent="EndScreen/EndScreenPanel"]
+layout_mode = 0
 offset_left = 20.0
 offset_top = 280.0
 offset_right = 120.0
@@ -65,6 +66,7 @@ offset_bottom = 310.0
 text = "Shop"
 
 [node name="RetryButton" type="Button" parent="EndScreen/EndScreenPanel"]
+layout_mode = 0
 offset_left = 140.0
 offset_top = 280.0
 offset_right = 240.0
@@ -72,6 +74,7 @@ offset_bottom = 310.0
 text = "Retry"
 
 [node name="MenuButton" type="Button" parent="EndScreen/EndScreenPanel"]
+layout_mode = 0
 offset_left = 260.0
 offset_top = 280.0
 offset_right = 360.0
@@ -95,7 +98,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="PauseLabel" type="Label" parent="PauseScreen/PausePanel"]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -110,7 +113,7 @@ text = "PAUSED"
 horizontal_alignment = 1
 
 [node name="ContinueButton" type="Button" parent="PauseScreen/PausePanel"]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -118,13 +121,12 @@ anchor_bottom = 0.5
 offset_left = -60.0
 offset_top = -30.0
 offset_right = 60.0
-offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 2
 text = "Continue"
 
 [node name="SaveButton" type="Button" parent="PauseScreen/PausePanel"]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -138,7 +140,7 @@ grow_vertical = 2
 text = "💾 Save"
 
 [node name="RestartButton" type="Button" parent="PauseScreen/PausePanel"]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -152,7 +154,7 @@ grow_vertical = 2
 text = "Restart"
 
 [node name="MenuButton2" type="Button" parent="PauseScreen/PausePanel"]
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5

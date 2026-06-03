@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://rpju7uw3g6ur"
-valid=false
+path="res://.godot/imported/insect_frame_01.png-71ef9fad21cee10b8538ecbd58c3688e.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/enemies/insect/green/insect_frame_01.png"
+dest_files=["res://.godot/imported/insect_frame_01.png-71ef9fad21cee10b8538ecbd58c3688e.ctex"]
 
 [params]
 

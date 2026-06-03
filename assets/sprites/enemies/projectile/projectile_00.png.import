@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://dn4x14r7rbeer"
-valid=false
+path="res://.godot/imported/projectile_00.png-9892e7788b4d150bf7eefe72fdf67757.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/enemies/projectile/projectile_00.png"
+dest_files=["res://.godot/imported/projectile_00.png-9892e7788b4d150bf7eefe72fdf67757.ctex"]
 
 [params]
 

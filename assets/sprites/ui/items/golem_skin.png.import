@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://0k7idiqea051"
-valid=false
+path="res://.godot/imported/golem_skin.png-2b0003d41104d8e009cfd4b696549cd4.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/ui/items/golem_skin.png"
+dest_files=["res://.godot/imported/golem_skin.png-2b0003d41104d8e009cfd4b696549cd4.ctex"]
 
 [params]
 

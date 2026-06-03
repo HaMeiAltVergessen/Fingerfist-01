@@ -122,13 +122,13 @@ func create_settings_panel():
 
 func load_settings():
 	"""Lädt aktuelle Settings"""
-	# SFX Volume
-	var sfx_volume = Audio.get_sfx_volume()
+	# SFX Volume (Audio-API ist 0.0–1.0, Slider 0–100)
+	var sfx_volume = Audio.get_sfx_volume() * 100.0
 	sfx_volume_slider.value = sfx_volume
 	sfx_volume_label.text = "SFX Volume: %d%%" % int(sfx_volume)
 
-	# Music Volume
-	var music_volume = Audio.get_music_volume()
+	# Music Volume (Audio-API ist 0.0–1.0, Slider 0–100)
+	var music_volume = Audio.get_music_volume() * 100.0
 	music_volume_slider.value = music_volume
 	music_volume_label.text = "Music Volume: %d%%" % int(music_volume)
 
@@ -148,14 +148,14 @@ func save_settings():
 # ============================================================================
 
 func _on_sfx_volume_changed(value: float):
-	"""SFX Volume Slider verändert"""
-	Audio.set_sfx_volume(value)
+	"""SFX Volume Slider verändert (Slider 0–100 -> Audio-API 0.0–1.0)"""
+	Audio.set_sfx_volume(value / 100.0)
 	sfx_volume_label.text = "SFX Volume: %d%%" % int(value)
 	save_settings()
 
 func _on_music_volume_changed(value: float):
-	"""Music Volume Slider verändert"""
-	Audio.set_music_volume(value)
+	"""Music Volume Slider verändert (Slider 0–100 -> Audio-API 0.0–1.0)"""
+	Audio.set_music_volume(value / 100.0)
 	music_volume_label.text = "Music Volume: %d%%" % int(value)
 	save_settings()
 
@@ -169,14 +169,14 @@ func _on_fullscreen_toggled(toggled_on: bool):
 
 func _on_reset_button_pressed():
 	"""Reset Button geklickt"""
-	# Reset to defaults
+	# Reset to defaults (siehe SaveSystem: SFX 1.0, Music 0.7)
 	sfx_volume_slider.value = 100
-	music_volume_slider.value = 100
+	music_volume_slider.value = 70
 	fullscreen_checkbox.button_pressed = false
 
-	# Apply
-	Audio.set_sfx_volume(100)
-	Audio.set_music_volume(100)
+	# Apply (Audio-API ist 0.0–1.0)
+	Audio.set_sfx_volume(1.0)
+	Audio.set_music_volume(0.7)
 	DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
 
 	save_settings()

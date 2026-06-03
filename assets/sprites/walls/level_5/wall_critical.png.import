@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://buurp2qdvv41y"
-valid=false
+path="res://.godot/imported/wall_critical.png-9436c9bb658ee71920de890f843f98bb.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/walls/level_5/wall_critical.png"
+dest_files=["res://.godot/imported/wall_critical.png-9436c9bb658ee71920de890f843f98bb.ctex"]
 
 [params]
 

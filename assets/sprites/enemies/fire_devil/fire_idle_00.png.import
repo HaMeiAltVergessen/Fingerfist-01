@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://b2mgy21ana56a"
-valid=false
+path="res://.godot/imported/fire_idle_00.png-295d715404b4533f44eecceef72d7c51.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/enemies/fire_devil/fire_idle_00.png"
+dest_files=["res://.godot/imported/fire_idle_00.png-295d715404b4533f44eecceef72d7c51.ctex"]
 
 [params]
 

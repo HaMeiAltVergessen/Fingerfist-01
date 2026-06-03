@@ -276,18 +276,28 @@ func _on_hurtbox_area_entered(area: Area2D):
 	if is_invulnerable:
 		return
 
-	# Prüfe ob Fire Shield verfügbar ist
-	if fire_shield_charges > 0:
-		# Negiere Projektil-Schaden
-		if area.get_parent() and area.get_parent().is_in_group("projectiles"):
-			fire_shield_charges -= 1
-			Audio.play_sfx("fire_shield.ogg")
-			# TODO: Spawn Fire Explosion Particles (Commit 59)
-			area.get_parent().queue_free()
-			return
+	# Projektil ist je nach Szenenaufbau die Area selbst oder deren Parent
+	var projectile: Node = null
+	if area.is_in_group("projectiles"):
+		projectile = area
+	elif area.get_parent() and area.get_parent().is_in_group("projectiles"):
+		projectile = area.get_parent()
+
+	# Fire Shield negiert Projektil-Schaden
+	if projectile and fire_shield_charges > 0:
+		fire_shield_charges -= 1
+		Audio.play_sfx("fire_shield.ogg")
+		# TODO: Spawn Fire Explosion Particles (Commit 59)
+		projectile.queue_free()
+		return
 
 	# Normaler Schaden
 	take_damage(1)
+
+	# Projektil wird beim Treffer verbraucht
+	if projectile:
+		Audio.play_sfx("projectile_hit.ogg")
+		projectile.queue_free()
 
 func _on_invulnerability_timeout():
 	"""Invulnerability endet"""
