@@ -51,6 +51,9 @@ var max_regeneration_percent: float = 0.1  # Max 10% of total HP can regenerate
 # ============================================================================
 
 func _ready():
+	# Gruppe, damit Player die Wand ohne harte Referenz findet (Wall-Punch)
+	add_to_group("wall")
+
 	# Create Particle Systems
 	create_particle_systems()
 

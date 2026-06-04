@@ -14,15 +14,15 @@ extends Node2D
 # LEVEL CURVES
 # ============================================================================
 
-# Spawn-Intervalle pro Level (Sekunden zwischen Spawns)
+# Spawn-Intervalle pro Level (Sekunden zwischen Spawns) - halbiert (doppelter Spawn)
 const SPAWN_INTERVALS = {
-	1: 3.0,   # Level 1: Sehr langsam (Tutorial-Pace)
-	2: 2.0,   # Level 2: Langsam
-	3: 1.5,   # Level 3: Mittel
-	4: 1.2,   # Level 4: Schnell
-	5: 1.0,   # Level 5: Sehr schnell
-	6: 0.8,   # Level 6: Extrem schnell
-	7: 0.6,   # Level 7 (Endless): Maximum
+	1: 1.5,   # Level 1: Sehr langsam (Tutorial-Pace)
+	2: 1.0,   # Level 2: Langsam
+	3: 0.75,  # Level 3: Mittel
+	4: 0.6,   # Level 4: Schnell
+	5: 0.5,   # Level 5: Sehr schnell
+	6: 0.4,   # Level 6: Extrem schnell
+	7: 0.3,   # Level 7 (Endless): Maximum
 }
 
 # Enemy-Type-Verteilung pro Level (Gewichte)
@@ -37,15 +37,15 @@ const TYPE_WEIGHTS = {
 	7: { Enemy.Type.INSECT: 20, Enemy.Type.VASE_MONSTER: 40, Enemy.Type.FIRE_DEVIL: 40 },
 }
 
-# Maximale gleichzeitige Enemies pro Level
+# Maximale gleichzeitige Enemies pro Level - verdoppelt (doppelter Spawn)
 const MAX_ENEMIES = {
-	1: 3,
-	2: 5,
-	3: 7,
-	4: 10,
-	5: 12,
-	6: 15,
-	7: 20,  # Endless Mode
+	1: 6,
+	2: 10,
+	3: 14,
+	4: 20,
+	5: 24,
+	6: 30,
+	7: 40,  # Endless Mode
 }
 
 # ============================================================================

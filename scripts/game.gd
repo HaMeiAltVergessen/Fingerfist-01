@@ -25,6 +25,12 @@ var is_round_active: bool = false
 var is_paused: bool = false
 var total_highscore_before_round: int = 0
 
+# Letzter verarbeiteter Rundenscore - für inkrementellen Wall-Schaden (Delta pro Score-Tick)
+var _last_round_score: int = 0
+
+# Rundenscore, gesichert vor Global.end_round() (das current_round_score nullt) - für EndScreen
+var _final_round_score: int = 0
+
 # Rundentimer (Wave-Dauer). Endless (Level 7) hat keinen Timer.
 const ROUND_DURATION: float = 45.0
 var round_time_left: float = 0.0
@@ -140,6 +146,10 @@ func _on_wall_destroyed():
 	if level < 7:
 		Global.unlock_next_level(level)
 
+	# Wall-HP für dieses Level zurücksetzen, damit es erneut spielbar ist
+	# (sonst startet ein Replay mit gespeicherten 0 HP -> sofort wieder zerstört)
+	Global.reset_wall_hp(level)
+
 	# Auto-Save bei Victory
 	Global.trigger_auto_save()
 
@@ -164,6 +174,7 @@ func start_round():
 
 	# Reset Round Score
 	Global.reset_round_score()
+	_last_round_score = 0
 
 	# Speichere Total Highscore vor Runde (für Wand-Schaden)
 	total_highscore_before_round = Global.total_highscore
@@ -213,6 +224,9 @@ func end_round():
 	enemy_spawner.clear_all_enemies()
 	coin_spawner.clear_all_coins()
 
+	# Rundenscore sichern, bevor Global.end_round() ihn zurücksetzt (für EndScreen)
+	_final_round_score = Global.current_round_score
+
 	# Update Global Stats
 	Global.end_round()
 
@@ -235,7 +249,7 @@ func show_end_screen():
 	var victory = (wall and not wall.visible)
 
 	var stats = {
-		"round_score": Global.current_round_score,
+		"round_score": _final_round_score,
 		"total_score": Global.total_highscore,
 		"coins_earned": coins_earned,
 		"highest_combo": player.highest_combo,
@@ -332,23 +346,19 @@ func _on_player_took_damage(hp: int):
 # ============================================================================
 
 func _on_score_changed(new_score: int):
-	"""Score hat sich geändert - Damage Wall"""
+	"""Score hat sich geändert - Wand inkrementell beschädigen.
+
+	Jeder Score-Zuwachs beschädigt die Wand um genau diesen Zuwachs (Delta) - unabhängig
+	von Rundengrenzen. Dadurch sinkt die persistente Wall-HP über mehrere Runden hinweg,
+	statt an den absoluten Rundenscore gekoppelt zu sein."""
 	if Global.selected_level == 7:
 		return  # Endless Mode, keine Wand
 
-	# Score damages wall (every point of score = 1 damage)
-	# Wall tracks its own HP, we just tell it to take damage
-	# Note: This is called on score increase, so we damage by the increment
-	# But since score increases are small (usually 1-10), we just sync HP with score
-	var level = Global.selected_level
-	var max_hp = Global.WALL_HP_PER_LEVEL.get(level, 0)
-	var target_hp = max_hp - Global.current_round_score
+	var delta := new_score - _last_round_score
+	_last_round_score = new_score
 
-	# Damage wall to match target HP
-	var current_wall_hp = wall.current_hp
-	if target_hp < current_wall_hp:
-		var damage = current_wall_hp - target_hp
-		wall.take_damage(damage)
+	if delta > 0:
+		wall.take_damage(delta * Global.wall_damage_multiplier)
 
 # ============================================================================
 # CLEANUP

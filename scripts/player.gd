@@ -32,6 +32,12 @@ var is_punching: bool = false
 # Treffer ist distanzbasiert, unabhängig von der kleinen Kollisions-Hitbox)
 const PUNCH_REACH: float = 72.0
 
+# Sammelreichweite für Coins ab Klickposition (großzügig, da die Coin-Hitbox nur r=12px ist)
+const COIN_COLLECT_REACH: float = 64.0
+
+# Toleranz, um die das Wand-Rechteck für Wall-Punch-Treffer vergrößert wird
+const WALL_PUNCH_REACH: float = 72.0
+
 # Zeitbasierter Cooldown (Echtzeit). Gate für den Punch - NICHT mehr an den
 # Animations-Callback gekoppelt, damit is_punching nie dauerhaft blockiert.
 const ATTACK_COOLDOWN: float = 0.08
@@ -102,15 +108,21 @@ func _ready():
 # ============================================================================
 
 func _input(event: InputEvent):
-	"""Nur Punch-Input (Click/Tap) - zielt auf die Klick-/Touch-Position"""
-	# Mouse Click
-	if event is InputEventMouseButton and event.pressed:
-		perform_punch(get_global_mouse_position())
+	"""Punch- und Coin-Sammel-Input (Click/Tap) - zielt auf die Klick-/Touch-Position.
+	Coin-Sammeln hat Vorrang und unterbricht die Attacke (CLAUDE.md §7)."""
+	# Mouse Click (nur linke Maustaste)
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		var target := get_global_mouse_position()
+		if _try_collect_coins_at(target):
+			return  # Coin-Sammeln unterbricht Attacke
+		perform_punch(target)
 
 	# Touch (Mobile)
 	if event is InputEventScreenTouch and event.pressed:
 		# Touch-Position (Screen) -> Weltkoordinaten
 		var world_pos = get_viewport().get_canvas_transform().affine_inverse() * event.position
+		if _try_collect_coins_at(world_pos):
+			return  # Coin-Sammeln unterbricht Attacke
 		perform_punch(world_pos)
 
 # ============================================================================
@@ -141,18 +153,62 @@ func perform_punch(target: Vector2):
 	Audio.play_sfx("punch_%02d.ogg" % punch_num, 0.1)
 
 	# Treffer SOFORT an der Klickposition auswerten (klick-zielbar)
-	_punch_at(target, PUNCH_REACH * attack_radius_multiplier)
+	var did_hit_enemy := _punch_at(target, PUNCH_REACH * attack_radius_multiplier)
+
+	# Kein Gegner getroffen? Dann prüfen, ob die Wand getroffen wurde (+1 Score)
+	if not did_hit_enemy:
+		_try_punch_wall_at(target)
 
 	print("[Player] PUNCH! @ %s" % target)
 
-func _punch_at(target: Vector2, reach: float):
+func _punch_at(target: Vector2, reach: float) -> bool:
 	"""Tötet jeden lebenden Gegner, dessen Mittelpunkt innerhalb 'reach' der
 	Klickposition liegt. Distanzbasiert (deckt das große Sprite ab) statt
-	abhängig von der kleinen Kollisions-Hitbox."""
+	abhängig von der kleinen Kollisions-Hitbox.
+	Gibt true zurück, wenn mindestens ein Gegner getroffen wurde."""
+	var hit := false
 	for node in get_tree().get_nodes_in_group("enemies"):
 		var enemy := node as Enemy
 		if enemy and enemy.is_alive and enemy.global_position.distance_to(target) <= reach:
 			_hit_enemy(enemy)
+			hit = true
+	return hit
+
+func _try_punch_wall_at(target: Vector2) -> bool:
+	"""Prüft, ob die Klickposition die Wand trifft. Falls ja: +1 Score (chippt die Wand
+	via score_changed + löst deren Flash/Impact-Partikel aus) und leichtes Screenshake-
+	Feedback. Gibt true zurück, wenn die Wand getroffen wurde."""
+	var wall := get_tree().get_first_node_in_group("wall") as Sprite2D
+	if not wall or not wall.visible:
+		return false
+
+	# Klick in das (per Toleranz vergrößerte) Sprite-Rechteck der Wand?
+	var local := wall.to_local(target)
+	if not wall.get_rect().grow(WALL_PUNCH_REACH).has_point(local):
+		return false
+
+	# +1 Score -> beschädigt die Wand um 1 und triggert deren Partikel-Feedback
+	Global.add_score(1)
+
+	# Leichtes Feedback
+	var camera = get_tree().get_first_node_in_group("camera")
+	if camera and camera.has_method("shake_light_hit"):
+		camera.shake_light_hit()
+
+	return true
+
+func _try_collect_coins_at(target: Vector2) -> bool:
+	"""Sammelt jeden noch nicht eingesammelten Coin ein, dessen Mittelpunkt innerhalb
+	COIN_COLLECT_REACH der Klick-/Touch-Position liegt. Distanzbasiert (deckt das kleine
+	Coin-Sprite ab) statt abhängig von der winzigen Kollisionsform.
+	Gibt true zurück, wenn mindestens ein Coin eingesammelt wurde."""
+	var collected := false
+	for node in get_tree().get_nodes_in_group("coins"):
+		var coin := node as Coin
+		if coin and not coin.is_collected and coin.global_position.distance_to(target) <= COIN_COLLECT_REACH:
+			coin.collect()
+			collected = true
+	return collected
 
 func activate_hitbox():
 	"""No-Op - Treffer laufen jetzt über _punch_at() an der Klickposition.
