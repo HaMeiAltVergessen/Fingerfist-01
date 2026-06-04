@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://diwgm1o6tlwyj"
-valid=false
+path="res://.godot/imported/fist_frame_01.png-44227069cb2092589cf6bc0c5d8d2c8f.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/player/shadow/fist_frame_01.png"
+dest_files=["res://.godot/imported/fist_frame_01.png-44227069cb2092589cf6bc0c5d8d2c8f.ctex"]
 
 [params]
 

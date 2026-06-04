@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Fingerfist 01 Punch to Playton"
-run/main_scene="uid://q6qlqtcsygqy"
+run/main_scene="uid://b13fiv2j853o8"
 config/features=PackedStringArray("4.4", "GL Compatibility")
 config/icon="res://icon.svg"
 
@@ -21,10 +21,6 @@ Global="*res://autoload/Global.gd"
 SaveSystem="*res://autoload/SaveSystem.gd"
 Audio="*res://autoload/AudioManager.gd"
 SceneLoader="*res://autoload/SceneLoader.gd"
-
-[audio]
-
-buses/default_bus_layout="res://default_bus_layout.tres"
 
 [display]
 

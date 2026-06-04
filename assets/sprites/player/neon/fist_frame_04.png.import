@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://da6vaby4akvc7"
-valid=false
+path="res://.godot/imported/fist_frame_04.png-7539528b0b6ed4037e78d91d9416a37f.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/player/neon/fist_frame_04.png"
+dest_files=["res://.godot/imported/fist_frame_04.png-7539528b0b6ed4037e78d91d9416a37f.ctex"]
 
 [params]
 

@@ -14,6 +14,9 @@ extends Node2D
 @onready var end_screen: CanvasLayer = $EndScreen
 @onready var pause_screen: CanvasLayer = $PauseScreen
 
+# Dynamic UI
+var save_indicator: CanvasLayer
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -21,6 +24,10 @@ extends Node2D
 var is_round_active: bool = false
 var is_paused: bool = false
 var total_highscore_before_round: int = 0
+
+# Rundentimer (Wave-Dauer). Endless (Level 7) hat keinen Timer.
+const ROUND_DURATION: float = 45.0
+var round_time_left: float = 0.0
 
 # Round Stats Tracking
 var coins_at_round_start: int = 0
@@ -33,6 +40,12 @@ var is_new_highscore: bool = false
 # ============================================================================
 
 func _ready():
+	# Create Save Indicator
+	var indicator_script = preload("res://scripts/SaveIndicator.gd")
+	save_indicator = CanvasLayer.new()
+	save_indicator.set_script(indicator_script)
+	add_child(save_indicator)
+
 	# Hide Screens initially
 	end_screen.visible = false
 	pause_screen.visible = false
@@ -70,8 +83,8 @@ func setup_player():
 	if not player:
 		return
 
-	# FESTE Position (links im Screen)
-	player.position = Vector2(100, 360)
+	# FESTE Position (rechts im Screen - Gegner laufen von links heran)
+	player.position = Vector2(1150, 360)
 
 	# Apply Items (falls gekauft)
 	player.apply_item_effects()
@@ -127,6 +140,9 @@ func _on_wall_destroyed():
 	if level < 7:
 		Global.unlock_next_level(level)
 
+	# Auto-Save bei Victory
+	Global.trigger_auto_save()
+
 	# End Round
 	end_round()
 
@@ -156,6 +172,12 @@ func start_round():
 	coins_at_round_start = Global.coins
 	round_start_time = Time.get_ticks_msec() / 1000.0
 	enemies_killed_this_round = 0
+
+	# Rundentimer starten (nicht im Endless-Modus)
+	if Global.selected_level != 7:
+		round_time_left = ROUND_DURATION
+		if hud and hud.has_method("update_timer"):
+			hud.update_timer(round_time_left)
 
 	# Start Spawners
 	enemy_spawner.start_spawning()
@@ -197,8 +219,8 @@ func end_round():
 	# Deactivate Items
 	Global.deactivate_all_items()
 
-	# Save Game
-	SaveSystem.save_game()
+	# Auto-Save bei Round-Ende
+	Global.trigger_auto_save()
 
 	# Show End Screen
 	show_end_screen()
@@ -225,6 +247,25 @@ func show_end_screen():
 
 	# Show EndScreen with stats
 	end_screen.show_stats(stats)
+
+# ============================================================================
+# ROUND TIMER
+# ============================================================================
+
+func _process(delta: float):
+	"""Rundentimer herunterzählen und Runde bei Ablauf beenden"""
+	if not is_round_active or is_paused or Global.selected_level == 7:
+		return
+
+	round_time_left -= delta
+
+	if hud and hud.has_method("update_timer"):
+		hud.update_timer(round_time_left)
+
+	if round_time_left <= 0.0:
+		round_time_left = 0.0
+		print("[GameScene] Round time up!")
+		end_round()
 
 # ============================================================================
 # PAUSE SYSTEM
@@ -260,6 +301,10 @@ func _on_player_hit_enemy(enemy: Enemy):
 	"""Player hat Enemy getroffen (One-Hit-KO)"""
 	# Track Kill
 	enemies_killed_this_round += 1
+
+	# Auto-Save alle 10 Kills
+	if enemies_killed_this_round % 10 == 0:
+		Global.trigger_auto_save()
 
 	# Screenshake basierend auf Enemy-Typ
 	match enemy.enemy_type:
@@ -338,6 +383,11 @@ func _on_menu_button_pressed():
 func _on_continue_button_pressed():
 	"""Continue Button im PauseScreen"""
 	toggle_pause()
+
+func _on_save_button_pressed():
+	"""Save Button im PauseScreen - Manual Save"""
+	SaveSystem.save_game(false)  # Manual save
+	print("[GameScene] Manual save triggered from pause menu")
 
 func _on_restart_button_pressed():
 	"""Restart Button im PauseScreen"""

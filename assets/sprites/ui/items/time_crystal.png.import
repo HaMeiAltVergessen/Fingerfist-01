@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://7jfjmgeec1oo"
-valid=false
+path="res://.godot/imported/time_crystal.png-cccca47ff9d6dc80c6d000f3c59575be.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/ui/items/time_crystal.png"
+dest_files=["res://.godot/imported/time_crystal.png-cccca47ff9d6dc80c6d000f3c59575be.ctex"]
 
 [params]
 

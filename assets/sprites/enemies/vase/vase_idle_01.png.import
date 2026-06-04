@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d0qadw4hqomng"
-valid=false
+path="res://.godot/imported/vase_idle_01.png-5387ae789a845c08f8c77a9613a65062.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/enemies/vase/vase_idle_01.png"
+dest_files=["res://.godot/imported/vase_idle_01.png-5387ae789a845c08f8c77a9613a65062.ctex"]
 
 [params]
 

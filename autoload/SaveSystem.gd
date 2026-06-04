@@ -5,8 +5,22 @@ extends Node
 # CONSTANTS
 # ============================================================================
 
-const SAVE_PATH = "user://fingerfist_save.cfg"
-const BACKUP_PATH = "user://fingerfist_save_backup.cfg"
+const SAVE_SLOT_COUNT = 3
+const AUTO_SAVE_DELAY = 2.0  # Seconds between auto-saves
+
+# ============================================================================
+# SAVE SLOT TRACKING
+# ============================================================================
+
+var current_slot: int = 0  # Active save slot (0-2)
+
+# ============================================================================
+# AUTO-SAVE STATE
+# ============================================================================
+
+var save_timer: Timer
+var pending_save: bool = false
+var is_saving: bool = false
 
 # ============================================================================
 # ITEM DEFINITIONS
@@ -68,14 +82,68 @@ const ITEMS = {
 # ============================================================================
 
 func _ready():
+	# Auto-Save Timer
+	save_timer = Timer.new()
+	save_timer.wait_time = AUTO_SAVE_DELAY
+	save_timer.one_shot = true
+	save_timer.timeout.connect(_perform_auto_save)
+	add_child(save_timer)
+
 	# Lade gespeicherte Daten beim Start
 	load_game()
+
+	print("[SaveSystem] Ready with Auto-Save")
+
+# ============================================================================
+# AUTO-SAVE
+# ============================================================================
+
+func request_auto_save():
+	"""Fordert Auto-Save an (debounced)
+
+	Verhindert zu häufiges Speichern durch Timer.
+	Sammelt mehrere Save-Requests in einem Save.
+	"""
+	if is_saving:
+		pending_save = true
+		return
+
+	# Restart Timer (debounce)
+	save_timer.start()
+	pending_save = true
+
+func _perform_auto_save():
+	"""Führt tatsächlichen Auto-Save aus"""
+	if not pending_save:
+		return
+
+	pending_save = false
+	save_game(true)  # Auto-Save flag
+
+# ============================================================================
+# SIGNALS
+# ============================================================================
+
+signal saved(is_auto: bool)
+signal loaded
 
 # ============================================================================
 # SAVE GAME
 # ============================================================================
 
-func save_game() -> bool:
+func save_game(is_auto: bool = false) -> bool:
+	"""Speichert kompletten Spielstand (current slot)
+
+	Args:
+		is_auto: True wenn Auto-Save, False wenn manuell
+	"""
+	if is_saving:
+		print("[SaveSystem] Save already in progress")
+		return false
+
+	is_saving = true
+	var start_time = Time.get_ticks_msec()
+
 	var config = ConfigFile.new()
 
 	# ========== GAME SECTION ==========
@@ -106,20 +174,37 @@ func save_game() -> bool:
 	config.set_value("settings", "screenshake_enabled", Global.screenshake_enabled)
 	config.set_value("settings", "pixel_perfect", Global.pixel_perfect)
 
+	# ========== METADATA SECTION ==========
+	config.set_value("meta", "save_version", "1.0")
+	config.set_value("meta", "save_time", Time.get_datetime_string_from_system())
+	config.set_value("meta", "is_auto_save", is_auto)
+	config.set_value("meta", "slot", current_slot)
+
 	# ========== BACKUP ==========
+	var save_path = _get_slot_path(current_slot)
+	var backup_path = _get_backup_path(current_slot)
+
 	# Erstelle Backup bevor wir überschreiben
-	if FileAccess.file_exists(SAVE_PATH):
-		var backup_error = DirAccess.copy_absolute(SAVE_PATH, BACKUP_PATH)
+	if FileAccess.file_exists(save_path):
+		var backup_error = DirAccess.copy_absolute(save_path, backup_path)
 		if backup_error != OK:
 			push_warning("Could not create backup: " + str(backup_error))
 
 	# ========== SAVE TO DISK ==========
-	var error = config.save(SAVE_PATH)
+	var error = config.save(save_path)
+
+	var duration = Time.get_ticks_msec() - start_time
+	is_saving = false
+
 	if error != OK:
 		push_error("Failed to save game: " + str(error))
 		return false
 
-	print("[SaveSystem] Game saved successfully")
+	var save_type = "Auto-Save" if is_auto else "Manual Save"
+	print("[SaveSystem] %s (Slot %d) complete (%d ms)" % [save_type, current_slot, duration])
+
+	# Emit Signal für UI-Feedback
+	saved.emit(is_auto)
 	return true
 
 # ============================================================================
@@ -127,11 +212,14 @@ func save_game() -> bool:
 # ============================================================================
 
 func load_game() -> bool:
+	"""Lädt den aktuellen Save-Slot"""
+	var save_path = _get_slot_path(current_slot)
+
 	var config = ConfigFile.new()
-	var error = config.load(SAVE_PATH)
+	var error = config.load(save_path)
 
 	if error != OK:
-		print("[SaveSystem] No save file found, using defaults")
+		print("[SaveSystem] No save file found for slot %d, using defaults" % current_slot)
 		_initialize_default_items()
 		return false
 
@@ -172,7 +260,10 @@ func load_game() -> bool:
 	Global.screenshake_enabled = config.get_value("settings", "screenshake_enabled", true)
 	Global.pixel_perfect = config.get_value("settings", "pixel_perfect", false)
 
-	print("[SaveSystem] Game loaded successfully")
+	print("[SaveSystem] Slot %d loaded successfully" % current_slot)
+
+	# Emit loaded signal
+	loaded.emit()
 	return true
 
 # ============================================================================
@@ -205,38 +296,31 @@ func _initialize_default_items():
 # ============================================================================
 
 func delete_save() -> bool:
-	"""Löscht den Save-File komplett"""
-	if FileAccess.file_exists(SAVE_PATH):
-		var error = DirAccess.remove_absolute(SAVE_PATH)
-		if error == OK:
-			print("[SaveSystem] Save file deleted")
-			# Reset Global zu Defaults
-			_reset_global_to_defaults()
-			return true
-		else:
-			push_error("Failed to delete save: " + str(error))
-			return false
-	return true  # Kein File = schon gelöscht
+	"""Löscht den aktuellen Save-Slot"""
+	return delete_slot(current_slot)
 
 func restore_backup() -> bool:
-	"""Stellt Backup wieder her"""
-	if FileAccess.file_exists(BACKUP_PATH):
-		var error = DirAccess.copy_absolute(BACKUP_PATH, SAVE_PATH)
+	"""Stellt Backup des aktuellen Slots wieder her"""
+	var save_path = _get_slot_path(current_slot)
+	var backup_path = _get_backup_path(current_slot)
+
+	if FileAccess.file_exists(backup_path):
+		var error = DirAccess.copy_absolute(backup_path, save_path)
 		if error == OK:
-			print("[SaveSystem] Backup restored")
+			print("[SaveSystem] Backup restored for slot %d" % current_slot)
 			load_game()
 			return true
 		else:
 			push_error("Failed to restore backup: " + str(error))
 			return false
 	else:
-		push_warning("No backup file found")
+		push_warning("No backup file found for slot %d" % current_slot)
 		return false
 
 func _reset_global_to_defaults():
 	"""Setzt alle Global-Variablen auf Default zurück"""
 	Global.total_highscore = 0
-	Global.unlocked_levels = 1
+	Global.unlocked_levels = [1]
 	Global.current_round_score = 0
 	Global.coins = 0
 	Global.highscores = []
@@ -254,9 +338,105 @@ func _reset_global_to_defaults():
 	_initialize_default_items()
 
 func save_exists() -> bool:
-	"""Prüft ob ein Save-File existiert"""
-	return FileAccess.file_exists(SAVE_PATH)
+	"""Prüft ob ein Save-File existiert (current slot)"""
+	return FileAccess.file_exists(_get_slot_path(current_slot))
 
 func get_save_path() -> String:
 	"""Gibt den absoluten Pfad zum Save-File zurück (für Debugging)"""
-	return ProjectSettings.globalize_path(SAVE_PATH)
+	return ProjectSettings.globalize_path(_get_slot_path(current_slot))
+
+# ============================================================================
+# SAVE SLOT FUNCTIONS
+# ============================================================================
+
+func _get_slot_path(slot: int) -> String:
+	"""Gibt den Pfad für einen bestimmten Save-Slot zurück"""
+	return "user://fingerfist_save_slot_%d.cfg" % slot
+
+func _get_backup_path(slot: int) -> String:
+	"""Gibt den Backup-Pfad für einen bestimmten Save-Slot zurück"""
+	return "user://fingerfist_save_slot_%d_backup.cfg" % slot
+
+func set_current_slot(slot: int):
+	"""Setzt den aktiven Save-Slot"""
+	if slot < 0 or slot >= SAVE_SLOT_COUNT:
+		push_error("Invalid slot: %d" % slot)
+		return
+
+	current_slot = slot
+	print("[SaveSystem] Active slot set to: %d" % slot)
+
+func get_slot_info(slot: int) -> Dictionary:
+	"""Gibt Informationen über einen Save-Slot zurück
+
+	Returns:
+		{
+			exists: bool,
+			save_time: String,
+			level: int,
+			total_score: int,
+			coins: int
+		}
+	"""
+	var info = {
+		"exists": false,
+		"save_time": "",
+		"level": 1,
+		"total_score": 0,
+		"coins": 0
+	}
+
+	var slot_path = _get_slot_path(slot)
+	if not FileAccess.file_exists(slot_path):
+		return info
+
+	var config = ConfigFile.new()
+	var error = config.load(slot_path)
+	if error != OK:
+		return info
+
+	info.exists = true
+	info.save_time = config.get_value("meta", "save_time", "Unknown")
+	info.level = config.get_value("progression", "selected_level", 1)
+	info.total_score = config.get_value("game", "total_highscore", 0)
+	info.coins = config.get_value("economy", "coins", 0)
+
+	return info
+
+func delete_slot(slot: int) -> bool:
+	"""Löscht einen Save-Slot
+
+	Args:
+		slot: Slot-Index (0-2)
+
+	Returns:
+		true wenn erfolgreich
+	"""
+	if slot < 0 or slot >= SAVE_SLOT_COUNT:
+		push_error("Invalid slot: %d" % slot)
+		return false
+
+	var slot_path = _get_slot_path(slot)
+	if FileAccess.file_exists(slot_path):
+		var error = DirAccess.remove_absolute(slot_path)
+		if error == OK:
+			print("[SaveSystem] Slot %d deleted" % slot)
+
+			# Also delete backup
+			var backup_path = _get_backup_path(slot)
+			if FileAccess.file_exists(backup_path):
+				DirAccess.remove_absolute(backup_path)
+
+			return true
+		else:
+			push_error("Failed to delete slot %d: %s" % [slot, error])
+			return false
+
+	return true  # Already deleted
+
+func any_save_exists() -> bool:
+	"""Prüft ob irgendein Save-Slot existiert"""
+	for i in range(SAVE_SLOT_COUNT):
+		if FileAccess.file_exists(_get_slot_path(i)):
+			return true
+	return false

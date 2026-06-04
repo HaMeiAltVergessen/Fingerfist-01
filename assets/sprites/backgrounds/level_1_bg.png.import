@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bdoyjdxtrkqdr"
-valid=false
+path="res://.godot/imported/level_1_bg.png-21285f39008274806349d9f7640ce93d.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/backgrounds/level_1_bg.png"
+dest_files=["res://.godot/imported/level_1_bg.png-21285f39008274806349d9f7640ce93d.ctex"]
 
 [params]
 

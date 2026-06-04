@@ -3,11 +3,15 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://bdwv2r1pbrtip"
-valid=false
+path="res://.godot/imported/coin_frame_02.png-e64b5d69522198f8adfa187091710fa4.ctex"
+metadata={
+"vram_texture": false
+}
 
 [deps]
 
 source_file="res://assets/sprites/coins/silver/coin_frame_02.png"
+dest_files=["res://.godot/imported/coin_frame_02.png-e64b5d69522198f8adfa187091710fa4.ctex"]
 
 [params]
 

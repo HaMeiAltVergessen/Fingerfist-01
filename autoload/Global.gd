@@ -145,6 +145,20 @@ func deactivate_all_items():
 func is_item_active(item_id: String) -> bool:
 	return item_id in active_items
 
+func is_item_owned(item_id: String) -> bool:
+	"""Prüft ob ein Item bereits gekauft wurde"""
+	return items.get(item_id, {}).get("owned", false)
+
+func purchase_item(item_id: String) -> void:
+	"""Markiert ein Item als gekauft.
+
+	Hinweis: Der Coin-Abzug erfolgt im Aufrufer (Shop.gd via add_coins(-cost)),
+	daher wird hier NUR der Besitz gesetzt — kein erneuter Abzug.
+	Für einen kombinierten Kauf inkl. Coin-Abzug siehe buy_item()."""
+	if items.has(item_id):
+		items[item_id].owned = true
+		coins_changed.emit(coins)
+
 # ============================================================================
 # PROGRESSION
 # ============================================================================
@@ -301,3 +315,7 @@ func save_game():
 
 func load_game():
 	SaveSystem.load_game()
+
+func trigger_auto_save():
+	"""Triggert Auto-Save (debounced)"""
+	SaveSystem.request_auto_save()
