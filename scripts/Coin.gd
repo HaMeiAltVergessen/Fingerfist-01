@@ -57,7 +57,7 @@ const COIN_CONFIG = {
 # ============================================================================
 
 var velocity: Vector2 = Vector2.ZERO
-var gravity: float = 600.0  # Pixel/s²
+var fall_gravity: float = 600.0  # Pixel/s²
 var bounce_damping: float = 0.6
 var ground_y: float = 650.0  # Boden-Höhe
 var friction: float = 0.95
@@ -125,7 +125,7 @@ func apply_physics(delta: float):
 	"""Simuliert Schwerkraft, Bounce und Friction"""
 	if not is_on_ground:
 		# Gravity
-		velocity.y += gravity * delta
+		velocity.y += fall_gravity * delta
 
 		# Move
 		position += velocity * delta
