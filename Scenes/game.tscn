@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://q6qlqtcsygqy"]
+[gd_scene load_steps=11 format=3 uid="uid://q6qlqtcsygqy"]
 
 [ext_resource type="Script" uid="uid://dg2yenqilvjgt" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="2_player"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://bdoyjdxtrkqdr" path="res://assets/sprites/backgrounds/level_1_bg.png" id="6_bg"]
 [ext_resource type="Script" uid="uid://hu2gxwadic7y" path="res://scripts/Wall.gd" id="7_wall_script"]
 [ext_resource type="Texture2D" uid="uid://cqfou658lw7vs" path="res://assets/sprites/walls/level_1/wall_intact.png" id="8_wall_tex"]
+[ext_resource type="PackedScene" path="res://Scenes/EndScreen.tscn" id="9_endscreen"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_game")
@@ -37,51 +38,11 @@ position = Vector2(48, 360)
 texture = ExtResource("8_wall_tex")
 script = ExtResource("7_wall_script")
 
-[node name="EndScreen" type="CanvasLayer" parent="."]
+[node name="EndScreen" parent="." instance=ExtResource("9_endscreen")]
 visible = false
 
-[node name="EndScreenPanel" type="Panel" parent="EndScreen"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 400.0
-offset_top = 200.0
-offset_right = -400.0
-offset_bottom = -200.0
-
-[node name="RoundScoreLabel" type="Label" parent="EndScreen/EndScreenPanel"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = 200.0
-offset_bottom = 50.0
-text = "Round Score: 0"
-
-[node name="ShopButton" type="Button" parent="EndScreen/EndScreenPanel"]
-layout_mode = 0
-offset_left = 20.0
-offset_top = 280.0
-offset_right = 120.0
-offset_bottom = 310.0
-text = "Shop"
-
-[node name="RetryButton" type="Button" parent="EndScreen/EndScreenPanel"]
-layout_mode = 0
-offset_left = 140.0
-offset_top = 280.0
-offset_right = 240.0
-offset_bottom = 310.0
-text = "Retry"
-
-[node name="MenuButton" type="Button" parent="EndScreen/EndScreenPanel"]
-layout_mode = 0
-offset_left = 260.0
-offset_top = 280.0
-offset_right = 360.0
-offset_bottom = 310.0
-text = "Main Menu"
-
 [node name="PauseScreen" type="CanvasLayer" parent="."]
+process_mode = 3
 visible = false
 
 [node name="PausePanel" type="Panel" parent="PauseScreen"]
@@ -167,9 +128,6 @@ grow_horizontal = 2
 grow_vertical = 2
 text = "Main Menu"
 
-[connection signal="pressed" from="EndScreen/EndScreenPanel/ShopButton" to="." method="_on_shop_button_pressed"]
-[connection signal="pressed" from="EndScreen/EndScreenPanel/RetryButton" to="." method="_on_retry_button_pressed"]
-[connection signal="pressed" from="EndScreen/EndScreenPanel/MenuButton" to="." method="_on_menu_button_pressed"]
 [connection signal="pressed" from="PauseScreen/PausePanel/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="PauseScreen/PausePanel/SaveButton" to="." method="_on_save_button_pressed"]
 [connection signal="pressed" from="PauseScreen/PausePanel/RestartButton" to="." method="_on_restart_button_pressed"]

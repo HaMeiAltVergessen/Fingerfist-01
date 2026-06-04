@@ -25,6 +25,10 @@ var is_round_active: bool = false
 var is_paused: bool = false
 var total_highscore_before_round: int = 0
 
+# Rundentimer (Wave-Dauer). Endless (Level 7) hat keinen Timer.
+const ROUND_DURATION: float = 45.0
+var round_time_left: float = 0.0
+
 # Round Stats Tracking
 var coins_at_round_start: int = 0
 var round_start_time: float = 0.0
@@ -79,8 +83,8 @@ func setup_player():
 	if not player:
 		return
 
-	# FESTE Position (links im Screen)
-	player.position = Vector2(100, 360)
+	# FESTE Position (rechts im Screen - Gegner laufen von links heran)
+	player.position = Vector2(1150, 360)
 
 	# Apply Items (falls gekauft)
 	player.apply_item_effects()
@@ -169,6 +173,12 @@ func start_round():
 	round_start_time = Time.get_ticks_msec() / 1000.0
 	enemies_killed_this_round = 0
 
+	# Rundentimer starten (nicht im Endless-Modus)
+	if Global.selected_level != 7:
+		round_time_left = ROUND_DURATION
+		if hud and hud.has_method("update_timer"):
+			hud.update_timer(round_time_left)
+
 	# Start Spawners
 	enemy_spawner.start_spawning()
 	coin_spawner.start_spawning()
@@ -237,6 +247,25 @@ func show_end_screen():
 
 	# Show EndScreen with stats
 	end_screen.show_stats(stats)
+
+# ============================================================================
+# ROUND TIMER
+# ============================================================================
+
+func _process(delta: float):
+	"""Rundentimer herunterzählen und Runde bei Ablauf beenden"""
+	if not is_round_active or is_paused or Global.selected_level == 7:
+		return
+
+	round_time_left -= delta
+
+	if hud and hud.has_method("update_timer"):
+		hud.update_timer(round_time_left)
+
+	if round_time_left <= 0.0:
+		round_time_left = 0.0
+		print("[GameScene] Round time up!")
+		end_round()
 
 # ============================================================================
 # PAUSE SYSTEM

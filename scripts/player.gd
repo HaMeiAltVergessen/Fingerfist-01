@@ -28,6 +28,15 @@ var invulnerability_duration: float = 1.0
 
 var is_punching: bool = false
 
+# Trefferreichweite des Schlags ab Klickposition (deckt das 96px-Gegner-Sprite ab;
+# Treffer ist distanzbasiert, unabhängig von der kleinen Kollisions-Hitbox)
+const PUNCH_REACH: float = 72.0
+
+# Zeitbasierter Cooldown (Echtzeit). Gate für den Punch - NICHT mehr an den
+# Animations-Callback gekoppelt, damit is_punching nie dauerhaft blockiert.
+const ATTACK_COOLDOWN: float = 0.08
+var _last_punch_time: float = -999.0
+
 # ============================================================================
 # COMBO
 # ============================================================================
@@ -71,14 +80,11 @@ func _ready():
 	add_to_group("player")
 
 	# STATIC POSITION - NO MOVEMENT!
-	position = Vector2(100, 360)  # Fixed position on left side of screen
+	position = Vector2(1150, 360)  # Fixed position on right side (Gegner laufen von links heran)
 
-	# Hitbox initial deaktiviert
+	# Feste Hitbox bleibt inert - Treffer laufen über _punch_at() an der Klickposition
 	punch_hitbox.monitoring = false
 	punch_hitbox.monitorable = false
-
-	# Connect Hitbox Signal
-	punch_hitbox.area_entered.connect(_on_hitbox_area_entered)
 
 	# Connect Hurtbox Signal
 	hurtbox.area_entered.connect(_on_hurtbox_area_entered)
@@ -96,25 +102,35 @@ func _ready():
 # ============================================================================
 
 func _input(event: InputEvent):
-	"""Nur Punch-Input (Click/Tap)"""
+	"""Nur Punch-Input (Click/Tap) - zielt auf die Klick-/Touch-Position"""
 	# Mouse Click
 	if event is InputEventMouseButton and event.pressed:
-		perform_punch()
+		perform_punch(get_global_mouse_position())
 
 	# Touch (Mobile)
 	if event is InputEventScreenTouch and event.pressed:
-		perform_punch()
+		# Touch-Position (Screen) -> Weltkoordinaten
+		var world_pos = get_viewport().get_canvas_transform().affine_inverse() * event.position
+		perform_punch(world_pos)
 
 # ============================================================================
 # PUNCH SYSTEM
 # ============================================================================
 
-func perform_punch():
-	"""Führt Punch aus"""
-	if is_punching:
-		return  # Animation läuft noch
+func perform_punch(target: Vector2):
+	"""Führt Punch an der Zielposition (Cursor/Touch) aus"""
+	# Zeitbasierter Cooldown (Echtzeit, unabhängig von time_scale/Pause) - kann
+	# nicht deadlocken wie das alte is_punching-Gate.
+	var now := Time.get_ticks_msec() / 1000.0
+	if now - _last_punch_time < ATTACK_COOLDOWN:
+		return
+	_last_punch_time = now
 
 	is_punching = true
+
+	# Faust optisch zur Zielposition ausrichten (kosmetisch)
+	if sprite:
+		sprite.rotation = (target - global_position).angle()
 
 	# Play Animation
 	if anim:
@@ -124,41 +140,31 @@ func perform_punch():
 	var punch_num = randi() % 10 + 1
 	Audio.play_sfx("punch_%02d.ogg" % punch_num, 0.1)
 
-	# Hitbox-Fenster aktivieren (Frame 3-5)
-	# Note: activate_hitbox() wird via AnimationPlayer aufgerufen
+	# Treffer SOFORT an der Klickposition auswerten (klick-zielbar)
+	_punch_at(target, PUNCH_REACH * attack_radius_multiplier)
 
-	print("[Player] PUNCH!")
+	print("[Player] PUNCH! @ %s" % target)
+
+func _punch_at(target: Vector2, reach: float):
+	"""Tötet jeden lebenden Gegner, dessen Mittelpunkt innerhalb 'reach' der
+	Klickposition liegt. Distanzbasiert (deckt das große Sprite ab) statt
+	abhängig von der kleinen Kollisions-Hitbox."""
+	for node in get_tree().get_nodes_in_group("enemies"):
+		var enemy := node as Enemy
+		if enemy and enemy.is_alive and enemy.global_position.distance_to(target) <= reach:
+			_hit_enemy(enemy)
 
 func activate_hitbox():
-	"""Aktiviert Hitbox für Frame 3-5 (~40ms) - Called by AnimationPlayer"""
-	# Hitbox aktivieren
-	punch_hitbox.monitoring = true
-	punch_hitbox.monitorable = true
-
-	# Apply Shockwave Fist (radius multiplier)
-	var base_radius = 32.0
-	var radius = base_radius * attack_radius_multiplier
-
-	if collision_shape and collision_shape.shape is CircleShape2D:
-		collision_shape.shape.radius = radius
+	"""No-Op - Treffer laufen jetzt über _punch_at() an der Klickposition.
+	Bleibt erhalten, da die 'attack'-Animation diese Methode als Track aufruft."""
+	pass
 
 func deactivate_hitbox():
-	"""Deaktiviert Hitbox - Called by AnimationPlayer"""
-	# Hitbox deaktivieren
-	punch_hitbox.monitoring = false
-	punch_hitbox.monitorable = false
-
+	"""Beendet den Punch (Cooldown via Anim-Timing) - Called by AnimationPlayer"""
 	is_punching = false
 
-func _on_hitbox_area_entered(area: Area2D):
-	"""Hitbox trifft Enemy"""
-	# Prüfe ob Enemy (via parent check)
-	var parent = area.get_parent()
-	if not parent is Enemy:
-		return
-
-	var enemy = parent as Enemy
-
+func _hit_enemy(enemy: Enemy):
+	"""Verarbeitet einen Treffer auf einen Enemy (One-Hit-KO + Combo + Items)"""
 	# Emit Signal
 	hit_enemy.emit(enemy)
 

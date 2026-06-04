@@ -19,6 +19,9 @@ var current_combo: int = 0
 # HP Icons (filled/empty hearts)
 var hp_icons: Array[TextureRect] = []
 
+# Rundentimer-Anzeige (dynamisch erzeugt)
+var timer_label: Label
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -31,6 +34,9 @@ func _ready():
 	# Hide Combo initially
 	combo_label.visible = false
 
+	# Rundentimer-Label erzeugen (oben mittig)
+	create_timer_label()
+
 	# Setup HP Icons
 	setup_hp_icons()
 
@@ -38,6 +44,32 @@ func _ready():
 	update_display()
 
 	print("[HUD] Ready")
+
+# ============================================================================
+# ROUND TIMER
+# ============================================================================
+
+func create_timer_label():
+	"""Erzeugt das Countdown-Label oben mittig"""
+	timer_label = Label.new()
+	timer_label.name = "TimerLabel"
+	timer_label.position = Vector2(580, 14)
+	timer_label.add_theme_font_size_override("font_size", 32)
+	timer_label.text = ""
+	add_child(timer_label)
+
+func update_timer(seconds: float):
+	"""Updated die Countdown-Anzeige (rot ab <=10s)"""
+	if not timer_label:
+		return
+
+	var s := int(ceil(max(0.0, seconds)))
+	timer_label.text = "⏱ %d" % s
+
+	if s <= 10:
+		timer_label.modulate = Color(1.0, 0.3, 0.3)  # Rot (Warnung)
+	else:
+		timer_label.modulate = Color(1.0, 1.0, 1.0)  # Weiß
 
 # ============================================================================
 # HP ICONS SETUP

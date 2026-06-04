@@ -31,6 +31,11 @@ var round_stats: Dictionary = {}
 func _ready():
 	visible = false
 
+	# WICHTIG: EndScreen muss während get_tree().paused == true aktiv bleiben,
+	# sonst friert der Fade-Tween ein (Panel bleibt Alpha 0 = unsichtbar) und die
+	# Buttons verarbeiten keinen Input. ALWAYS lässt Tween + Buttons trotz Pause laufen.
+	process_mode = Node.PROCESS_MODE_ALWAYS
+
 	# Connect Buttons
 	shop_button.pressed.connect(_on_shop_pressed)
 	retry_button.pressed.connect(_on_retry_pressed)
@@ -86,10 +91,12 @@ func show_stats(stats: Dictionary):
 	visible = true
 	get_tree().paused = true
 
-	# Fade-In
-	panel.modulate = Color(1, 1, 1, 0)
+	# Fade-In von Alpha 0 -> 1. Läuft dank process_mode = ALWAYS auch unter Pause.
+	panel.modulate.a = 0.0
 	var tween = create_tween()
 	tween.tween_property(panel, "modulate:a", 1.0, 0.3)
+	# Sicherheitsnetz: garantiert volle Sichtbarkeit, falls der Tween nicht durchläuft.
+	tween.tween_callback(func(): panel.modulate.a = 1.0)
 
 	print("[EndScreen] Showing stats - Victory: ", stats.get("victory", false))
 
