@@ -8,6 +8,8 @@ extends Node2D
 @onready var play_button: Button = $CanvasLayer/MenuContainer/PlayButton
 @onready var shop_button: Button = $CanvasLayer/MenuContainer/ShopButton
 @onready var settings_button: Button = $CanvasLayer/MenuContainer/SettingsButton
+@onready var highscore_button: Button = $CanvasLayer/MenuContainer/HighscoreButton
+@onready var credits_button: Button = $CanvasLayer/MenuContainer/CreditsButton
 @onready var quit_button: Button = $CanvasLayer/MenuContainer/QuitButton
 
 # Stats Display (created dynamically)
@@ -44,6 +46,10 @@ func _ready():
 		shop_button.pressed.connect(_on_shop_button_pressed)
 	if settings_button:
 		settings_button.pressed.connect(_on_settings_button_pressed)
+	if highscore_button:
+		highscore_button.pressed.connect(_on_highscore_button_pressed)
+	if credits_button:
+		credits_button.pressed.connect(_on_credits_button_pressed)
 	if quit_button:
 		quit_button.pressed.connect(_on_quit_button_pressed)
 	if continue_button:
@@ -160,6 +166,16 @@ func _on_settings_button_pressed():
 	"""Settings Button → Settings"""
 	print("[MainMenu] Settings pressed")
 	SceneLoader.load_scene("res://Scenes/Settings.tscn")
+
+func _on_highscore_button_pressed():
+	"""Highscore Button → Highscore Screen"""
+	print("[MainMenu] Highscore pressed")
+	SceneLoader.load_scene("res://Scenes/highscore.tscn")
+
+func _on_credits_button_pressed():
+	"""Credits Button → Credits Screen"""
+	print("[MainMenu] Credits pressed")
+	SceneLoader.load_scene("res://Scenes/CreditScreen.tscn")
 
 func _on_quit_button_pressed():
 	"""Quit Button → Exit Game"""

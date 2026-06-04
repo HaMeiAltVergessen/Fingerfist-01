@@ -27,6 +27,7 @@ SceneLoader="*res://autoload/SceneLoader.gd"
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="viewport"
+window/handheld/orientation=0
 
 [file_customization]
 
@@ -66,3 +67,4 @@ pointing/emulate_touch_from_mouse=true
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/canvas_textures/default_texture_filter=0

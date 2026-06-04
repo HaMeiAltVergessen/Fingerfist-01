@@ -29,6 +29,16 @@ custom_minimum_size = Vector2(400, 56)
 layout_mode = 2
 text = "⚙ SETTINGS"
 
+[node name="HighscoreButton" type="Button" parent="CanvasLayer/MenuContainer"]
+custom_minimum_size = Vector2(400, 56)
+layout_mode = 2
+text = "🏆 HIGHSCORE"
+
+[node name="CreditsButton" type="Button" parent="CanvasLayer/MenuContainer"]
+custom_minimum_size = Vector2(400, 56)
+layout_mode = 2
+text = "📜 CREDITS"
+
 [node name="QuitButton" type="Button" parent="CanvasLayer/MenuContainer"]
 custom_minimum_size = Vector2(400, 56)
 layout_mode = 2

@@ -384,5 +384,63 @@ crystal, gold, metal, neon, shadow
 
 ---
 
+# Teil C — Integration / Drop-in (für den Art-Drop)
+
+> So rutscht das eingehende Sprite-Set ohne Code-Nacharbeit ins Spiel. Stand der Pipeline-Vorbereitung:
+> **2026-06-04.**
+
+## C1 · Was bereits vorbereitet ist
+- **Pixel-Art-Filter projektweit auf *Nearest*** gesetzt (`project.godot` →
+  `rendering/textures/canvas_textures/default_texture_filter=0`). Neue PNGs werden damit **scharf**
+  (nicht weichgezeichnet) gerendert — keine Per-Datei-Einstellung nötig.
+- **Ziel-Ordnerstruktur + Frame-Benennung existieren bereits** exakt wie in der Status-Tabelle oben
+  (z. B. `assets/sprites/enemies/insect/<color>/insect_frame_0N.png`,
+  `assets/sprites/player/<skin>/fist_frame_0N.png`). Der Artist liefert nach **genau diesem Schema**.
+- **Import ist Lossless** (`compress/mode=0`, `mipmaps/generate=false`) — passt für Pixel-Art.
+
+## C2 · Drop-in-Vorgehen
+1. PNGs **1:1 über die Platzhalter** an den dokumentierten Pfaden kopieren (gleicher Datei-/Ordnername).
+2. Godot öffnen **oder** headless importieren: `… --headless --path . --import` (2×, falls neue UIDs).
+3. Status-Tabelle oben pflegen (☐ → ☑).
+
+> **Wichtig:** Pfade/Dateinamen **nicht** ändern — die Szenen referenzieren sie fix (z. B. `Enemy.tscn`
+> → `insect/green/insect_frame_00.png`). Wird ein Pfad umbenannt, bricht die Referenz.
+
+## C3 · ⚠️ Animations-Lücke (bewusst offen, Folge-Code-Aufgabe)
+Aktuell gibt es **keinen `AnimatedSprite2D`** — **alle** Entities zeigen einen **einzelnen statischen
+`Sprite2D`-Frame**:
+
+| Entity | Szene | Aktuell sichtbarer Frame |
+|---|---|---|
+| Insekt | `Enemy.tscn` | `insect/green/insect_frame_00.png` (pro Typ per `modulate` eingefärbt) |
+| Coin | `Coin.tscn` | ein einzelner `coin_frame`-Texture |
+| Projektil | `Projectile.tscn` | ein einzelner `projectile`-Frame |
+| Spieler-Faust | `Player.tscn` | `fist_frame_00` |
+
+**Konsequenz für den Drop:**
+- Wird **nur der jeweils sichtbare Basis-Frame** überschrieben (z. B. `insect_frame_00.png`,
+  `fist_frame_00.png`), sieht man die neue Art **sofort** — ohne jede Code-Änderung. Empfohlener
+  schneller Win.
+- Die **restlichen Frames** (01–0N) + **Farbordner** (insect blau/rot) + Skins liegen dann zwar im
+  Repo, werden aber **noch nicht abgespielt**. Echte Frame-Animation + Skin-/Farbwahl ist eine separate
+  **Code-Aufgabe** (Umbau Enemy/Coin/Projectile/Player auf `AnimatedSprite2D` + `SpriteFrames` nach den
+  Timings in CLAUDE.md §17). Das machen wir, wenn die Art da ist — nicht jetzt.
+
+## C4 · Pre-Drop-Checkliste (an den Artist)
+- [ ] Exakte Pfade/Dateinamen aus der Status-Tabelle einhalten (case-sensitiv behandeln).
+- [ ] Quell-Auflösungen wie in Spalte „Maße" (Sprites dürfen größer als die Hitbox sein — §16 bleibt).
+- [ ] Frame-Anzahl je Set wie in Spalte „Frames"; transparenter Hintergrund (außer Backgrounds/Walls).
+- [ ] PNG, kein verlustbehaftetes Vorab-Resampling (Nearest/Lossless-Pipeline).
+
+## C5 · Post-Drop-Smoke-Test
+```powershell
+& "E:\Godot\Godot_v4.4-stable_win64_console.exe" --headless --path . --import
+& "E:\Godot\Godot_v4.4-stable_win64_console.exe" --headless --path . --quit-after 8
+```
+Konsole muss frei von `Failed to load`/`valid=false`/`SCRIPT ERROR` sein; dann eine echte Runde im
+Editor zur Sichtprüfung starten.
+
+---
+
 *Abhaken: Status-Tabelle oben (☐ → ☑) pflegen, sobald ein Set durch echte Assets ersetzt ist. Nach
 PNG-Ersatz Godot 2× `--import` laufen lassen; `.ogg` müssen gültige Vorbis-Dateien sein (kein Text).*
