@@ -95,11 +95,8 @@ func setup_hp_icons():
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.custom_minimum_size = Vector2(32, 32)
 
-		# TODO: Später Texture laden
-		# icon.texture = load("res://assets/sprites/ui/hp_icon.png")
-
-		# Placeholder: ColorRect
-		icon.modulate = Color(1.0, 0.2, 0.2)  # Red
+		icon.texture = load("res://assets/sprites/ui/hp_icon.png")
+		icon.modulate = Color.WHITE  # heart artwork is already red
 
 		hp_container.add_child(icon)
 		hp_icons.append(icon)
@@ -120,12 +117,12 @@ func update_hp_display(current_hp: int):
 	"""Updated HP-Icons (filled vs empty)"""
 	for i in range(hp_icons.size()):
 		if i < current_hp:
-			# Filled Heart
-			hp_icons[i].modulate = Color(1.0, 0.2, 0.2)  # Red
+			# Filled Heart (full-colour artwork)
+			hp_icons[i].modulate = Color.WHITE
 			hp_icons[i].scale = Vector2(1.0, 1.0)
 		else:
-			# Empty Heart
-			hp_icons[i].modulate = Color(0.3, 0.3, 0.3)  # Gray
+			# Empty Heart (dimmed)
+			hp_icons[i].modulate = Color(0.25, 0.25, 0.25)
 			hp_icons[i].scale = Vector2(0.8, 0.8)
 
 func update_combo_display(combo: int):

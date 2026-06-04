@@ -150,6 +150,14 @@ func create_item_button(item_id: String, item_data: Dictionary) -> Button:
 	button.custom_minimum_size = Vector2(220, 140)
 	button.name = "%sButton" % item_id
 
+	# Item icon (artwork keyed by item id)
+	var icon_path = "res://assets/sprites/ui/items/%s.png" % item_id
+	if ResourceLoader.exists(icon_path):
+		button.icon = load(icon_path)
+		button.expand_icon = true
+		button.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		button.vertical_icon_alignment = VERTICAL_ALIGNMENT_TOP
+
 	# Check if owned
 	var is_owned = Global.is_item_owned(item_id)
 	var can_afford = Global.coins >= item_data.cost

@@ -20,6 +20,7 @@ const TYPE_CONFIG = {
 		"score": 10,
 		"hitbox_radius": 12.0,
 		"color": Color(0.3, 0.8, 0.3),  # Green
+		"texture": "res://assets/sprites/enemies/insect/green/insect_frame_00.png",
 		"coin_drop_chance": 0.05,
 		"sfx_death": ["insect_death_01.ogg", "insect_death_02.ogg", "insect_death_03.ogg"]
 	},
@@ -28,6 +29,7 @@ const TYPE_CONFIG = {
 		"score": 25,
 		"hitbox_size": Vector2(16, 20),
 		"color": Color(0.8, 0.5, 0.3),  # Brown/Terra
+		"texture": "res://assets/sprites/enemies/vase/vase_idle_00.png",
 		"coin_drop_chance": 0.15,
 		"attack_windup_time": 0.35,
 		"attack_range": 100.0,
@@ -40,6 +42,7 @@ const TYPE_CONFIG = {
 		"score": 40,
 		"hitbox_radius": 14.0,
 		"color": Color(0.9, 0.3, 0.2),  # Orange-Red
+		"texture": "res://assets/sprites/enemies/fire_devil/fire_idle_00.png",
 		"coin_drop_chance": 0.25,
 		"projectile_interval": 5.0,
 		"projectile_telegraph_time": 0.4,
@@ -100,8 +103,10 @@ func _ready():
 	score_value = config.score
 	coin_drop_chance = config.get("coin_drop_chance", 0.05)
 
-	# Visual Setup
-	sprite.modulate = config.color
+	# Visual Setup (per-type sprite; real artwork is already coloured -> no tint)
+	if config.has("texture"):
+		sprite.texture = load(config.texture)
+	sprite.modulate = Color.WHITE
 
 	# Hitbox Setup
 	_setup_hitbox(config)
@@ -251,7 +256,7 @@ func _start_projectile_charge():
 
 	if is_alive:
 		_fire_projectile()
-		sprite.modulate = TYPE_CONFIG[enemy_type].color  # Reset color
+		sprite.modulate = Color.WHITE  # Reset telegraph tint
 		is_charging_projectile = false
 		projectile_timer = TYPE_CONFIG[Type.FIRE_DEVIL].projectile_interval
 

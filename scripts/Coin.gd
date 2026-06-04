@@ -18,21 +18,25 @@ const COIN_CONFIG = {
 	CoinType.BRONZE: {
 		"value": 1,
 		"color": Color(0.8, 0.5, 0.2),  # Bronze
+		"texture": "res://assets/sprites/coins/bronze/coin_frame_00.png",
 		"drop_chance": 70,  # 70% von allen Coin-Drops
 	},
 	CoinType.SILVER: {
 		"value": 5,
 		"color": Color(0.75, 0.75, 0.75),  # Silber
+		"texture": "res://assets/sprites/coins/silver/coin_frame_00.png",
 		"drop_chance": 20,  # 20%
 	},
 	CoinType.GOLD: {
 		"value": 10,
 		"color": Color(1.0, 0.84, 0.0),  # Gold
+		"texture": "res://assets/sprites/coins/gold/coin_frame_00.png",
 		"drop_chance": 8,  # 8%
 	},
 	CoinType.PLATINUM: {
 		"value": 25,
 		"color": Color(0.9, 0.95, 1.0),  # Platin
+		"texture": "res://assets/sprites/coins/platinum/coin_frame_00.png",
 		"drop_chance": 2,  # 2%
 	},
 }
@@ -80,8 +84,10 @@ func _ready():
 	var config = COIN_CONFIG[coin_type]
 	coin_value = config.value
 
-	# Sprite-Color
-	sprite.modulate = config.color
+	# Sprite (per-type artwork is already coloured -> no tint)
+	if config.has("texture"):
+		sprite.texture = load(config.texture)
+	sprite.modulate = Color.WHITE
 
 	# Collision Layers
 	collision_layer = 4  # Layer 3 (Coin)
