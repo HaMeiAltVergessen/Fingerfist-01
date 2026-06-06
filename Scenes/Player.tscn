@@ -3,6 +3,10 @@
 [ext_resource type="Script" uid="uid://ipwof1pfw222" path="res://scripts/player.gd" id="1_player"]
 [ext_resource type="Texture2D" uid="uid://byl8tj44i6lm7" path="res://assets/Placeholder/AIPlaceholder/charsheet01.png" id="2_charsheet"]
 
+[sub_resource type="AtlasTexture" id="idle_00"]
+atlas = ExtResource("2_charsheet")
+region = Rect2(512, 768, 256, 256)
+
 [sub_resource type="AtlasTexture" id="punch_00"]
 atlas = ExtResource("2_charsheet")
 region = Rect2(0, 0, 256, 256)
@@ -50,10 +54,6 @@ region = Rect2(512, 512, 256, 256)
 [sub_resource type="AtlasTexture" id="punch_11"]
 atlas = ExtResource("2_charsheet")
 region = Rect2(768, 512, 256, 256)
-
-[sub_resource type="AtlasTexture" id="idle_00"]
-atlas = ExtResource("2_charsheet")
-region = Rect2(512, 768, 256, 256)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_player"]
 animations = [{
@@ -120,8 +120,9 @@ script = ExtResource("1_player")
 [node name="PlayerSprite" type="AnimatedSprite2D" parent="."]
 scale = Vector2(0.8, 0.8)
 sprite_frames = SubResource("SpriteFrames_player")
-animation = &"idle"
+animation = &"punch"
 autoplay = "idle"
+flip_h = true
 
 [node name="Hitbox" type="Area2D" parent="."]
 collision_layer = 0
