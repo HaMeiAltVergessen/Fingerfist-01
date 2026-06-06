@@ -11,8 +11,8 @@ extends Node2D
 @export var spawn_y_max: float = 620.0
 
 # Lanes: Boden-Gegner laufen auf der Spielerlinie, Insekten fliegen darüber
-const LANE_GROUND_Y: float = 360.0   # Vase, Feuerteufel (Spielerlinie)
-const LANE_FLY_Y: float = 230.0      # Insekten (eigene Fluglinie)
+const LANE_GROUND_Y: float = 550.0   # Vase, Feuerteufel (Spielerlinie)
+const LANE_FLY_Y: float = 550.0      # Insekten (eigene Fluglinie)
 
 # ============================================================================
 # LEVEL CURVES

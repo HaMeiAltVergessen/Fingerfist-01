@@ -133,7 +133,7 @@ func setup_player():
 		return
 
 	# FESTE Position (rechts im Screen - Gegner laufen von links heran)
-	player.position = Vector2(1150, 360)
+	player.position = Vector2(1150, 500)
 
 	# Apply Items (falls gekauft)
 	player.apply_item_effects()
