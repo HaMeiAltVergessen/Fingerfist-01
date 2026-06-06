@@ -5,6 +5,7 @@ extends Node2D
 # NODE REFERENCES
 # ============================================================================
 
+@onready var background: Sprite2D = $Background
 @onready var player: Player = $Player
 @onready var enemy_spawner: Node2D = $Spawners/EnemySpawner
 @onready var coin_spawner: Node2D = $Spawners/CoinSpawner
@@ -56,6 +57,9 @@ func _ready():
 	end_screen.visible = false
 	pause_screen.visible = false
 
+	# Setup Background (per Level)
+	setup_background()
+
 	# Setup Player (STATIC position)
 	setup_player()
 
@@ -79,6 +83,31 @@ func _ready():
 	start_round()
 
 	print("[GameScene] Ready - Level: ", level)
+
+# ============================================================================
+# BACKGROUND SETUP
+# ============================================================================
+
+func setup_background():
+	"""Lädt das Background-Sprite für das gewählte Level und streckt es auf Vollbild."""
+	if not background:
+		return
+
+	var level = clamp(Global.selected_level, 1, 7)
+	var tex = load("res://assets/sprites/backgrounds/level_%d_bg.png" % level)
+	if not tex:
+		print("[GameScene] Background für Level %d nicht gefunden" % level)
+		return
+
+	background.texture = tex
+
+	# Auf Viewport (1280×720) strecken - dynamisch, falls echte Backgrounds andere Maße haben
+	var tw = tex.get_width()
+	var th = tex.get_height()
+	if tw > 0 and th > 0:
+		background.scale = Vector2(1280.0 / tw, 720.0 / th)
+
+	print("[GameScene] Background gesetzt für Level %d" % level)
 
 # ============================================================================
 # PLAYER SETUP

@@ -6,8 +6,7 @@ class_name Player
 # NODE REFERENCES
 # ============================================================================
 
-@onready var sprite: Sprite2D = $PlayerSprite
-@onready var anim: AnimationPlayer = $AnimationPlayer
+@onready var sprite: AnimatedSprite2D = $PlayerSprite
 @onready var punch_hitbox: Area2D = $Hitbox
 @onready var collision_shape: CollisionShape2D = $Hitbox/HitboxShape
 @onready var hurtbox: Area2D = $Hurtbox
@@ -98,6 +97,10 @@ func _ready():
 	# Connect Invulnerability Timer
 	invulnerability_timer.timeout.connect(_on_invulnerability_timeout)
 
+	# Spritesheet-Animation: Idle als Standzustand, Punch wird bei Bedarf abgespielt
+	sprite.animation_finished.connect(_on_anim_finished)
+	sprite.play("idle")
+
 	# Apply Items
 	apply_item_effects()
 
@@ -140,13 +143,9 @@ func perform_punch(target: Vector2):
 
 	is_punching = true
 
-	# Faust optisch zur Zielposition ausrichten (kosmetisch)
+	# Punch-Animation aus dem Spritesheet abspielen (Char steht statisch, keine Rotation)
 	if sprite:
-		sprite.rotation = (target - global_position).angle()
-
-	# Play Animation
-	if anim:
-		anim.play("attack")
+		sprite.play("punch")
 
 	# SFX
 	var punch_num = randi() % 10 + 1
@@ -210,14 +209,11 @@ func _try_collect_coins_at(target: Vector2) -> bool:
 			collected = true
 	return collected
 
-func activate_hitbox():
-	"""No-Op - Treffer laufen jetzt über _punch_at() an der Klickposition.
-	Bleibt erhalten, da die 'attack'-Animation diese Methode als Track aufruft."""
-	pass
-
-func deactivate_hitbox():
-	"""Beendet den Punch (Cooldown via Anim-Timing) - Called by AnimationPlayer"""
-	is_punching = false
+func _on_anim_finished():
+	"""Punch-Animation fertig -> zurück in den Idle-Zustand."""
+	if sprite.animation == "punch":
+		is_punching = false
+		sprite.play("idle")
 
 func _hit_enemy(enemy: Enemy):
 	"""Verarbeitet einen Treffer auf einen Enemy (One-Hit-KO + Combo + Items)"""

@@ -157,10 +157,20 @@ func _physics_process(delta: float):
 # INSECT BEHAVIOR
 # ============================================================================
 
-func _process_insect(delta: float):
-	"""Einfache lineare Bewegung nach rechts"""
+# Distanz vor dem Spieler, ab der ein fliegendes Insekt auf dessen Höhe sinkt
+const INSECT_DIVE_DISTANCE: float = 300.0
+
+func _process_insect(_delta: float):
+	"""Fliegt auf der Fluglinie nach rechts und sinkt nahe dem Spieler auf dessen Höhe,
+	damit das Insekt die Hurtbox trifft und Schaden macht."""
 	velocity.x = speed
 	velocity.y = 0
+
+	var players = get_tree().get_nodes_in_group("player")
+	if players.size() > 0:
+		var p = players[0]
+		if global_position.x > p.global_position.x - INSECT_DIVE_DISTANCE:
+			velocity.y = clamp((p.global_position.y - global_position.y) * 4.0, -speed, speed)
 
 # ============================================================================
 # VASE MONSTER BEHAVIOR

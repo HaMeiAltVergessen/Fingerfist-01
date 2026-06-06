@@ -10,6 +10,10 @@ extends Node2D
 @export var spawn_y_min: float = 100.0
 @export var spawn_y_max: float = 620.0
 
+# Lanes: Boden-Gegner laufen auf der Spielerlinie, Insekten fliegen darüber
+const LANE_GROUND_Y: float = 360.0   # Vase, Feuerteufel (Spielerlinie)
+const LANE_FLY_Y: float = 230.0      # Insekten (eigene Fluglinie)
+
 # ============================================================================
 # LEVEL CURVES
 # ============================================================================
@@ -253,7 +257,12 @@ func _instantiate_enemy(enemy_type: Enemy.Type, spawn_pos: Vector2):
 	"""Hilfsfunktion: Erstellt Enemy an Position"""
 	var enemy = EnemyScene.instantiate() as Enemy
 	enemy.enemy_type = enemy_type
-	enemy.position = spawn_pos
+
+	# Lane pro Typ erzwingen: Insekten fliegen, alle anderen laufen auf dem Boden.
+	# Kleiner X-Versatz verhindert exakte Überlappung bei Mehrfach-Spawns (Wave/Cluster/Spread),
+	# da das vertikale Pattern-Spacing durch die festen Lanes entfällt.
+	var lane_y := LANE_FLY_Y if enemy_type == Enemy.Type.INSECT else LANE_GROUND_Y
+	enemy.position = Vector2(spawn_pos.x + randf_range(-60.0, 0.0), lane_y)
 
 	# Füge zum Parent hinzu
 	get_parent().get_parent().add_child(enemy)
