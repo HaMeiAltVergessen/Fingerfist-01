@@ -16,25 +16,25 @@ enum CoinType {
 # Coin-Konfiguration pro Type
 const COIN_CONFIG = {
 	CoinType.BRONZE: {
-		"value": 1,
+		"value": 50,
 		"color": Color(0.8, 0.5, 0.2),  # Bronze
 		"texture": "res://assets/sprites/coins/bronze/coin_frame_00.png",
 		"drop_chance": 70,  # 70% von allen Coin-Drops
 	},
 	CoinType.SILVER: {
-		"value": 5,
+		"value": 50,
 		"color": Color(0.75, 0.75, 0.75),  # Silber
 		"texture": "res://assets/sprites/coins/silver/coin_frame_00.png",
 		"drop_chance": 20,  # 20%
 	},
 	CoinType.GOLD: {
-		"value": 10,
+		"value": 50,
 		"color": Color(1.0, 0.84, 0.0),  # Gold
 		"texture": "res://assets/sprites/coins/gold/coin_frame_00.png",
 		"drop_chance": 8,  # 8%
 	},
 	CoinType.PLATINUM: {
-		"value": 25,
+		"value": 50,
 		"color": Color(0.9, 0.95, 1.0),  # Platin
 		"texture": "res://assets/sprites/coins/platinum/coin_frame_00.png",
 		"drop_chance": 2,  # 2%

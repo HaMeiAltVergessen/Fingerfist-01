@@ -1,3 +1,6 @@
+# Claude Code – persönliche, projekt-lokale Einstellungen (nicht teilen)
+.claude/settings.local.json
+
 # Godot 4+ specific ignores
 .godot/
 .nomedia

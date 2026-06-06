@@ -55,6 +55,22 @@ PixelLab). Bei Sheets das Frame-Layout explizit fordern; bei Einzel-Icons „sin
 | B8 | Wall-SFX | `assets/audio/sfx/{wall_crack_01..02,wall_break}.ogg` | — | 3 | ☐ |
 | B9 | UI-SFX | `assets/audio/sfx/{button_*,menu_*,shop_*}.ogg` | — | 6 | ☐ |
 | B10 | Item-FX-SFX | `assets/audio/sfx/{fire_shield,thunder_chain,slow_motion,whoosh}.ogg` | — | 4 | ☐ |
+| V1 | Punch Hit-Spark | `assets/sprites/vfx/hit_spark/hit_spark_{00..05}.png` | 48×48 | 6 | ☐ |
+| V2 | Insekt-Tod-FX | `assets/sprites/vfx/death_insect/death_insect_{00..03}.png` | 48×48 | 4 | ☐ |
+| V3 | Vase-Shatter-FX | `assets/sprites/vfx/death_vase/death_vase_{00..05}.png` | 64×80 | 6 | ☐ |
+| V4 | Feuerteufel-Tod-FX | `assets/sprites/vfx/death_fire/death_fire_{00..05}.png` | 64×64 | 6 | ☐ |
+| V5 | Wand-Treffer-FX | `assets/sprites/vfx/wall_hit/wall_hit_{00..05}.png` | 64×64 | 6 | ☐ |
+| V6 | Wand-Break-FX | `assets/sprites/vfx/wall_break/wall_break_{00..07}.png` | 256×512 | 8 | ☐ |
+| V7 | Coin-Bounce-Dust | `assets/sprites/vfx/coin_dust/coin_dust_{00..03}.png` | 32×32 | 4 | ☐ |
+| V8 | Coin-Collect-Pop | `assets/sprites/vfx/coin_pop/coin_pop_{00..04}.png` | 48×48 | 5 | ☐ |
+| V9 | Projektil-Spawn-Flash | `assets/sprites/vfx/proj_spawn/proj_spawn_{00..03}.png` | 32×32 | 4 | ☐ |
+| V10 | Projektil-Impact | `assets/sprites/vfx/proj_hit/proj_hit_{00..04}.png` | 48×48 | 5 | ☐ |
+| V11 | Item Shockwave-Ring | `assets/sprites/vfx/fx_shockwave/fx_shockwave_{00..05}.png` | 128×128 | 6 | ☐ |
+| V12 | Item Chain-Lightning | `assets/sprites/vfx/fx_thunder/fx_thunder_{00..04}.png` | 128×64 | 5 | ☐ |
+| V13 | Item Meteor-Impact | `assets/sprites/vfx/fx_meteor/fx_meteor_{00..07}.png` | 128×128 | 8 | ☐ |
+| V14 | Item Time-Ripple | `assets/sprites/vfx/fx_slowmo/fx_slowmo_{00..04}.png` | 256×256 | 5 | ☐ |
+| V15 | Item Fire-Shield-Burst | `assets/sprites/vfx/fx_shield/fx_shield_{00..05}.png` | 96×96 | 6 | ☐ |
+| V16 | Player-Hurt-Flash | `assets/sprites/vfx/hurt_flash/hurt_flash_{00..03}.png` | 64×64 | 4 | ☐ |
 
 ---
 
@@ -381,6 +397,143 @@ crystal, gold, metal, neon, shadow
 > - **thunder_chain** (~300ms): a crackling electric arc/zap (combo reward).
 > - **slow_motion** (~400ms): a pitch-bending "time slows" warp as the Time Crystal triggers.
 > - **whoosh** (~120ms): a generic fast air swipe (fist/dash movement accent).
+
+---
+
+# Teil VFX — Visuelle Effekte
+
+> Treffer-/Tod-/Item-Feedback aus CLAUDE.md §17 (FX-Spalten) und §18 (Combat Feedback). Alle VFX sind
+> **One-Shot-Sprite-Sheets** (kein Loop): einmal abspielen, dann `queue_free()`. Empfohlene Integration:
+> kleiner wiederverwendbarer `AnimatedSprite2D`/`GPUParticles2D`-Knoten, am Effekt-Ursprung gespawnt.
+> **Stil zusätzlich zu §0:** additiv/leuchtend gedacht (heller Kern → farbiger Glow → Funken), transparenter
+> Hintergrund, kräftige Neon-Akzente, kurze knackige Bursts. Frames links→rechts, Pivot zentriert.
+>
+> **Rein code-getrieben, kein Asset nötig:** *Screenshake* (§18, `GameCamera.gd`), *Time-Squeeze/Slow-Motion-
+> Zeitskalierung* (§18, `Engine.time_scale`), *Invuln-Blink* (`modulate.a`), *Coin-Rain* (spawnt vorhandene
+> Coin-Sprites). V14 ist nur der **optische** Time-Ripple-Overlay zur Slow-Motion.
+
+## V1 · Punch Hit-Spark
+**Pfad:** `assets/sprites/vfx/hit_spark/hit_spark_00.png … 05.png` · **48×48** · **6 Frames** ·
+Trigger: Treffer auf Gegner (Faust-Impact, §17 Frame 7 / §18 „Hit Sparks 12–16 Partikel weiß/gelb").
+> Pixel-art melee impact spark burst, 48x48 per frame, 6-frame one-shot horizontal sheet, transparent
+> background. A sharp radial explosion of 12–16 white-and-yellow sparks + a quick bright flash core that
+> expands then dissipates over the frames. Punchy arcade hit-feedback, additive glow look, bold outline,
+> 1x pixel density, no anti-aliasing.
+
+## V2 · Insekt-Tod-FX
+**Pfad:** `assets/sprites/vfx/death_insect/death_insect_00.png … 03.png` · **48×48** · **4 Frames** ·
+Trigger: Insekt stirbt (§17 „Insekt Tod 4 Frames Auflösung").
+> Pixel-art small enemy death poof, 48x48 per frame, 4-frame one-shot sheet, transparent background. A
+> quick squishy burst — a tiny green-ish splatter + chitin shards + a puff of smoke that dissolves into
+> dispersing pixels. Low-key but satisfying (triggers constantly). Bold outline, 1x pixel density, no
+> anti-aliasing.
+
+## V3 · Vase-Shatter-FX
+**Pfad:** `assets/sprites/vfx/death_vase/death_vase_00.png … 05.png` · **64×80** · **6 Frames** ·
+Trigger: Vasenmonster stirbt.
+> Pixel-art ceramic shatter effect, 64x80 per frame, 6-frame one-shot sheet, transparent background.
+> A heavy pottery vessel violently bursting into clay shards and dust that fly outward and fall, with a
+> brief warning-glow flash on the first frame. Earthy ceramic palette. Bold outline, 1x pixel density,
+> no anti-aliasing.
+
+## V4 · Feuerteufel-Tod-FX
+**Pfad:** `assets/sprites/vfx/death_fire/death_fire_00.png … 05.png` · **64×64** · **6 Frames** ·
+Trigger: Feuerteufel stirbt (Flamme erlischt).
+> Pixel-art flame snuff-out death effect, 64x64 per frame, 6-frame one-shot sheet, transparent
+> background. A fiery imp's flames flaring up then collapsing into rising smoke and fading embers — a
+> "extinguished" read. Hot ember palette (yellow core → orange → red → grey smoke). Bold outline, 1x
+> pixel density, no anti-aliasing.
+
+## V5 · Wand-Treffer-FX
+**Pfad:** `assets/sprites/vfx/wall_hit/wall_hit_00.png … 05.png` · **64×64** · **6 Frames** ·
+Trigger: Punch trifft die Wand / Wand nimmt Score-Schaden (§17 „Wand Treffer Frame 4–6").
+> Pixel-art wall impact effect, 64x64 per frame, 6-frame one-shot sheet, transparent background. A
+> short burst of stone chips, dust cloud and a few radiating crack flashes where a fist strikes a rock
+> barrier. Neutral grey stone debris with a faint warm impact flash. Bold outline, 1x pixel density, no
+> anti-aliasing.
+
+## V6 · Wand-Break-FX
+**Pfad:** `assets/sprites/vfx/wall_break/wall_break_00.png … 07.png` · **256×512** · **8 Frames** ·
+Trigger: Wand zerstört → Level-Clear (§18 Payoff, größter Effekt).
+> Pixel-art wall collapse/explosion, 256x512 per frame, 8-frame one-shot sheet, transparent background,
+> matching the wall silhouette. The barrier violently shatters and crumbles — large chunks blast
+> outward, dust plume, glowing stress-fracture flashes, then debris falls and clears. Triumphant
+> level-break payoff. Bold outline, 1x pixel density, no anti-aliasing.
+
+## V7 · Coin-Bounce-Dust
+**Pfad:** `assets/sprites/vfx/coin_dust/coin_dust_00.png … 03.png` · **32×32** · **4 Frames** ·
+Trigger: Coin prallt am Boden auf (§18 „Dust-Puff + goldener Funkenschweif").
+> Pixel-art tiny dust puff, 32x32 per frame, 4-frame one-shot sheet, transparent background. A small
+> soft kick of ground dust with a couple of golden sparkle flecks, expanding and fading quickly. Light
+> and subtle. 1x pixel density, no anti-aliasing.
+
+## V8 · Coin-Collect-Pop
+**Pfad:** `assets/sprites/vfx/coin_pop/coin_pop_00.png … 04.png` · **48×48** · **5 Frames** ·
+Trigger: Coin eingesammelt (§17 Frame 2–3 / §18 „Gold Funken + Light Pop").
+> Pixel-art coin pickup sparkle, 48x48 per frame, 5-frame one-shot sheet, transparent background. A
+> bright golden light-pop with radiating star-sparkles and a quick expanding ring that flashes then
+> fades — a rewarding "collected!" pop. Warm gold palette, additive glow. 1x pixel density, no
+> anti-aliasing.
+
+## V9 · Projektil-Spawn-Flash
+**Pfad:** `assets/sprites/vfx/proj_spawn/proj_spawn_00.png … 03.png` · **32×32** · **4 Frames** ·
+Trigger: Feuerteufel feuert Projektil (§17 „Frame 3 Spawn").
+> Pixel-art muzzle/spawn flash for a fireball launch, 32x32 per frame, 4-frame one-shot sheet,
+> transparent background. A quick hot flare bursting outward as a projectile is released — bright
+> yellow-white core with orange flame petals. 1x pixel density, no anti-aliasing.
+
+## V10 · Projektil-Impact
+**Pfad:** `assets/sprites/vfx/proj_hit/proj_hit_00.png … 04.png` · **48×48** · **5 Frames** ·
+Trigger: Projektil trifft Spieler.
+> Pixel-art fireball impact burst, 48x48 per frame, 5-frame one-shot sheet, transparent background. A
+> fiery splash/explosion on hit — radial flame burst, scattering embers and a brief scorch flash. Hot
+> ember palette. Bold outline, 1x pixel density, no anti-aliasing.
+
+## V11 · Item · Shockwave-Ring (Shockwave Fist)
+**Pfad:** `assets/sprites/vfx/fx_shockwave/fx_shockwave_00.png … 05.png` · **128×128** · **6 Frames** ·
+Trigger: Shockwave-Fist-Item (Attack-Radius ×2).
+> Pixel-art expanding shockwave ring, 128x128 per frame, 6-frame one-shot sheet, transparent
+> background. A single concentric energy ring that erupts from the center and rapidly expands outward
+> while thinning and fading, with a bright leading edge. Cool white-cyan energy. Additive glow, 1x pixel
+> density, no anti-aliasing.
+
+## V12 · Item · Chain-Lightning (Thunder Charge)
+**Pfad:** `assets/sprites/vfx/fx_thunder/fx_thunder_00.png … 04.png` · **128×64** · **5 Frames** ·
+Trigger: Thunder-Charge-Item (Chain Lightning bei 20er Combo).
+> Pixel-art chain-lightning arc, 128x64 per frame, 5-frame one-shot sheet, transparent background. A
+> jagged electric bolt arcing horizontally, branching and flickering between two points, bright blue-white
+> core with electric-cyan glow and tiny sparks. Crackling energy feel. 1x pixel density, no anti-aliasing.
+
+## V13 · Item · Meteor-Impact (Call of Wrath)
+**Pfad:** `assets/sprites/vfx/fx_meteor/fx_meteor_00.png … 07.png` · **128×128** · **8 Frames** ·
+Trigger: Call-of-Wrath-Item (Meteor + ×2 Score bei 30+ Combo) — das Ultimate.
+> Pixel-art meteor strike, 128x128 per frame, 8-frame one-shot sheet, transparent background. A flaming
+> meteor screams down from the top, slams into the ground and erupts in a fiery explosion with shockwave
+> dust, scattering embers and a bright flash. Epic, dramatic, the game's ultimate payoff. Hot ember
+> palette. Bold outline, 1x pixel density, no anti-aliasing.
+
+## V14 · Item · Time-Ripple-Overlay (Time Crystal)
+**Pfad:** `assets/sprites/vfx/fx_slowmo/fx_slowmo_00.png … 04.png` · **256×256** · **5 Frames** ·
+Trigger: Time-Crystal-Item (Slow-Motion bei 10er Combo) — rein optischer Overlay zur Zeitskalierung.
+> Pixel-art "time warp" ripple overlay, 256x256 per frame, 5-frame one-shot sheet, transparent
+> background. A large soft concentric distortion ripple with a faint violet-cyan chromatic shimmer that
+> washes outward across the screen as time slows. Subtle, ethereal, low-opacity. 1x pixel density, no
+> anti-aliasing.
+
+## V15 · Item · Fire-Shield-Burst
+**Pfad:** `assets/sprites/vfx/fx_shield/fx_shield_00.png … 05.png` · **96×96** · **6 Frames** ·
+Trigger: Fire-Shield-Item absorbiert ein Projektil.
+> Pixel-art fire-shield absorb burst, 96x96 per frame, 6-frame one-shot sheet, transparent background.
+> A circular flaming barrier flaring brightly as it catches an incoming projectile — a flame ring pulse
+> that whoomphs and dissipates. Hot orange-red with a protective golden rim. Additive glow, 1x pixel
+> density, no anti-aliasing.
+
+## V16 · Player-Hurt-Flash
+**Pfad:** `assets/sprites/vfx/hurt_flash/hurt_flash_00.png … 03.png` · **64×64** · **4 Frames** ·
+Trigger: Spieler nimmt Schaden (ergänzend zum code-seitigen Invuln-Blink).
+> Pixel-art damage/hurt flash, 64x64 per frame, 4-frame one-shot sheet, transparent background. A short
+> sharp red impact flash with a few outward pain-spark slashes that snap in and fade fast. Reads as
+> "took a hit". Bold outline, 1x pixel density, no anti-aliasing.
 
 ---
 
