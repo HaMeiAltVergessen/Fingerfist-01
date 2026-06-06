@@ -56,6 +56,12 @@ var current_track_name: String = ""
 var active_sfx_count: int = 0
 const MAX_SIMULTANEOUS_SFX: int = 8
 
+# Web/Mobile: Browser blockieren jegliches Audio bis zur ersten Nutzer-Geste.
+# Musik, die vor der ersten Berührung startet (z.B. Menü-Theme in MainMenu._ready),
+# bliebe sonst stumm -> wir puffern den Track und starten ihn beim ersten Tap.
+var audio_unlocked: bool = false
+var _pending_music_track: String = ""
+
 # ============================================================================
 # INITIALIZATION
 # ============================================================================
@@ -67,6 +73,35 @@ func _ready():
 	# Apply initial volumes
 	set_sfx_volume(sfx_volume)
 	set_music_volume(music_volume)
+
+	# Nur der Web-Export hat die Autoplay-Sperre. Desktop/Editor: sofort entsperrt,
+	# kein Input-Listening nötig.
+	if not OS.has_feature("web"):
+		audio_unlocked = true
+		set_process_input(false)
+
+# ============================================================================
+# WEB AUDIO UNLOCK (erste Nutzer-Geste hebt die Browser-Autoplay-Sperre auf)
+# ============================================================================
+
+func _input(event: InputEvent):
+	if audio_unlocked:
+		return
+	if (event is InputEventMouseButton and event.pressed) \
+			or (event is InputEventScreenTouch and event.pressed) \
+			or (event is InputEventKey and event.pressed):
+		_unlock_audio()
+
+func _unlock_audio():
+	if audio_unlocked:
+		return
+	audio_unlocked = true
+	set_process_input(false)  # ab jetzt nicht mehr nötig
+	# Aufgestaute Musik (vor der Geste angefordert) jetzt nachträglich starten
+	if _pending_music_track != "":
+		var track := _pending_music_track
+		_pending_music_track = ""
+		play_music(track)
 
 func _setup_audio_buses():
 	var sfx_idx = AudioServer.get_bus_index(SFX_BUS)
@@ -141,6 +176,12 @@ func _play_path(stream_path: String, pitch_variation: float = 0.1, volume_db: fl
 # ============================================================================
 
 func play_music(track_name: String, crossfade: bool = true):
+	# Web: Vor der ersten Nutzer-Geste kann kein Audio starten -> Track puffern,
+	# _unlock_audio() spielt ihn beim ersten Tap nach.
+	if not audio_unlocked:
+		_pending_music_track = track_name
+		return
+
 	# Derselbe Track läuft bereits -> kein Neustart (z.B. bei Menü-Szenenwechsel)
 	if track_name == current_track_name and is_music_playing():
 		return
