@@ -59,6 +59,9 @@ func _ready():
 	Global.coins_changed.connect(_on_stats_changed)
 	Global.score_changed.connect(_on_stats_changed)
 
+	# Main Theme (läuft über Menü-Unterszenen weiter, kein Neustart dank Guard)
+	Audio.play_music("Main Menu.mp3")
+
 	print("[MainMenu] Ready")
 
 # ============================================================================

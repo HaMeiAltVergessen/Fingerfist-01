@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bifpeg1ivvqnw"
+path="res://.godot/imported/Magic Spell 1.ogg-9306a52d1fee13883c1549f0477ae8d3.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Magic and Spells 5 - Universal Sound Effects/Magic and Spells 5 - Universal Sound Effects/OGG/Magic Spell 1.ogg"
+dest_files=["res://.godot/imported/Magic Spell 1.ogg-9306a52d1fee13883c1549f0477ae8d3.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

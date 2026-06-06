@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://m2fhvs4bmbnv"
+path="res://.godot/imported/Slime Hit - 4.ogg-f886632c6f95b61c3e03744056b44fa4.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 4/Game Sound Effects Pack 4/OGG/Slime Hit - 4.ogg"
+dest_files=["res://.godot/imported/Slime Hit - 4.ogg-f886632c6f95b61c3e03744056b44fa4.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

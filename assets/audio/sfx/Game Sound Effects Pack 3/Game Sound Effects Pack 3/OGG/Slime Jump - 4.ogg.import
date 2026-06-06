@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://vdajrvuqcqg1"
+path="res://.godot/imported/Slime Jump - 4.ogg-0f4a5e6b5dee3346f648741f267941d1.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Slime Jump - 4.ogg"
+dest_files=["res://.godot/imported/Slime Jump - 4.ogg-0f4a5e6b5dee3346f648741f267941d1.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

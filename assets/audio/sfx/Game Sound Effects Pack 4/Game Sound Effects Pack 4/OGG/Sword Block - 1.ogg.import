@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ba6nr1g36or3r"
+path="res://.godot/imported/Sword Block - 1.ogg-c99df0f7125d4ce2581b768a973f8c49.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 4/Game Sound Effects Pack 4/OGG/Sword Block - 1.ogg"
+dest_files=["res://.godot/imported/Sword Block - 1.ogg-c99df0f7125d4ce2581b768a973f8c49.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

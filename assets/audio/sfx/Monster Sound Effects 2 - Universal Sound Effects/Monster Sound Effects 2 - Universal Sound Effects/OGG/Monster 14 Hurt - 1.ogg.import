@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://j0xnq7q3jtkp"
+path="res://.godot/imported/Monster 14 Hurt - 1.ogg-b645c5e513933656d4c08997ed88f526.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/OGG/Monster 14 Hurt - 1.ogg"
+dest_files=["res://.godot/imported/Monster 14 Hurt - 1.ogg-b645c5e513933656d4c08997ed88f526.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

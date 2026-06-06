@@ -22,7 +22,7 @@ const TYPE_CONFIG = {
 		"color": Color(0.3, 0.8, 0.3),  # Green
 		"texture": "res://assets/sprites/enemies/insect/green/insect_frame_00.png",
 		"coin_drop_chance": 0.05,
-		"sfx_death": ["insect_death_01.ogg", "insect_death_02.ogg", "insect_death_03.ogg"]
+		"sfx_death_key": "insect_death"
 	},
 	Type.VASE_MONSTER: {
 		"speed": 80.0,
@@ -33,9 +33,7 @@ const TYPE_CONFIG = {
 		"coin_drop_chance": 0.15,
 		"attack_windup_time": 0.35,
 		"attack_range": 100.0,
-		"sfx_death": ["vase_break_01.ogg", "vase_break_02.ogg", "vase_break_03.ogg"],
-		"sfx_windup": "vase_windup.ogg",
-		"sfx_attack": ["vase_attack_01.ogg", "vase_attack_02.ogg"]
+		"sfx_death_key": "vase_death"
 	},
 	Type.FIRE_DEVIL: {
 		"speed": 30.0,
@@ -47,9 +45,7 @@ const TYPE_CONFIG = {
 		"projectile_interval": 5.0,
 		"projectile_telegraph_time": 0.4,
 		"projectile_range": 700.0,
-		"sfx_death": ["fire_extinguish_01.ogg", "fire_extinguish_02.ogg", "fire_extinguish_03.ogg"],
-		"sfx_charge": "projectile_charge.ogg",
-		"sfx_fire": "projectile_fire.ogg"
+		"sfx_death_key": "fire_death"
 	}
 }
 
@@ -210,7 +206,7 @@ func _process_vase_monster(delta: float):
 		if not is_attacking:
 			is_attacking = true
 			attack_windup_timer = config.attack_windup_time
-			Audio.play_sfx(config.sfx_windup)
+			Audio.play_sfx_random("vase_windup")
 
 	else:
 		# Außerhalb Range - normale Bewegung
@@ -222,8 +218,7 @@ func _execute_vase_attack():
 	var config = TYPE_CONFIG[Type.VASE_MONSTER]
 
 	# SFX
-	var sfx_list = config.sfx_attack
-	Audio.play_sfx(sfx_list[randi() % sfx_list.size()])
+	Audio.play_sfx_random("vase_attack")
 
 	# Dash nach rechts (3x normale Speed)
 	velocity.x = speed * 3.0
@@ -256,7 +251,7 @@ func _start_projectile_charge():
 	var config = TYPE_CONFIG[Type.FIRE_DEVIL]
 
 	# SFX
-	Audio.play_sfx(config.sfx_charge)
+	Audio.play_sfx_random("fire_charge")
 
 	# Visual Telegraph (TODO: Add particle effect in later commit)
 	sprite.modulate = Color(1.0, 1.0, 0.5)  # Yellow tint
@@ -293,7 +288,7 @@ func _fire_projectile():
 	get_parent().add_child(projectile)
 
 	# SFX
-	Audio.play_sfx(config.sfx_fire)
+	Audio.play_sfx_random("fire_shot")
 
 # ============================================================================
 # DEATH
@@ -314,8 +309,7 @@ func die():
 
 	# SFX
 	var config = TYPE_CONFIG[enemy_type]
-	var sfx_list = config.sfx_death
-	Audio.play_sfx(sfx_list[randi() % sfx_list.size()])
+	Audio.play_sfx_random(config.sfx_death_key)
 
 	# Coin Drop
 	if randf() < coin_drop_chance:

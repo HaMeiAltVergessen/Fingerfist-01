@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dlwtkb03a1j0b"
+path="res://.godot/imported/Keyboard 1.ogg-cd5ac257fb41e082fabffde59fbbfe34.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 4/Game Sound Effects Pack 4/OGG/Keyboard 1.ogg"
+dest_files=["res://.godot/imported/Keyboard 1.ogg-cd5ac257fb41e082fabffde59fbbfe34.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

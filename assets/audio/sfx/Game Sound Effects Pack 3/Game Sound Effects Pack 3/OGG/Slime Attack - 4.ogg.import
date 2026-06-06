@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ccjcoxpp0u16t"
+path="res://.godot/imported/Slime Attack - 4.ogg-50f2144da08b30a9abb476ff953547e5.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Slime Attack - 4.ogg"
+dest_files=["res://.godot/imported/Slime Attack - 4.ogg-50f2144da08b30a9abb476ff953547e5.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

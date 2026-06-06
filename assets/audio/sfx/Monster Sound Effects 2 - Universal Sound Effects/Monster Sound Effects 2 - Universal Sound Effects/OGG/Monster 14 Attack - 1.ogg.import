@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://8wu1hwngmi74"
+path="res://.godot/imported/Monster 14 Attack - 1.ogg-020989157098851ccb1c9333a9db7b5f.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Monster Sound Effects 2 - Universal Sound Effects/Monster Sound Effects 2 - Universal Sound Effects/OGG/Monster 14 Attack - 1.ogg"
+dest_files=["res://.godot/imported/Monster 14 Attack - 1.ogg-020989157098851ccb1c9333a9db7b5f.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

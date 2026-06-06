@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dundgfdaekqk6"
+path="res://.godot/imported/Frog - 2.ogg-b623d3358510326cfc3c57d33b222b1e.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Frog - 2.ogg"
+dest_files=["res://.godot/imported/Frog - 2.ogg-b623d3358510326cfc3c57d33b222b1e.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

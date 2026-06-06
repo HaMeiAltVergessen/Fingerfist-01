@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ck5ldavp1wrty"
+path="res://.godot/imported/Frog Attack - 1.ogg-5e74b858633744c2af0f5fb7c8b9162b.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Frog Attack - 1.ogg"
+dest_files=["res://.godot/imported/Frog Attack - 1.ogg-5e74b858633744c2af0f5fb7c8b9162b.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://kvktucw8rtaw"
+path="res://.godot/imported/Slime Die - 1.ogg-3d48c6d3ea38b061328b7d985b8f3d69.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 4/Game Sound Effects Pack 4/OGG/Slime Die - 1.ogg"
+dest_files=["res://.godot/imported/Slime Die - 1.ogg-3d48c6d3ea38b061328b7d985b8f3d69.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

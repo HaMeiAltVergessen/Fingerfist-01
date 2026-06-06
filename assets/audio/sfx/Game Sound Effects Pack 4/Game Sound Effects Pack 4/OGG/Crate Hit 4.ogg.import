@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://d1pdgxd6g0sq1"
+path="res://.godot/imported/Crate Hit 4.ogg-c37dc1c53e763fa11418476ccad7cf1e.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 4/Game Sound Effects Pack 4/OGG/Crate Hit 4.ogg"
+dest_files=["res://.godot/imported/Crate Hit 4.ogg-c37dc1c53e763fa11418476ccad7cf1e.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

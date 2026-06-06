@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://ccvhab0n185dc"
+path="res://.godot/imported/Fire Spell - 1.ogg-dae8461948bd0820976097a9c4f619f4.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Fire Spells/Fire Spell - 1.ogg"
+dest_files=["res://.godot/imported/Fire Spell - 1.ogg-dae8461948bd0820976097a9c4f619f4.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

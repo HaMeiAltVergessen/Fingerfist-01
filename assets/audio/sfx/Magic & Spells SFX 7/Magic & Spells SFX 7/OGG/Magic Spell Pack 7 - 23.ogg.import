@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bfq8atr6h8fd4"
+path="res://.godot/imported/Magic Spell Pack 7 - 23.ogg-83725819978054d145c39e8b5fd75ca7.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Magic & Spells SFX 7/Magic & Spells SFX 7/OGG/Magic Spell Pack 7 - 23.ogg"
+dest_files=["res://.godot/imported/Magic Spell Pack 7 - 23.ogg-83725819978054d145c39e8b5fd75ca7.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

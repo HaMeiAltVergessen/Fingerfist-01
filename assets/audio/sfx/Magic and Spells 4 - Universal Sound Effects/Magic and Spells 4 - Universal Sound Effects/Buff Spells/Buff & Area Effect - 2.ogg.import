@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://8lmvs40rtgi"
+path="res://.godot/imported/Buff & Area Effect - 2.ogg-52c72a307d164759a81fcc1146f1e75a.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Buff Spells/Buff & Area Effect - 2.ogg"
+dest_files=["res://.godot/imported/Buff & Area Effect - 2.ogg-52c72a307d164759a81fcc1146f1e75a.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

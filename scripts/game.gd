@@ -32,6 +32,15 @@ var _last_round_score: int = 0
 # Rundenscore, gesichert vor Global.end_round() (das current_round_score nullt) - für EndScreen
 var _final_round_score: int = 0
 
+# Runden-OSTs - bei jedem Rundenstart wird zufällig einer gespielt
+const ROUND_OSTS := [
+	"Fingerfist Ost 1.mp3",
+	"Fingerfist Ost 2.mp3",
+	"Fingerfist Ost 10.mp3",
+	"Fingerfist Ost 11.mp3",
+	"Fingerfist Ost 12.mp3",
+]
+
 # Rundentimer (Wave-Dauer). Endless (Level 7) hat keinen Timer.
 const ROUND_DURATION: float = 45.0
 var round_time_left: float = 0.0
@@ -94,7 +103,12 @@ func setup_background():
 		return
 
 	var level = clamp(Global.selected_level, 1, 7)
-	var tex = load("res://assets/sprites/backgrounds/level_%d_bg.png" % level)
+
+	# Echte Höhlen-Backgrounds, abwechselnd je Level: dunkle Höhle früh, helle Kristallhöhle
+	# spät -> visualisiert den "Aufstieg aus der Höhle".
+	var bg_path := "res://assets/Placeholder/AIPlaceholder/background02.png" if level <= 4 \
+		else "res://assets/Placeholder/AIPlaceholder/Background01.png"
+	var tex = load(bg_path)
 	if not tex:
 		print("[GameScene] Background für Level %d nicht gefunden" % level)
 		return
@@ -223,14 +237,8 @@ func start_round():
 	enemy_spawner.start_spawning()
 	coin_spawner.start_spawning()
 
-	# TODO: Start Music (Commit später)
-	# var level = Global.selected_level
-	# if level <= 3:
-	# 	Audio.play_music("combat_level_1.ogg")
-	# elif level <= 6:
-	# 	Audio.play_music("combat_level_2.ogg")
-	# else:
-	# 	Audio.play_music("combat_boss.ogg")
+	# Zufälligen Runden-OST starten (loopt via AudioManager)
+	Audio.play_music(ROUND_OSTS[randi() % ROUND_OSTS.size()])
 
 	print("[GameScene] Round Started")
 

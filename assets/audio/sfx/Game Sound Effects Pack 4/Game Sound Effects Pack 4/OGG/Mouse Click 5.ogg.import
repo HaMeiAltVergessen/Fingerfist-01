@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://cthpp0vol028v"
+path="res://.godot/imported/Mouse Click 5.ogg-430e8d021dae9cbbcf090dd32cec3df3.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 4/Game Sound Effects Pack 4/OGG/Mouse Click 5.ogg"
+dest_files=["res://.godot/imported/Mouse Click 5.ogg-430e8d021dae9cbbcf090dd32cec3df3.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

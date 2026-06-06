@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://501vjicx32wn"
+path="res://.godot/imported/Air Spell - 2.ogg-9dccf5074be48297f5f7b2c9b1efef8a.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Air Spells/Air Spell - 2.ogg"
+dest_files=["res://.godot/imported/Air Spell - 2.ogg-9dccf5074be48297f5f7b2c9b1efef8a.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

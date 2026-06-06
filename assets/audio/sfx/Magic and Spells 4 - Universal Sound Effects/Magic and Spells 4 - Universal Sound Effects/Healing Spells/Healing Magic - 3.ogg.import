@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bx3xbdvegibfw"
+path="res://.godot/imported/Healing Magic - 3.ogg-a59bce0c1774c7d783c52d7eca478d7f.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Magic and Spells 4 - Universal Sound Effects/Magic and Spells 4 - Universal Sound Effects/Healing Spells/Healing Magic - 3.ogg"
+dest_files=["res://.godot/imported/Healing Magic - 3.ogg-a59bce0c1774c7d783c52d7eca478d7f.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

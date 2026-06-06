@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dfqsu5jkd4xhn"
+path="res://.godot/imported/Magic Spell Pack 6 - 1.ogg-93bcd64de4c1e074b59b4bdcc728635b.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Magic & Spells SFX 6/Magic & Spells SFX 6/OGG/Magic Spell Pack 6 - 1.ogg"
+dest_files=["res://.godot/imported/Magic Spell Pack 6 - 1.ogg-93bcd64de4c1e074b59b4bdcc728635b.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

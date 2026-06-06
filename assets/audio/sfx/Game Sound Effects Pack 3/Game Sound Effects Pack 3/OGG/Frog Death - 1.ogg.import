@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://dlrv30yt12vd1"
+path="res://.godot/imported/Frog Death - 1.ogg-822be1de255a4fa249ec67d05670ab0e.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 3/Game Sound Effects Pack 3/OGG/Frog Death - 1.ogg"
+dest_files=["res://.godot/imported/Frog Death - 1.ogg-822be1de255a4fa249ec67d05670ab0e.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

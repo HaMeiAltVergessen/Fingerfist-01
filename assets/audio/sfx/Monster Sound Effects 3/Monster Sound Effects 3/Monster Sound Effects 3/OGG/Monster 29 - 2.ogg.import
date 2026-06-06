@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://bnq0vfinqal36"
+path="res://.godot/imported/Monster 29 - 2.ogg-b513f12b3991d22bc4951390e6dc7105.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Monster Sound Effects 3/Monster Sound Effects 3/Monster Sound Effects 3/OGG/Monster 29 - 2.ogg"
+dest_files=["res://.godot/imported/Monster 29 - 2.ogg-b513f12b3991d22bc4951390e6dc7105.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

@@ -148,8 +148,7 @@ func perform_punch(target: Vector2):
 		sprite.play("punch")
 
 	# SFX
-	var punch_num = randi() % 10 + 1
-	Audio.play_sfx("punch_%02d.ogg" % punch_num, 0.1)
+	Audio.play_sfx_random("punch", 0.15)
 
 	# Treffer SOFORT an der Klickposition auswerten (klick-zielbar)
 	var did_hit_enemy := _punch_at(target, PUNCH_REACH * attack_radius_multiplier)
@@ -298,7 +297,7 @@ func take_damage(amount: int):
 	# Fire Shield
 	if fire_shield_charges > 0:
 		fire_shield_charges -= 1
-		Audio.play_sfx("fire_shield.ogg")
+		Audio.play_sfx_random("item_shield")
 		print("[Player] Fire Shield absorbed hit! Charges: %d" % fire_shield_charges)
 		return
 
@@ -314,8 +313,7 @@ func take_damage(amount: int):
 		last_rain_combo = 0
 
 	# SFX
-	var hurt_num = randi() % 3 + 1
-	Audio.play_sfx("hurt_%02d.ogg" % hurt_num)
+	Audio.play_sfx_random("player_hurt")
 
 	print("[Player] Took %d damage - HP: %d/%d" % [amount, hp, max_hp])
 
@@ -344,7 +342,7 @@ func _on_hurtbox_area_entered(area: Area2D):
 	# Fire Shield negiert Projektil-Schaden
 	if projectile and fire_shield_charges > 0:
 		fire_shield_charges -= 1
-		Audio.play_sfx("fire_shield.ogg")
+		Audio.play_sfx_random("item_shield")
 		# TODO: Spawn Fire Explosion Particles (Commit 59)
 		projectile.queue_free()
 		return
@@ -354,7 +352,7 @@ func _on_hurtbox_area_entered(area: Area2D):
 
 	# Projektil wird beim Treffer verbraucht
 	if projectile:
-		Audio.play_sfx("projectile_hit.ogg")
+		Audio.play_sfx_random("projectile_hit")
 		projectile.queue_free()
 
 func _on_invulnerability_timeout():
@@ -368,7 +366,7 @@ func die():
 	set_process(false)
 
 	# SFX
-	Audio.play_sfx("death.ogg")
+	Audio.play_sfx_random("player_death")
 
 	# Save highest combo
 	if combo_counter > 0:
@@ -490,7 +488,7 @@ func _check_item_triggers():
 func trigger_slow_motion():
 	"""Aktiviert Slow-Motion für 2 Sekunden"""
 	Engine.time_scale = 0.7
-	Audio.play_sfx("slow_motion.ogg")
+	Audio.play_sfx_random("item_slowmo")
 
 	# Reset nach 2s (real time, nicht game time)
 	var timer = get_tree().create_timer(2.0 / 0.7, true, false, true)
@@ -499,7 +497,7 @@ func trigger_slow_motion():
 
 func trigger_chain_lightning():
 	"""Spawnt Chain Lightning Effekt"""
-	Audio.play_sfx("thunder_chain.ogg")
+	Audio.play_sfx_random("item_thunder")
 
 	# Screenshake
 	var camera = get_tree().get_first_node_in_group("camera")
@@ -517,7 +515,7 @@ func trigger_chain_lightning():
 func trigger_meteor_rain():
 	"""Spawnt Meteoriten-Regen"""
 	Global.score_multiplier = 2.0
-	Audio.play_sfx("meteor_rain.ogg")
+	Audio.play_sfx_random("item_meteor")
 
 	# Screenshake
 	var camera = get_tree().get_first_node_in_group("camera")

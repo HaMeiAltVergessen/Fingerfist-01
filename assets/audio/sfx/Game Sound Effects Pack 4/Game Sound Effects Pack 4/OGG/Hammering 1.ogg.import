@@ -1,0 +1,19 @@
+[remap]
+
+importer="oggvorbisstr"
+type="AudioStreamOggVorbis"
+uid="uid://b5gjpnixmcw5v"
+path="res://.godot/imported/Hammering 1.ogg-aa9c25a95aa1e8cb22d71116b803f450.oggvorbisstr"
+
+[deps]
+
+source_file="res://assets/audio/sfx/Game Sound Effects Pack 4/Game Sound Effects Pack 4/OGG/Hammering 1.ogg"
+dest_files=["res://.godot/imported/Hammering 1.ogg-aa9c25a95aa1e8cb22d71116b803f450.oggvorbisstr"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
