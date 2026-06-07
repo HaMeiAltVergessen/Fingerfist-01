@@ -69,6 +69,12 @@ const ITEMS = {
 		"description": "+3 Extra Leben (HP 5→8)",
 		"category": "Defense"
 	},
+	"thunder_charge": {
+		"name": "Thunder Charge",
+		"cost": 900,
+		"description": "Chain Lightning bei 20er Combo (Blitz alle 10 Treffer)",
+		"category": "Combat"
+	},
 	"call_of_wrath": {
 		"name": "Call of Wrath",
 		"cost": 1200,
@@ -251,6 +257,13 @@ func load_game() -> bool:
 		if Global.items.has(item_id):
 			Global.items[item_id].owned = saved_items[item_id].get("owned", false)
 			Global.items[item_id].active = saved_items[item_id].get("active", false)
+
+	# active_items-Array aus den geladenen Flags neu aufbauen,
+	# damit is_item_active() (prüft active_items) und items[id].active konsistent sind
+	Global.active_items.clear()
+	for item_id in Global.items:
+		if Global.items[item_id].get("active", false):
+			Global.active_items.append(item_id)
 
 	# ========== SETTINGS SECTION ==========
 	var sfx_vol = config.get_value("settings", "sfx_volume", 1.0)

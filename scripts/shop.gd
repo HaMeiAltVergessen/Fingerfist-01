@@ -149,6 +149,7 @@ func create_item_button(item_id: String, item_data: Dictionary) -> Button:
 	var button = Button.new()
 	button.custom_minimum_size = Vector2(220, 140)
 	button.name = "%sButton" % item_id
+	button.set_meta("item_id", item_id)  # Für korrektes Mapping in update_item_buttons()
 
 	# Item icon (artwork keyed by item id)
 	var icon_path = "res://assets/sprites/ui/items/%s.png" % item_id
@@ -185,12 +186,10 @@ func create_item_button(item_id: String, item_data: Dictionary) -> Button:
 
 func update_item_buttons():
 	"""Updated Item-Button-Zustände basierend auf Coins"""
-	var items = SaveSystem.ITEMS
-
-	for i in range(item_buttons.size()):
-		var item_id = items.keys()[i]
-		var item_data = items[item_id]
-		var button = item_buttons[i]
+	# Button → Item via Metadata mappen, damit Kategorie-Filter (Teilmenge) korrekt bleibt
+	for button in item_buttons:
+		var item_id = button.get_meta("item_id")
+		var item_data = SaveSystem.ITEMS[item_id]
 
 		var is_owned = Global.is_item_owned(item_id)
 		var can_afford = Global.coins >= item_data.cost
@@ -462,8 +461,10 @@ func _on_detail_action_button_pressed():
 		show_item_details(selected_item_id)
 	else:
 		# Show Purchase Confirmation
+		# WICHTIG: ID sichern, bevor hide_item_details() selected_item_id leert
+		var id := selected_item_id
 		hide_item_details()
-		show_purchase_confirmation(selected_item_id)
+		show_purchase_confirmation(id)
 
 func _on_detail_close_button_pressed():
 	"""Close Button im Details-Panel geklickt"""

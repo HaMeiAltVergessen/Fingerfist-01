@@ -15,8 +15,13 @@ var details_title: Label
 var details_wall_hp: Label
 var details_highscore: Label
 var details_combo: Label
+var details_items_header: Label
+var details_items_container: VBoxContainer
 var details_play_button: Button
 var details_close_button: Button
+
+# Pre-Round Item Toggle Buttons (rebuilt each time panel opens)
+var item_toggle_buttons: Array[Button] = []
 
 # ============================================================================
 # STATE
@@ -123,8 +128,8 @@ func create_details_panel():
 	details_panel = Panel.new()
 	details_panel.name = "DetailsPanel"
 	details_panel.visible = false
-	details_panel.custom_minimum_size = Vector2(500, 400)
-	details_panel.position = Vector2(290, 160)  # Center of screen
+	details_panel.custom_minimum_size = Vector2(500, 560)
+	details_panel.position = Vector2(290, 90)  # Center of screen
 	add_child(details_panel)
 
 	# Title Label
@@ -155,11 +160,26 @@ func create_details_panel():
 	details_combo.add_theme_font_size_override("font_size", 18)
 	details_panel.add_child(details_combo)
 
+	# Items Header
+	details_items_header = Label.new()
+	details_items_header.name = "DetailItemsHeader"
+	details_items_header.text = "YOUR ITEMS (tap to activate for this run)"
+	details_items_header.position = Vector2(20, 230)
+	details_items_header.add_theme_font_size_override("font_size", 18)
+	details_panel.add_child(details_items_header)
+
+	# Items Container (toggle buttons rebuilt per open)
+	details_items_container = VBoxContainer.new()
+	details_items_container.name = "DetailItemsContainer"
+	details_items_container.position = Vector2(20, 265)
+	details_items_container.custom_minimum_size = Vector2(460, 170)
+	details_panel.add_child(details_items_container)
+
 	# Play Button
 	details_play_button = Button.new()
 	details_play_button.name = "DetailPlayButton"
 	details_play_button.text = "START LEVEL"
-	details_play_button.position = Vector2(50, 280)
+	details_play_button.position = Vector2(50, 470)
 	details_play_button.custom_minimum_size = Vector2(180, 60)
 	details_play_button.pressed.connect(_on_detail_play_button_pressed)
 	details_panel.add_child(details_play_button)
@@ -168,7 +188,7 @@ func create_details_panel():
 	details_close_button = Button.new()
 	details_close_button.name = "DetailCloseButton"
 	details_close_button.text = "BACK"
-	details_close_button.position = Vector2(270, 280)
+	details_close_button.position = Vector2(270, 470)
 	details_close_button.custom_minimum_size = Vector2(180, 60)
 	details_close_button.pressed.connect(_on_detail_close_button_pressed)
 	details_panel.add_child(details_close_button)
@@ -204,10 +224,67 @@ func show_level_details(level: int):
 	else:
 		details_combo.text = "🔥 Best Combo: Not Set"
 
+	# Render owned items as pre-round activation toggles
+	render_item_toggles()
+
 	# Show Panel
 	details_panel.visible = true
 
 	print("[LevelSelect] Showing details for Level %d" % level)
+
+func render_item_toggles():
+	"""Baut die Item-Toggle-Buttons (nur besessene Items) neu auf"""
+	# Alte Buttons / Hinweistext entfernen
+	for child in details_items_container.get_children():
+		child.queue_free()
+	item_toggle_buttons.clear()
+
+	var any_owned := false
+
+	for item_id in SaveSystem.ITEMS.keys():
+		if not Global.is_item_owned(item_id):
+			continue
+
+		any_owned = true
+		var item_data = SaveSystem.ITEMS[item_id]
+
+		var button = Button.new()
+		button.name = "ItemToggle_%s" % item_id
+		button.custom_minimum_size = Vector2(440, 36)
+		button.pressed.connect(_on_item_toggle_pressed.bind(item_id))
+		details_items_container.add_child(button)
+		item_toggle_buttons.append(button)
+
+		update_item_toggle(button, item_id, item_data)
+
+	if not any_owned:
+		var hint = Label.new()
+		hint.text = "No items owned — visit the Shop to buy items."
+		hint.add_theme_font_size_override("font_size", 16)
+		details_items_container.add_child(hint)
+
+func update_item_toggle(button: Button, item_id: String, item_data: Dictionary):
+	"""Aktualisiert Text/Farbe eines Item-Toggles je nach Aktiv-Status"""
+	var is_active = Global.is_item_active(item_id)
+	if is_active:
+		button.text = "✅ %s — ACTIVE" % item_data.name
+		button.modulate = Color(0.5, 1.0, 0.5)  # Green
+	else:
+		button.text = "⬜ %s — inactive" % item_data.name
+		button.modulate = Color.WHITE
+
+func _on_item_toggle_pressed(item_id: String):
+	"""Item-Toggle geklickt - aktiviert/deaktiviert für die nächste Runde"""
+	if Global.is_item_active(item_id):
+		Global.deactivate_item(item_id)
+		print("[LevelSelect] Deactivated item: %s" % item_id)
+	else:
+		Global.activate_item(item_id)
+		print("[LevelSelect] Activated item: %s" % item_id)
+
+	# Persistieren und Toggles neu rendern
+	SaveSystem.save_game()
+	render_item_toggles()
 
 func hide_level_details():
 	"""Versteckt Level-Details-Panel"""
