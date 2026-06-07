@@ -64,7 +64,7 @@ func update_timer(seconds: float):
 		return
 
 	var s := int(ceil(max(0.0, seconds)))
-	timer_label.text = "⏱ %d" % s
+	timer_label.text = "%d" % s
 
 	if s <= 10:
 		timer_label.modulate = Color(1.0, 0.3, 0.3)  # Rot (Warnung)

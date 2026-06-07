@@ -165,17 +165,17 @@ func create_item_button(item_id: String, item_data: Dictionary) -> Button:
 
 	# Button Text
 	var button_text = "%s\n\n" % item_data.name
-	button_text += "💰 %d Coins\n" % item_data.cost
+	button_text += "%d Coins\n" % item_data.cost
 
 	if is_owned:
-		button_text += "✅ OWNED"
+		button_text += "OWNED"
 		button.modulate = Color(0.7, 1.0, 0.7)  # Green tint
 	elif not can_afford:
-		button_text += "❌ Cannot Afford"
+		button_text += "Cannot Afford"
 		button.disabled = true
 		button.modulate = Color(0.6, 0.6, 0.6)  # Gray
 	else:
-		button_text += "🛒 BUY"
+		button_text += "BUY"
 
 	button.text = button_text
 
@@ -196,18 +196,18 @@ func update_item_buttons():
 
 		# Update Button Text
 		var button_text = "%s\n\n" % item_data.name
-		button_text += "💰 %d Coins\n" % item_data.cost
+		button_text += "%d Coins\n" % item_data.cost
 
 		if is_owned:
-			button_text += "✅ OWNED"
+			button_text += "OWNED"
 			button.modulate = Color(0.7, 1.0, 0.7)
 			button.disabled = false
 		elif not can_afford:
-			button_text += "❌ Cannot Afford"
+			button_text += "Cannot Afford"
 			button.disabled = true
 			button.modulate = Color(0.6, 0.6, 0.6)
 		else:
-			button_text += "🛒 BUY"
+			button_text += "BUY"
 			button.disabled = false
 			button.modulate = Color.WHITE
 
@@ -291,14 +291,14 @@ func show_item_details(item_id: String):
 	details_description.text = item_data.description
 
 	# Update Cost
-	details_cost.text = "💰 Cost: %d Coins" % item_data.cost
+	details_cost.text = "Cost: %d Coins" % item_data.cost
 
 	# Update Status & Action Button
 	var is_owned = Global.is_item_owned(item_id)
 	var is_active = Global.is_item_active(item_id)
 
 	if is_owned:
-		details_status.text = "✅ Status: OWNED"
+		details_status.text = "Status: OWNED"
 		details_status.modulate = Color(0.3, 1.0, 0.3)
 
 		if is_active:
@@ -313,13 +313,13 @@ func show_item_details(item_id: String):
 		var can_afford = Global.coins >= item_data.cost
 
 		if can_afford:
-			details_status.text = "❓ Status: Not Owned"
+			details_status.text = "Status: Not Owned"
 			details_status.modulate = Color(1.0, 1.0, 1.0)
 			details_action_button.text = "BUY NOW"
 			details_action_button.modulate = Color(1.0, 0.84, 0.0)  # Gold
 			details_action_button.disabled = false
 		else:
-			details_status.text = "❌ Status: Cannot Afford"
+			details_status.text = "Status: Cannot Afford"
 			details_status.modulate = Color(1.0, 0.3, 0.3)
 			details_action_button.text = "BUY NOW"
 			details_action_button.modulate = Color(0.5, 0.5, 0.5)
@@ -419,7 +419,7 @@ func hide_purchase_confirmation():
 
 func update_coins_display():
 	"""Updated Coins-Anzeige"""
-	coins_label.text = "💰 Coins: %d" % Global.coins
+	coins_label.text = "Coins: %d" % Global.coins
 
 func _on_coins_changed(new_amount: int):
 	"""Coins haben sich geändert"""

@@ -66,7 +66,7 @@ const ITEMS = {
 	"golem_skin": {
 		"name": "Golem Skin",
 		"cost": 1000,
-		"description": "+3 Extra Leben (HP 5→8)",
+		"description": "+3 Extra Leben (HP 5->8)",
 		"category": "Defense"
 	},
 	"thunder_charge": {

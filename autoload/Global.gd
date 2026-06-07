@@ -234,6 +234,28 @@ func reset_progression():
 	level_highest_combos = [0, 0, 0, 0, 0, 0, 0, 0]
 	save_game()
 
+func reset_all_progress():
+	"""Kompletter Reset für 'New Game': Score, Coins, Items, Level-Unlocks, Wall-HP.
+
+	Bündelt die vorhandenen Reset-Bausteine und speichert genau einmal."""
+	# Coins, Items, unlocked_levels, highscores, Statistik, Settings → Defaults
+	SaveSystem._reset_global_to_defaults()
+
+	# Level-spezifische Highscores/Combos zurücksetzen
+	level_highscores = [0, 0, 0, 0, 0, 0, 0, 0]
+	level_highest_combos = [0, 0, 0, 0, 0, 0, 0, 0]
+	selected_level = 1
+
+	# Wall-HP aller Level auf Maximum
+	for level in WALL_HP_PER_LEVEL:
+		wall_hp[level] = WALL_HP_PER_LEVEL[level]
+
+	# Alten Save-Slot von der Platte löschen und frischen Stand speichern
+	SaveSystem.delete_save()
+	save_game()
+
+	print("[Global] All progress reset (New Game)")
+
 # ============================================================================
 # HIGHSCORE SYSTEM
 # ============================================================================

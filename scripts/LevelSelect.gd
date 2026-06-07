@@ -23,6 +23,12 @@ var details_close_button: Button
 # Pre-Round Item Toggle Buttons (rebuilt each time panel opens)
 var item_toggle_buttons: Array[Button] = []
 
+# Stats Display (created dynamically) - Total Score / Coins / Levels Unlocked
+var stats_panel: Panel
+var total_score_label: Label
+var coins_label: Label
+var levels_unlocked_label: Label
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -60,7 +66,55 @@ func _ready():
 	# Create Details Panel
 	create_details_panel()
 
+	# Create Stats Display (Total Score / Coins / Levels Unlocked)
+	create_stats_panel()
+	update_stats_panel()
+
+	# Live-Update bei Änderungen (z.B. Coins nach Shop-Kauf)
+	Global.coins_changed.connect(_on_stats_changed)
+	Global.score_changed.connect(_on_stats_changed)
+
 	print("[LevelSelect] Ready")
+
+# ============================================================================
+# STATS DISPLAY
+# ============================================================================
+
+func create_stats_panel():
+	"""Erstellt Stats-Panel oben links (Total Score / Coins / Levels Unlocked)"""
+	stats_panel = Panel.new()
+	stats_panel.name = "StatsPanel"
+	stats_panel.position = Vector2(20, 20)
+	stats_panel.custom_minimum_size = Vector2(240, 150)
+	add_child(stats_panel)
+
+	total_score_label = Label.new()
+	total_score_label.name = "TotalScoreLabel"
+	total_score_label.position = Vector2(12, 12)
+	total_score_label.add_theme_font_size_override("font_size", 16)
+	stats_panel.add_child(total_score_label)
+
+	coins_label = Label.new()
+	coins_label.name = "CoinsLabel"
+	coins_label.position = Vector2(12, 60)
+	coins_label.add_theme_font_size_override("font_size", 16)
+	stats_panel.add_child(coins_label)
+
+	levels_unlocked_label = Label.new()
+	levels_unlocked_label.name = "LevelsUnlockedLabel"
+	levels_unlocked_label.position = Vector2(12, 108)
+	levels_unlocked_label.add_theme_font_size_override("font_size", 16)
+	stats_panel.add_child(levels_unlocked_label)
+
+func update_stats_panel():
+	"""Aktualisiert die Stats-Anzeige"""
+	total_score_label.text = "Total Score:\n   %d" % Global.total_highscore
+	coins_label.text = "Coins:\n   %d" % Global.coins
+	levels_unlocked_label.text = "Levels Unlocked:\n   %d / 7" % Global.unlocked_levels.size()
+
+func _on_stats_changed(_value):
+	"""Stats haben sich geändert"""
+	update_stats_panel()
 
 # ============================================================================
 # LEVEL BUTTONS
@@ -90,7 +144,7 @@ func create_level_button(level: int) -> Button:
 	if is_unlocked:
 		button.text = "Level %d\n%s" % [level, LEVEL_NAMES[level - 1]]
 	else:
-		button.text = "Level %d\n🔒 LOCKED" % level
+		button.text = "Level %d\nLOCKED" % level
 
 	button.pressed.connect(_on_level_button_pressed.bind(level))
 	return button
@@ -108,13 +162,13 @@ func update_button_states():
 
 			var highscore = Global.get_highscore(level)
 			if highscore > 0:
-				button.text += "\n🏆 %d" % highscore
+				button.text += "\nBest: %d" % highscore
 
 			button.disabled = false
 			button.modulate = Color.WHITE
 		else:
 			# Locked - Gray out
-			button.text = "Level %d\n🔒 LOCKED" % level
+			button.text = "Level %d\nLOCKED" % level
 			button.disabled = true
 			button.modulate = Color(0.5, 0.5, 0.5)
 
@@ -206,23 +260,23 @@ func show_level_details(level: int):
 	var max_hp = Global.WALL_HP_PER_LEVEL.get(level, 0)
 	var current_hp = Global.get_wall_remaining_hp(level)
 	if level == 7:
-		details_wall_hp.text = "⚔️ Endless Mode - No Wall"
+		details_wall_hp.text = "Endless Mode - No Wall"
 	else:
-		details_wall_hp.text = "🏰 Wall HP: %d / %d" % [current_hp, max_hp]
+		details_wall_hp.text = "Wall HP: %d / %d" % [current_hp, max_hp]
 
 	# Highscore Info
 	var highscore = Global.get_highscore(level)
 	if highscore > 0:
-		details_highscore.text = "🏆 Highscore: %d" % highscore
+		details_highscore.text = "Highscore: %d" % highscore
 	else:
-		details_highscore.text = "🏆 Highscore: Not Set"
+		details_highscore.text = "Highscore: Not Set"
 
 	# Combo Info
 	var highest_combo = Global.get_highest_combo(level)
 	if highest_combo > 0:
-		details_combo.text = "🔥 Best Combo: %d" % highest_combo
+		details_combo.text = "Best Combo: %d" % highest_combo
 	else:
-		details_combo.text = "🔥 Best Combo: Not Set"
+		details_combo.text = "Best Combo: Not Set"
 
 	# Render owned items as pre-round activation toggles
 	render_item_toggles()
@@ -267,10 +321,10 @@ func update_item_toggle(button: Button, item_id: String, item_data: Dictionary):
 	"""Aktualisiert Text/Farbe eines Item-Toggles je nach Aktiv-Status"""
 	var is_active = Global.is_item_active(item_id)
 	if is_active:
-		button.text = "✅ %s — ACTIVE" % item_data.name
+		button.text = "%s - ACTIVE" % item_data.name
 		button.modulate = Color(0.5, 1.0, 0.5)  # Green
 	else:
-		button.text = "⬜ %s — inactive" % item_data.name
+		button.text = "%s - inactive" % item_data.name
 		button.modulate = Color.WHITE
 
 func _on_item_toggle_pressed(item_id: String):

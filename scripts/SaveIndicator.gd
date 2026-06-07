@@ -58,7 +58,7 @@ func create_indicator_ui():
 	icon_label.add_theme_font_size_override("font_size", 28)
 	icon_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	icon_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	icon_label.text = "💾"
+	icon_label.text = ""
 	indicator_panel.add_child(icon_label)
 
 	# Text Label
@@ -81,11 +81,11 @@ func create_indicator_ui():
 func _on_save_complete(is_auto: bool):
 	"""Save abgeschlossen - zeige Indicator"""
 	var text = "Auto-Saved" if is_auto else "Game Saved"
-	show_indicator(text, "💾", Color(0.3, 1.0, 0.3))
+	show_indicator(text, "", Color(0.3, 1.0, 0.3))
 
 func _on_load_complete():
 	"""Load abgeschlossen"""
-	show_indicator("Game Loaded", "📂", Color(0.3, 0.8, 1.0))
+	show_indicator("Game Loaded", "", Color(0.3, 0.8, 1.0))
 
 func show_indicator(text: String, emoji: String, color: Color):
 	"""Zeigt Save-Indicator

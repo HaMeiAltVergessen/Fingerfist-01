@@ -100,7 +100,7 @@ offset_right = 60.0
 offset_bottom = 40.0
 grow_horizontal = 2
 grow_vertical = 2
-text = "💾 Save"
+text = "Save"
 
 [node name="RestartButton" type="Button" parent="PauseScreen/PausePanel"]
 layout_mode = 0

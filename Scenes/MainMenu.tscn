@@ -17,29 +17,24 @@ theme_override_constants/separation = 16
 [node name="PlayButton" type="Button" parent="CanvasLayer/MenuContainer"]
 custom_minimum_size = Vector2(400, 56)
 layout_mode = 2
-text = "▶ PLAY"
+text = "PLAY"
+
+[node name="NewGameButton" type="Button" parent="CanvasLayer/MenuContainer"]
+custom_minimum_size = Vector2(400, 56)
+layout_mode = 2
+text = "NEW GAME"
 
 [node name="ShopButton" type="Button" parent="CanvasLayer/MenuContainer"]
 custom_minimum_size = Vector2(400, 56)
 layout_mode = 2
-text = "🛒 SHOP"
+text = "SHOP"
 
 [node name="SettingsButton" type="Button" parent="CanvasLayer/MenuContainer"]
 custom_minimum_size = Vector2(400, 56)
 layout_mode = 2
-text = "⚙ SETTINGS"
-
-[node name="HighscoreButton" type="Button" parent="CanvasLayer/MenuContainer"]
-custom_minimum_size = Vector2(400, 56)
-layout_mode = 2
-text = "🏆 HIGHSCORE"
-
-[node name="CreditsButton" type="Button" parent="CanvasLayer/MenuContainer"]
-custom_minimum_size = Vector2(400, 56)
-layout_mode = 2
-text = "📜 CREDITS"
+text = "SETTINGS"
 
 [node name="QuitButton" type="Button" parent="CanvasLayer/MenuContainer"]
 custom_minimum_size = Vector2(400, 56)
 layout_mode = 2
-text = "✖ QUIT"
+text = "QUIT"

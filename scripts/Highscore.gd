@@ -39,7 +39,7 @@ func create_title():
 	"""Titel-Label"""
 	var title = Label.new()
 	title.name = "TitleLabel"
-	title.text = "🏆 HIGHSCORES"
+	title.text = "HIGHSCORES"
 	title.position = Vector2(0, 40)
 	title.size = Vector2(1280, 60)
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
