@@ -31,6 +31,9 @@ func _ready():
 	# Create New Game Confirmation Dialog
 	create_confirm_dialog()
 
+	# TEMP: Test-Button zum Freischalten aller Level
+	create_test_unlock_button()
+
 	# Connect Buttons
 	if play_button:
 		play_button.pressed.connect(_on_play_button_pressed)
@@ -81,7 +84,7 @@ func create_confirm_dialog():
 	confirm_dialog.add_child(title)
 
 	var message = Label.new()
-	message.text = "Neues Spiel starten?\nAller Fortschritt geht verloren."
+	message.text = "Start new game?\nYour Progress will be lost."
 	message.position = Vector2(20, 70)
 	message.custom_minimum_size = Vector2(400, 60)
 	message.add_theme_font_size_override("font_size", 16)
@@ -144,3 +147,25 @@ func _on_quit_button_pressed():
 	"""Quit Button → Exit Game"""
 	print("[MainMenu] Quit pressed")
 	get_tree().quit()
+
+# ============================================================================
+# === TEMP TEST BUTTON (später entfernen) ===
+# Schaltet zum Testen alle Level frei. Komplett diesen Block + den Aufruf in
+# _ready() löschen, um ihn wieder zu entfernen.
+# ============================================================================
+
+func create_test_unlock_button():
+	var btn = Button.new()
+	btn.name = "TestUnlockButton"
+	btn.text = "🔓 UNLOCK ALL (TEST)"
+	btn.position = Vector2(20, 20)
+	btn.custom_minimum_size = Vector2(220, 40)
+	btn.modulate = Color(1.0, 0.6, 0.2)
+	btn.pressed.connect(func():
+		Global.unlock_all_levels()
+		btn.text = "✓ Alle Level frei")
+	canvas_layer.add_child(btn)
+
+	print("[MainMenu] TEMP test unlock button created")
+
+# === ENDE TEMP TEST BUTTON ===

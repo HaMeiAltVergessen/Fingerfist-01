@@ -68,11 +68,16 @@ func show_stats(stats: Dictionary):
 			title_label.text = "NEW HIGHSCORE!"
 			title_label.modulate = Color(1.0, 0.84, 0.0)  # Gold
 		else:
-			title_label.text = "LEVEL COMPLETE!"
+			title_label.text = "Wall shatterd!"
 			title_label.modulate = Color(0.3, 1.0, 0.3)
-	else:
+	elif stats.get("died", false):
+		# Spieler ist gestorben
 		title_label.text = "GAME OVER"
 		title_label.modulate = Color(1.0, 0.3, 0.3)
+	else:
+		# Runde abgelaufen, Wand steht noch
+		title_label.text = "The Wall Still Stands"
+		title_label.modulate = Color(1.0, 0.7, 0.2)
 
 	# Stats
 	round_score_label.text = "Round Score: %d" % stats.get("round_score", 0)

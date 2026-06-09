@@ -218,6 +218,12 @@ func unlock_next_level(current_level: int):
 
 	print("[Global] Level %d UNLOCKED! 🎉" % next_level)
 
+func unlock_all_levels():
+	"""Schaltet alle Level frei (Test-Helfer - später entfernen)"""
+	unlocked_levels = [1, 2, 3, 4, 5, 6, 7]
+	save_game()
+	print("[Global] ALL levels unlocked (test)")
+
 func is_level_unlocked(level: int) -> bool:
 	"""Prüft ob Level freigeschaltet ist"""
 	return unlocked_levels.has(level)

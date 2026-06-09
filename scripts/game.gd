@@ -50,6 +50,7 @@ var coins_at_round_start: int = 0
 var round_start_time: float = 0.0
 var enemies_killed_this_round: int = 0
 var is_new_highscore: bool = false
+var player_died: bool = false
 
 # ============================================================================
 # INITIALIZATION
@@ -104,10 +105,9 @@ func setup_background():
 
 	var level = clamp(Global.selected_level, 1, 7)
 
-	# Echte Höhlen-Backgrounds, abwechselnd je Level: dunkle Höhle früh, helle Kristallhöhle
-	# spät -> visualisiert den "Aufstieg aus der Höhle".
-	var bg_path := "res://assets/Placeholder/AIPlaceholder/background02.png" if level <= 4 \
-		else "res://assets/Placeholder/AIPlaceholder/Background01.png"
+	# Nummerierte Backgrounds: Background1 → Level 1 … Background7 → Level 7
+	# (visualisiert den "Aufstieg aus der Höhle" über die Level hinweg).
+	var bg_path := "res://assets/Placeholder/AIPlaceholder/Background%d.png" % level
 	var tex = load(bg_path)
 	if not tex:
 		print("[GameScene] Background für Level %d nicht gefunden" % level)
@@ -226,6 +226,7 @@ func start_round():
 	coins_at_round_start = Global.coins
 	round_start_time = Time.get_ticks_msec() / 1000.0
 	enemies_killed_this_round = 0
+	player_died = false
 
 	# Rundentimer starten (nicht im Endless-Modus)
 	if Global.selected_level != 7:
@@ -294,6 +295,7 @@ func show_end_screen():
 		"time_played": round_time,
 		"victory": victory,
 		"new_highscore": is_new_highscore,
+		"died": player_died,
 	}
 
 	# Show EndScreen with stats
@@ -341,6 +343,7 @@ func toggle_pause():
 func _on_player_died():
 	"""Player ist gestorben"""
 	print("[GameScene] Player Died")
+	player_died = true
 
 	# Wait a moment (für Death-Animation)
 	await get_tree().create_timer(1.0).timeout

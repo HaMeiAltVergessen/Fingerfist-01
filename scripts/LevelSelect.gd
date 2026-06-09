@@ -38,13 +38,13 @@ var selected_level_for_details: int = 0
 
 # Level Names
 const LEVEL_NAMES: Array[String] = [
-	"Beginner's Trial",
-	"Rising Challenge",
-	"Breaking Point",
-	"Relentless Assault",
-	"Expert's Gauntlet",
-	"Master's Ordeal",
-	"Final Stand",
+	"Fire and Shadows",
+	"Endless Cave",
+	"Hope",
+	"Holding On",
+	"Willpower",
+	"Into the Light",
+	"Final Stand under the Sun",
 ]
 
 # ============================================================================
@@ -362,8 +362,11 @@ func _on_detail_play_button_pressed():
 	Global.selected_level = selected_level_for_details
 	print("[LevelSelect] Starting Level %d" % selected_level_for_details)
 
-	# Load GameScene
-	SceneLoader.load_scene("res://Scenes/game.tscn")
+	# Levelspezifische Szene laden (eigene Spawnpunkte etc.); Fallback auf game.tscn
+	var level_path := "res://Scenes/Levels/Level%d.tscn" % selected_level_for_details
+	if not ResourceLoader.exists(level_path):
+		level_path = "res://Scenes/game.tscn"
+	SceneLoader.load_scene(level_path)
 
 func _on_detail_close_button_pressed():
 	"""Close Button im Details-Panel geklickt"""

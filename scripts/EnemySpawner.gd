@@ -68,6 +68,10 @@ var current_interval: float = 3.0
 var current_level: int = 1
 var spawned_enemies: Array[Enemy] = []
 
+# Im Editor platzierte Spawnpunkte (Marker2D in Gruppe "spawn_points").
+# Werden in start_spawning() einmalig gecacht. Leer => Default-Spawnverhalten.
+var spawn_points: Array[Vector2] = []
+
 # ============================================================================
 # SPAWN PATTERNS
 # ============================================================================
@@ -149,9 +153,44 @@ func get_pattern_enemy_count(pattern: SpawnPattern) -> int:
 
 func start_spawning():
 	"""Startet Enemy-Spawning"""
+	refresh_spawn_points()
 	is_spawning = true
 	spawn_timer = current_interval
-	print("[EnemySpawner] Started - Interval: ", current_interval)
+	print("[EnemySpawner] Started - Interval: ", current_interval, " - Spawnpunkte: ", spawn_points.size())
+
+func refresh_spawn_points():
+	"""Liest die im Editor platzierten Spawnpunkte (Marker2D in Gruppe 'spawn_points')
+	und cacht ihre globalen Positionen."""
+	spawn_points.clear()
+	for node in get_tree().get_nodes_in_group("spawn_points"):
+		if node is Node2D:
+			spawn_points.append((node as Node2D).global_position)
+
+func has_spawn_points() -> bool:
+	return spawn_points.size() > 0
+
+func _pick_distinct_points(count: int) -> Array[Vector2]:
+	"""Wählt count möglichst verschiedene Spawnpunkte. Sind weniger Punkte vorhanden
+	als benötigt, werden Punkte mit kleinem vertikalen Offset wiederverwendet."""
+	var result: Array[Vector2] = []
+	if spawn_points.is_empty():
+		return result
+
+	var pool := spawn_points.duplicate()
+	pool.shuffle()
+	for i in range(count):
+		if i < pool.size():
+			result.append(pool[i])
+		else:
+			var base: Vector2 = pool[i % pool.size()]
+			result.append(base + Vector2(0, randf_range(-40.0, 40.0)))
+	return result
+
+func _fallback_position(enemy_type: Enemy.Type) -> Vector2:
+	"""Default-Spawnposition, wenn keine Spawnpunkte definiert sind.
+	Insekten fliegen, alle anderen laufen auf dem Boden (altes Lane-Verhalten)."""
+	var lane_y := LANE_FLY_Y if enemy_type == Enemy.Type.INSECT else LANE_GROUND_Y
+	return Vector2(spawn_x, lane_y)
 
 func stop_spawning():
 	"""Stoppt Enemy-Spawning"""
@@ -188,81 +227,83 @@ func spawn_enemy():
 			spawn_spread()
 
 func spawn_single():
-	"""Spawnt einzelnen Enemy"""
+	"""Spawnt einzelnen Enemy an einem zufälligen Spawnpunkt"""
 	var enemy_type = select_weighted_type()
-	var spawn_y = randf_range(spawn_y_min, spawn_y_max)
-	var spawn_pos = Vector2(spawn_x, spawn_y)
+	var spawn_pos: Vector2
+	if has_spawn_points():
+		spawn_pos = spawn_points.pick_random()
+	else:
+		spawn_pos = _fallback_position(enemy_type)
 
 	_instantiate_enemy(enemy_type, spawn_pos)
 
 func spawn_wave(count: int):
-	"""Spawnt vertikale Welle von Enemies
-
-	2er-Wave: 2 Enemies mit 120px Abstand
-	3er-Wave: 3 Enemies mit 100px Abstand
-	"""
+	"""Spawnt eine Welle von Enemies auf mehreren verschiedenen Spawnpunkten"""
 	var enemy_type = select_weighted_type()
 
-	# Berechne Start-Position (zentriert)
+	if has_spawn_points():
+		for spawn_pos in _pick_distinct_points(count):
+			_instantiate_enemy(enemy_type, spawn_pos)
+		return
+
+	# Fallback: vertikale Welle wie bisher
 	var spacing = 120.0 if count == 2 else 100.0
 	var total_height = (count - 1) * spacing
 	var center_y = (spawn_y_min + spawn_y_max) / 2.0
 	var start_y = center_y - (total_height / 2.0)
 
-	# Spawne Enemies
 	for i in range(count):
-		var spawn_y = start_y + (i * spacing)
-		spawn_y = clamp(spawn_y, spawn_y_min, spawn_y_max)
-		var spawn_pos = Vector2(spawn_x, spawn_y)
-
-		_instantiate_enemy(enemy_type, spawn_pos)
+		var spawn_y = clamp(start_y + (i * spacing), spawn_y_min, spawn_y_max)
+		_instantiate_enemy(enemy_type, Vector2(spawn_x, spawn_y))
 
 func spawn_cluster():
-	"""Spawnt 2-3 Enemies eng zusammen (50px Radius)"""
+	"""Spawnt 2-3 Enemies eng zusammen (um einen Spawnpunkt herum)"""
 	var enemy_type = select_weighted_type()
 	var count = randi_range(2, 3)
 
-	# Zentrale Position
+	if has_spawn_points():
+		var center: Vector2 = spawn_points.pick_random()
+		for i in range(count):
+			var spawn_pos = center + Vector2(randf_range(-30.0, 30.0), randf_range(-50.0, 50.0))
+			_instantiate_enemy(enemy_type, spawn_pos)
+			await get_tree().create_timer(0.05).timeout
+		return
+
+	# Fallback: Cluster auf der Lane wie bisher
 	var center_y = randf_range(spawn_y_min + 100, spawn_y_max - 100)
-
 	for i in range(count):
-		# Zufälliger Offset im 50px Radius
-		var offset_y = randf_range(-50, 50)
-		var spawn_y = clamp(center_y + offset_y, spawn_y_min, spawn_y_max)
-		var spawn_pos = Vector2(spawn_x, spawn_y)
-
-		_instantiate_enemy(enemy_type, spawn_pos)
-
-		# Kleines Delay zwischen Cluster-Spawns (visuell)
+		var spawn_y = clamp(center_y + randf_range(-50, 50), spawn_y_min, spawn_y_max)
+		_instantiate_enemy(enemy_type, Vector2(spawn_x, spawn_y))
 		await get_tree().create_timer(0.05).timeout
 
 func spawn_spread():
-	"""Spawnt 2-3 Enemies weit auseinander (>200px)"""
+	"""Spawnt 2-3 Enemies weit auseinander (auf verschiedenen Spawnpunkten)"""
 	var enemy_type = select_weighted_type()
 	var count = randi_range(2, 3)
 
-	# Gleichmäßige Verteilung über Screen-Höhe
+	if has_spawn_points():
+		for spawn_pos in _pick_distinct_points(count):
+			_instantiate_enemy(enemy_type, spawn_pos)
+		return
+
+	# Fallback: gleichmäßige Verteilung über Screen-Höhe
 	var sections = spawn_y_max - spawn_y_min
 	var section_size = sections / count
-
 	for i in range(count):
 		var section_center = spawn_y_min + (i * section_size) + (section_size / 2.0)
-		var spawn_y = randf_range(section_center - 30, section_center + 30)
-		spawn_y = clamp(spawn_y, spawn_y_min, spawn_y_max)
-		var spawn_pos = Vector2(spawn_x, spawn_y)
-
-		_instantiate_enemy(enemy_type, spawn_pos)
+		var spawn_y = clamp(randf_range(section_center - 30, section_center + 30), spawn_y_min, spawn_y_max)
+		_instantiate_enemy(enemy_type, Vector2(spawn_x, spawn_y))
 
 func _instantiate_enemy(enemy_type: Enemy.Type, spawn_pos: Vector2):
-	"""Hilfsfunktion: Erstellt Enemy an Position"""
+	"""Hilfsfunktion: Erstellt Enemy an Position.
+
+	Verwendet die übergebene Position (x UND y) direkt - bei Spawnpunkten bestimmt
+	also der im Editor platzierte Marker die Position. Kleiner X-Versatz verhindert
+	exakte Überlappung bei Mehrfach-Spawns auf demselben Punkt."""
 	var enemy = EnemyScene.instantiate() as Enemy
 	enemy.enemy_type = enemy_type
 
-	# Lane pro Typ erzwingen: Insekten fliegen, alle anderen laufen auf dem Boden.
-	# Kleiner X-Versatz verhindert exakte Überlappung bei Mehrfach-Spawns (Wave/Cluster/Spread),
-	# da das vertikale Pattern-Spacing durch die festen Lanes entfällt.
-	var lane_y := LANE_FLY_Y if enemy_type == Enemy.Type.INSECT else LANE_GROUND_Y
-	enemy.position = Vector2(spawn_pos.x + randf_range(-60.0, 0.0), lane_y)
+	enemy.position = Vector2(spawn_pos.x + randf_range(-60.0, 0.0), spawn_pos.y)
 
 	# Füge zum Parent hinzu
 	get_parent().get_parent().add_child(enemy)

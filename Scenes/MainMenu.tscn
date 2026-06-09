@@ -1,9 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://b13fiv2j853o8"]
+[gd_scene load_steps=3 format=3 uid="uid://b13fiv2j853o8"]
 
 [ext_resource type="Script" uid="uid://dtwh5rkf4ldfj" path="res://scripts/MainMenu.gd" id="1_tt5f1"]
+[ext_resource type="Texture2D" uid="uid://00gx0s4ox7rl" path="res://assets/Placeholder/AIPlaceholder/MainMenu.png" id="2_bg"]
 
 [node name="MainMenu" type="Node2D"]
 script = ExtResource("1_tt5f1")
+
+[node name="Background" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(640, 360)
+scale = Vector2(0.9375, 0.9375)
+texture = ExtResource("2_bg")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
