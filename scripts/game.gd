@@ -17,6 +17,7 @@ extends Node2D
 
 # Dynamic UI
 var save_indicator: CanvasLayer
+var intermission: CanvasLayer
 
 # ============================================================================
 # STATE
@@ -41,9 +42,23 @@ const ROUND_OSTS := [
 	"Fingerfist Ost 12.mp3",
 ]
 
-# Rundentimer (Wave-Dauer). Endless (Level 7) hat keinen Timer.
-const ROUND_DURATION: float = 45.0
+# Mini-Runden-System: jedes Level besteht aus MINI_COUNT Mini-Runden, deren
+# Zufallsdauern zusammen TOTAL_MIN..TOTAL_MAX Sekunden ergeben. Zwischen den
+# Mini-Runden eine kurze Intermission-Pause. Endless (Level 7) hat keinen
+# Rundentimer, sondern alle ENDLESS_PAUSE_INTERVAL Sekunden eine Pause.
+const MINI_COUNT: int = 3
+const TOTAL_MIN: float = 45.0
+const TOTAL_MAX: float = 60.0
+const MINI_MIN: float = 8.0
+const INTERMISSION_SECONDS: float = 5.0
+const ENDLESS_PAUSE_INTERVAL: float = 60.0
+
+var mini_durations: Array[float] = []
+var current_mini: int = 0
 var round_time_left: float = 0.0
+var in_intermission: bool = false
+var endless_elapsed: float = 0.0
+var endless_next_pause: float = ENDLESS_PAUSE_INTERVAL
 
 # Round Stats Tracking
 var coins_at_round_start: int = 0
@@ -51,6 +66,7 @@ var round_start_time: float = 0.0
 var enemies_killed_this_round: int = 0
 var is_new_highscore: bool = false
 var player_died: bool = false
+var round_won: bool = false
 
 # ============================================================================
 # INITIALIZATION
@@ -62,6 +78,13 @@ func _ready():
 	save_indicator = CanvasLayer.new()
 	save_indicator.set_script(indicator_script)
 	add_child(save_indicator)
+
+	# Create Intermission Overlay (Pause zwischen Mini-Runden)
+	var intermission_script = preload("res://scripts/Intermission.gd")
+	intermission = CanvasLayer.new()
+	intermission.set_script(intermission_script)
+	add_child(intermission)
+	intermission.finished.connect(_on_intermission_finished)
 
 	# Hide Screens initially
 	end_screen.visible = false
@@ -132,8 +155,8 @@ func setup_player():
 	if not player:
 		return
 
-	# FESTE Position (rechts im Screen - Gegner laufen von links heran)
-	player.position = Vector2(1150, 500)
+	# Position wird im jeweiligen Level{N}.tscn im Editor festgelegt; den Fallback
+	# (falls der Node auf 0/0 steht) übernimmt Player.gd._ready() vor diesem Aufruf.
 
 	# Apply Items (falls gekauft)
 	player.apply_item_effects()
@@ -189,6 +212,9 @@ func _on_wall_destroyed():
 	if level < 7:
 		Global.unlock_next_level(level)
 
+	# Sieg-Flag setzen (zuverlässig, statt der wall.visible-Heuristik)
+	round_won = true
+
 	# Wall-HP für dieses Level zurücksetzen, damit es erneut spielbar ist
 	# (sonst startet ein Replay mit gespeicherten 0 HP -> sofort wieder zerstört)
 	Global.reset_wall_hp(level)
@@ -228,9 +254,17 @@ func start_round():
 	enemies_killed_this_round = 0
 	player_died = false
 
-	# Rundentimer starten (nicht im Endless-Modus)
-	if Global.selected_level != 7:
-		round_time_left = ROUND_DURATION
+	# Mini-Runden vorbereiten
+	round_won = false
+	current_mini = 0
+	in_intermission = false
+	if Global.selected_level == 7:
+		# Endless: kein Rundentimer, nur Pausen alle 60s
+		endless_elapsed = 0.0
+		endless_next_pause = ENDLESS_PAUSE_INTERVAL
+	else:
+		_generate_mini_durations()
+		round_time_left = mini_durations[0]
 		if hud and hud.has_method("update_timer"):
 			hud.update_timer(round_time_left)
 
@@ -242,6 +276,56 @@ func start_round():
 	Audio.play_music(ROUND_OSTS[randi() % ROUND_OSTS.size()])
 
 	print("[GameScene] Round Started")
+
+func _generate_mini_durations():
+	"""Erzeugt MINI_COUNT zufällige Mini-Runden-Dauern, die zusammen
+	TOTAL_MIN..TOTAL_MAX Sekunden ergeben (je mind. MINI_MIN)."""
+	var total := randf_range(TOTAL_MIN, TOTAL_MAX)
+	var weights: Array[float] = [randf() + 0.5, randf() + 0.5, randf() + 0.5]
+	var sum_w: float = weights[0] + weights[1] + weights[2]
+
+	mini_durations.clear()
+	for i in range(MINI_COUNT):
+		var d: float = max(MINI_MIN, total * (weights[i] / sum_w))
+		mini_durations.append(d)
+
+	print("[GameScene] Mini-Runden-Dauern: ", mini_durations)
+
+func _advance_mini():
+	"""Aktuelle Mini-Runde abgelaufen: nächste starten oder Runde beenden."""
+	current_mini += 1
+	if current_mini >= MINI_COUNT:
+		print("[GameScene] Alle Mini-Runden durch!")
+		end_round()
+	else:
+		_start_intermission()
+
+func _start_intermission():
+	"""Friert das Spiel ein und zeigt die Pause (Items + Shop)."""
+	in_intermission = true
+	get_tree().paused = true
+	intermission.start(INTERMISSION_SECONDS)
+	print("[GameScene] Intermission gestartet (Mini %d)" % current_mini)
+
+func _on_intermission_finished():
+	"""Pause vorbei: fortsetzen, ggf. neue Item-Effekte übernehmen."""
+	get_tree().paused = false
+	in_intermission = false
+
+	# Nur bei Änderung neu anwenden (apply_item_effects heilt bei golem_skin auf max_hp)
+	if intermission.selection_changed:
+		player.apply_item_effects()
+		if Global.is_item_active("golem_blessing") and wall and wall.visible:
+			wall.enable_regeneration()
+
+	if Global.selected_level == 7:
+		endless_next_pause += ENDLESS_PAUSE_INTERVAL
+	else:
+		round_time_left = mini_durations[current_mini]
+		if hud and hud.has_method("update_timer"):
+			hud.update_timer(round_time_left)
+
+	print("[GameScene] Intermission beendet - weiter mit Mini %d" % current_mini)
 
 func end_round():
 	"""Beendet die Runde"""
@@ -284,7 +368,7 @@ func show_end_screen():
 	# Calculate Stats
 	var round_time = (Time.get_ticks_msec() / 1000.0) - round_start_time
 	var coins_earned = Global.coins - coins_at_round_start
-	var victory = (wall and not wall.visible)
+	var victory = round_won
 
 	var stats = {
 		"round_score": _final_round_score,
@@ -306,8 +390,15 @@ func show_end_screen():
 # ============================================================================
 
 func _process(delta: float):
-	"""Rundentimer herunterzählen und Runde bei Ablauf beenden"""
-	if not is_round_active or is_paused or Global.selected_level == 7:
+	"""Mini-Runden-Timer (L1–6) bzw. Endless-Pausen-Timer (L7)."""
+	if not is_round_active or is_paused or in_intermission:
+		return
+
+	# Endless (Level 7): kein Rundenende per Timer, aber Pause alle 60s
+	if Global.selected_level == 7:
+		endless_elapsed += delta
+		if endless_elapsed >= endless_next_pause:
+			_start_intermission()
 		return
 
 	round_time_left -= delta
@@ -317,8 +408,7 @@ func _process(delta: float):
 
 	if round_time_left <= 0.0:
 		round_time_left = 0.0
-		print("[GameScene] Round time up!")
-		end_round()
+		_advance_mini()
 
 # ============================================================================
 # PAUSE SYSTEM
@@ -326,6 +416,8 @@ func _process(delta: float):
 
 func _input(event: InputEvent):
 	if event.is_action_pressed("ui_cancel"):  # ESC Key
+		if in_intermission:
+			return  # Während der Mini-Pause kein zusätzliches Pausenmenü
 		toggle_pause()
 
 func toggle_pause():

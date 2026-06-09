@@ -84,8 +84,10 @@ signal combo_reset
 func _ready():
 	add_to_group("player")
 
-	# STATIC POSITION - NO MOVEMENT!
-	position = Vector2(1150, 360)  # Fixed position on right side (Gegner laufen von links heran)
+	# STATIC POSITION - aus dem jeweiligen Level{N}.tscn (Editor).
+	# Fallback nur, falls der Player-Node nie platziert wurde (0/0).
+	if position == Vector2.ZERO:
+		position = Vector2(1150, 360)
 
 	# Feste Hitbox bleibt inert - Treffer laufen über _punch_at() an der Klickposition
 	punch_hitbox.monitoring = false

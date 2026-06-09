@@ -22,7 +22,7 @@ texture = ExtResource("6_bg")
 flip_h = true
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector2(1172, 512)
+position = Vector2(1100, 486)
 
 [node name="Spawners" type="Node2D" parent="."]
 

@@ -21,7 +21,7 @@ scale = Vector2(0.465116, 0.46875)
 texture = ExtResource("6_bg")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector2(1172, 512)
+position = Vector2(1158, 554)
 
 [node name="Spawners" type="Node2D" parent="."]
 
