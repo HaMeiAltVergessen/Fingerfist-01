@@ -59,8 +59,9 @@ func create_title():
 	"""Erstellt Titel-Label"""
 	title_label = Label.new()
 	title_label.name = "TitleLabel"
-	title_label.text = "FINGERFIST"
-	title_label.position = Vector2(440, 80)
+	title_label.text = "     FINGERFIST
+	Punch to Playton"
+	title_label.position = Vector2(450, 100)
 	title_label.add_theme_font_size_override("font_size", 48)
 	title_label.add_theme_color_override("font_color", Color(1.0, 0.84, 0.0))  # Gold
 	add_child(title_label)

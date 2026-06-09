@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dg2yenqilvjgt" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://ck0hp12ep61o7" path="res://Scenes/EnemySpawner.tscn" id="3_spawner"]
-[ext_resource type="Script" uid="uid://bpj2p6hd82ytd" path="res://scripts/GameCamera.gd" id="4_camera"]
+[ext_resource type="Script" uid="uid://0mmvxtrlflai" path="res://scripts/GameCamera.gd" id="4_camera"]
 [ext_resource type="PackedScene" uid="uid://bi0ku3pq6jubw" path="res://Scenes/CoinSpawner.tscn" id="4_coin_spawner"]
 [ext_resource type="PackedScene" uid="uid://x11f4urm5rxl" path="res://Scenes/HUD.tscn" id="5_hud"]
 [ext_resource type="Texture2D" uid="uid://bir3rywvpe5wo" path="res://assets/Placeholder/AIPlaceholder/Background6.png" id="6_bg"]
@@ -22,13 +22,14 @@ texture = ExtResource("6_bg")
 flip_h = true
 
 [node name="Player" parent="." instance=ExtResource("2_player")]
-position = Vector2(1100, 486)
+position = Vector2(1185, 491)
 
 [node name="Spawners" type="Node2D" parent="."]
 
 [node name="EnemySpawner" parent="Spawners" instance=ExtResource("3_spawner")]
 
 [node name="CoinSpawner" parent="Spawners" instance=ExtResource("4_coin_spawner")]
+spawn_x_max = 900.0
 
 [node name="GameCamera" type="Camera2D" parent="." groups=["camera"]]
 position = Vector2(640, 360)
@@ -133,22 +134,22 @@ grow_vertical = 2
 text = "Main Menu"
 
 [node name="SpawnPoint1" type="Marker2D" parent="." groups=["spawn_points"]]
-position = Vector2(-50, 120)
+position = Vector2(189, 581)
 
 [node name="SpawnPoint2" type="Marker2D" parent="." groups=["spawn_points"]]
-position = Vector2(-50, 220)
+position = Vector2(400, 573)
 
 [node name="SpawnPoint3" type="Marker2D" parent="." groups=["spawn_points"]]
-position = Vector2(-50, 320)
+position = Vector2(235, 644)
 
 [node name="SpawnPoint4" type="Marker2D" parent="." groups=["spawn_points"]]
-position = Vector2(-50, 420)
+position = Vector2(315, 583)
 
 [node name="SpawnPoint5" type="Marker2D" parent="." groups=["spawn_points"]]
-position = Vector2(-50, 520)
+position = Vector2(464, 580)
 
 [node name="SpawnPoint6" type="Marker2D" parent="." groups=["spawn_points"]]
-position = Vector2(-50, 610)
+position = Vector2(496, 105)
 
 [connection signal="pressed" from="PauseScreen/PausePanel/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="PauseScreen/PausePanel/SaveButton" to="." method="_on_save_button_pressed"]
