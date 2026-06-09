@@ -155,8 +155,11 @@ func perform_punch(target: Vector2):
 	# Treffer SOFORT an der Klickposition auswerten (klick-zielbar)
 	var did_hit_enemy := _punch_at(target, PUNCH_REACH * attack_radius_multiplier)
 
-	# Kein Gegner getroffen? Dann prüfen, ob die Wand getroffen wurde (+1 Score)
-	if not did_hit_enemy:
+	# Gegner-Projektile im Schlagradius zerschlagen (zählt ebenfalls als Treffer)
+	var did_smash_projectile := _smash_projectiles_at(target, PUNCH_REACH * attack_radius_multiplier)
+
+	# Weder Gegner noch Projektil getroffen? Dann prüfen, ob die Wand getroffen wurde (+1 Score)
+	if not did_hit_enemy and not did_smash_projectile:
 		_try_punch_wall_at(target)
 
 	print("[Player] PUNCH! @ %s" % target)
@@ -173,6 +176,19 @@ func _punch_at(target: Vector2, reach: float) -> bool:
 			_hit_enemy(enemy)
 			hit = true
 	return hit
+
+func _smash_projectiles_at(target: Vector2, reach: float) -> bool:
+	"""Zerschlägt jedes Gegner-Projektil, dessen Position innerhalb 'reach' der
+	Klickposition liegt. Distanzbasiert (analog zu _punch_at). Gibt true zurück,
+	wenn mindestens ein Projektil zerstört wurde."""
+	var smashed := false
+	for node in get_tree().get_nodes_in_group("projectiles"):
+		var proj := node as Node2D
+		if proj and is_instance_valid(proj) and proj.global_position.distance_to(target) <= reach:
+			Audio.play_sfx_random("projectile_hit")
+			proj.queue_free()
+			smashed = true
+	return smashed
 
 func _try_punch_wall_at(target: Vector2) -> bool:
 	"""Prüft, ob die Klickposition die Wand trifft. Falls ja: +1 Score (chippt die Wand
