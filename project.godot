@@ -21,6 +21,7 @@ Global="*res://autoload/Global.gd"
 SaveSystem="*res://autoload/SaveSystem.gd"
 Audio="*res://autoload/AudioManager.gd"
 SceneLoader="*res://autoload/SceneLoader.gd"
+VFX="*res://autoload/VFX.gd"
 
 [display]
 

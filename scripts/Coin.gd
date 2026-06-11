@@ -144,6 +144,8 @@ func apply_physics(delta: float):
 			# Bounce
 			if abs(velocity.y) > 50:
 				velocity.y = -velocity.y * bounce_damping
+				# Dust-Puff am Boden
+				VFX.play("coin_dust", global_position, get_parent())
 				# SFX
 				# Audio.play_sfx("coin_bounce.ogg")
 			else:
@@ -215,6 +217,9 @@ func collect():
 
 	# Add Coins zu Global
 	Global.add_coins(coin_value)
+
+	# Pop-VFX (an den Parent gehängt, überlebt das Freigeben des Coins)
+	VFX.play("coin_pop", global_position, get_parent())
 
 	# SFX
 	# Audio.play_sfx("coin_collect_01.ogg")  # Später

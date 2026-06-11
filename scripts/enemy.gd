@@ -315,8 +315,6 @@ func die():
 	if randf() < coin_drop_chance:
 		spawn_coin()
 
-	# TODO: Death Particles (Commit 59)
-
 	# Cleanup
 	queue_free()
 

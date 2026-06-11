@@ -276,6 +276,9 @@ func destroy():
 	# Particle Effect
 	spawn_destruction_particles()
 
+	# Break-VFX (an den Parent gehängt, damit es nach dem Ausblenden der Wand sichtbar bleibt)
+	VFX.play("wall_break", global_position, get_parent())
+
 	# Hide Wall
 	visible = false
 

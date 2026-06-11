@@ -234,6 +234,9 @@ func _on_anim_finished():
 
 func _hit_enemy(enemy: Enemy):
 	"""Verarbeitet einen Treffer auf einen Enemy (One-Hit-KO + Combo + Items)"""
+	# Treffer-Funke an der Gegnerposition (zufällige Variante)
+	VFX.play_hit_spark(enemy.global_position, get_parent())
+
 	# Emit Signal
 	hit_enemy.emit(enemy)
 
@@ -316,6 +319,7 @@ func take_damage(amount: int):
 	if fire_shield_charges > 0:
 		fire_shield_charges -= 1
 		Audio.play_sfx_random("item_shield")
+		VFX.play("fx_shield", global_position, get_parent())
 		print("[Player] Fire Shield absorbed hit! Charges: %d" % fire_shield_charges)
 		return
 
@@ -332,6 +336,9 @@ func take_damage(amount: int):
 
 	# SFX
 	Audio.play_sfx_random("player_hurt")
+
+	# Hurt-Flash am Player
+	VFX.play("hurt_flash", global_position, get_parent())
 
 	print("[Player] Took %d damage - HP: %d/%d" % [amount, hp, max_hp])
 
@@ -361,7 +368,7 @@ func _on_hurtbox_area_entered(area: Area2D):
 	if projectile and fire_shield_charges > 0:
 		fire_shield_charges -= 1
 		Audio.play_sfx_random("item_shield")
-		# TODO: Spawn Fire Explosion Particles (Commit 59)
+		VFX.play("fx_shield", global_position, get_parent())
 		projectile.queue_free()
 		return
 
@@ -507,6 +514,7 @@ func trigger_slow_motion():
 	"""Aktiviert Slow-Motion für 2 Sekunden"""
 	Engine.time_scale = 0.7
 	Audio.play_sfx_random("item_slowmo")
+	VFX.play("fx_slowmo", global_position, get_parent())
 
 	# Reset nach 2s (real time, nicht game time)
 	var timer = get_tree().create_timer(2.0 / 0.7, true, false, true)
@@ -522,7 +530,9 @@ func trigger_chain_lightning():
 	if camera and camera.has_method("shake_explosion"):
 		camera.shake_explosion()
 
-	# TODO: Implement Lightning Visual (Commit 60)
+	# Lightning-Bolt + expandierender Schockwellen-Ring
+	VFX.play("fx_thunder", global_position, get_parent())
+	VFX.play("fx_shockwave", global_position, get_parent())
 
 	# Schade allen Enemies in Range
 	var enemies = get_tree().get_nodes_in_group("enemies")
@@ -540,7 +550,8 @@ func trigger_meteor_rain():
 	if camera and camera.has_method("shake_explosion"):
 		camera.shake_explosion()
 
-	# TODO: Implement Meteor Visual (Commit 60)
+	# Meteoriten-Einschlag-VFX
+	VFX.play("fx_meteor", global_position, get_parent())
 
 # ============================================================================
 # RESET
