@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://dg2yenqilvjgt" path="res://scripts/game.gd" id="1_game"]
 [ext_resource type="PackedScene" uid="uid://4rxoeb3wyu0h" path="res://Scenes/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://ck0hp12ep61o7" path="res://Scenes/EnemySpawner.tscn" id="3_spawner"]
-[ext_resource type="Script" uid="uid://bpj2p6hd82ytd" path="res://scripts/GameCamera.gd" id="4_camera"]
+[ext_resource type="Script" uid="uid://0mmvxtrlflai" path="res://scripts/GameCamera.gd" id="4_camera"]
 [ext_resource type="PackedScene" uid="uid://bi0ku3pq6jubw" path="res://Scenes/CoinSpawner.tscn" id="4_coin_spawner"]
 [ext_resource type="PackedScene" uid="uid://x11f4urm5rxl" path="res://Scenes/HUD.tscn" id="5_hud"]
 [ext_resource type="Texture2D" uid="uid://oxxqnwu1prkv" path="res://assets/Placeholder/AIPlaceholder/Background1.png" id="6_bg"]
