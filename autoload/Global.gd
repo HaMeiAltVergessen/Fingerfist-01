@@ -216,7 +216,7 @@ func unlock_next_level(current_level: int):
 	unlocked_levels.sort()
 	save_game()
 
-	print("[Global] Level %d UNLOCKED! 🎉" % next_level)
+	print("[Global] Level %d UNLOCKED!" % next_level)
 
 func unlock_all_levels():
 	"""Schaltet alle Level frei (Test-Helfer - später entfernen)"""

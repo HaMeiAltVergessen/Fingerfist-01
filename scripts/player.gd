@@ -252,7 +252,7 @@ func _hit_enemy(enemy: Enemy):
 		if thunder_hit_counter >= 10:
 			thunder_hit_counter = 0
 			# TODO: 3× damage effect (visual only, enemy dies anyway)
-			print("[Player] THUNDER CHARGE! ⚡")
+			print("[Player] THUNDER CHARGE!")
 
 	# Apply Knockback (Iron Knuckles Item)
 	if has_knockback:

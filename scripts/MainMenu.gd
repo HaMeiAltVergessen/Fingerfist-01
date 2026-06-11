@@ -158,13 +158,13 @@ func _on_quit_button_pressed():
 func create_test_unlock_button():
 	var btn = Button.new()
 	btn.name = "TestUnlockButton"
-	btn.text = "🔓 UNLOCK ALL (TEST)"
+	btn.text = "UNLOCK ALL (TEST)"
 	btn.position = Vector2(20, 20)
 	btn.custom_minimum_size = Vector2(220, 40)
 	btn.modulate = Color(1.0, 0.6, 0.2)
 	btn.pressed.connect(func():
 		Global.unlock_all_levels()
-		btn.text = "✓ Alle Level frei")
+		btn.text = "Alle Level frei")
 	canvas_layer.add_child(btn)
 
 	print("[MainMenu] TEMP test unlock button created")

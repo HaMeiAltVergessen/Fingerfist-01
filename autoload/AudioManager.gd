@@ -47,6 +47,14 @@ var sfx_pools := {
 var sfx_volume: float = 1.0
 var music_volume: float = 0.7
 
+# Inhaltliche Grund-Dämpfung pro SFX-Kategorie (zusätzlich zum Settings-Regler/Bus).
+const SFX_SCALE_ALL := 0.7      # alle SFX -30%
+const SFX_SCALE_MONSTER := 0.4  # Monster gesamt -60% (additiv: -30% -30%)
+const MONSTER_SFX_KEYS := [
+	"insect_death", "vase_death", "fire_death",
+	"vase_windup", "vase_attack", "fire_charge", "fire_shot",
+]
+
 # ============================================================================
 # STATE
 # ============================================================================
@@ -118,7 +126,7 @@ func _setup_audio_buses():
 
 func play_sfx(sfx_name: String, pitch_variation: float = 0.1, volume_db: float = 0.0):
 	# Legacy-API: relativer Name unter res://assets/audio/sfx/
-	_play_path("res://assets/audio/sfx/" + sfx_name, pitch_variation, volume_db)
+	_play_path("res://assets/audio/sfx/" + sfx_name, pitch_variation, volume_db + linear_to_db(SFX_SCALE_ALL))
 
 func play_sfx_random(key: String, pitch_variation: float = 0.1, volume_db: float = 0.0):
 	"""Spielt einen zufälligen SFX aus dem Pool 'key' (siehe sfx_pools)."""
@@ -126,7 +134,9 @@ func play_sfx_random(key: String, pitch_variation: float = 0.1, volume_db: float
 	if pool.is_empty():
 		push_warning("SFX pool empty/unknown: " + key)
 		return
-	_play_path(pool[randi() % pool.size()], pitch_variation, volume_db)
+	# Kategorie-Dämpfung: Monster -60%, alle anderen -30% (zusätzlich zum Bus-Pegel).
+	var scale: float = SFX_SCALE_MONSTER if key in MONSTER_SFX_KEYS else SFX_SCALE_ALL
+	_play_path(pool[randi() % pool.size()], pitch_variation, volume_db + linear_to_db(scale))
 
 func _play_path(stream_path: String, pitch_variation: float = 0.1, volume_db: float = 0.0):
 	# Limit simultaneous sounds (Performance)

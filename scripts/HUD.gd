@@ -93,7 +93,7 @@ func setup_hp_icons():
 	for i in range(player.max_hp):
 		var icon = TextureRect.new()
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
-		icon.custom_minimum_size = Vector2(32, 32)
+		icon.custom_minimum_size = Vector2(1, 1)
 
 		icon.texture = load("res://assets/sprites/ui/hp_icon.png")
 		icon.modulate = Color.WHITE  # heart artwork is already red
