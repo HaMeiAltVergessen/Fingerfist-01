@@ -145,7 +145,7 @@ position = Vector2(233, 624)
 position = Vector2(213, 600)
 
 [node name="SpawnPoint5" type="Marker2D" parent="." groups=["spawn_points"]]
-position = Vector2(387, 374)
+position = Vector2(242, 599)
 
 [connection signal="pressed" from="PauseScreen/PausePanel/ContinueButton" to="." method="_on_continue_button_pressed"]
 [connection signal="pressed" from="PauseScreen/PausePanel/SaveButton" to="." method="_on_save_button_pressed"]
